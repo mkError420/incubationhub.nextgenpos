@@ -167,20 +167,20 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                     <i class="fa-solid fa-house w-6 text-agro-700"></i> Home
                 </a>
                 <a href="about.php" class="px-3 py-2.5 rounded-lg text-sm font-bold <?= $currentPage === 'about' ? 'bg-agro-50 text-agro-800' : 'text-slate-700' ?>">
-                    <i class="fa-solid fa-compass w-6 text-agro-700"></i> About Us
+                    About Us
                 </a>
                 <a href="programs.php" class="px-3 py-2.5 rounded-lg text-sm font-bold <?= $currentPage === 'programs' ? 'bg-agro-50 text-agro-800' : 'text-slate-700' ?>">
-                    <i class="fa-solid fa-rocket w-6 text-agro-700"></i> Programs & Cohorts
+                    Programs & Cohorts
                 </a>
                 <a href="offerings.php" class="px-3 py-2.5 rounded-lg text-sm font-bold <?= $currentPage === 'offerings' ? 'bg-agro-50 text-agro-800' : 'text-slate-700' ?>">
-                    <i class="fa-solid fa-layer-group w-6 text-agro-700"></i> Core Offerings
+                    Core Offerings
                 </a>
                 <a href="networking.php" class="px-3 py-2.5 rounded-lg text-sm font-bold <?= $currentPage === 'networking' ? 'bg-agro-50 text-agro-800' : 'text-slate-700' ?>">
-                    <i class="fa-solid fa-network-wired w-6 text-agro-700"></i> Networking
+                    Networking
                 </a>
                 <div class="pt-3">
                     <a href="contact.php" class="w-full flex items-center justify-center px-4 py-3 text-sm font-bold text-white bg-agro-800 rounded-xl shadow-md">
-                        <i class="fa-solid fa-paper-plane mr-2 text-emerald-300"></i> Apply / Connect Now
+                        Apply / Connect Now
                     </a>
                 </div>
             </div>

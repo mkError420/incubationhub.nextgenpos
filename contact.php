@@ -180,17 +180,17 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="bg-agro-900 text-white p-6 rounded-3xl shadow-lg border border-agro-800 relative overflow-hidden">
                     <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-xl"></div>
                     <div class="flex items-center space-x-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400">
+   <!--                      <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400">
                             <i class="fa-solid fa-bolt text-lg"></i>
-                        </div>
+                        </div> -->
                         <div>
                             <h3 class="font-extrabold text-sm">Rapid Evaluation SLA</h3>
                             <span class="text-xs text-emerald-300">Reviewed within 48 Hours</span>
                         </div>
                     </div>
-                    <p class="text-xs text-emerald-100/80 leading-relaxed">
+<!--                     <p class="text-xs text-emerald-100/80 leading-relaxed">
                         Every submission is logged directly to our MySQL pipeline and routed to the corresponding sector manager (Admissions, Angel Network, or Partnerships).
-                    </p>
+                    </p> -->
                 </div>
 
                 <!-- Office Contact Card -->
@@ -256,13 +256,13 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
 
                 <!-- Live Submissions Portal Link -->
-                <div class="p-5 rounded-3xl bg-emerald-50 border border-emerald-200 text-center">
+               <!--  <div class="p-5 rounded-3xl bg-emerald-50 border border-emerald-200 text-center">
                     <span class="text-xs font-bold text-emerald-900 block mb-1">Developer / Reviewer Verification</span>
                     <p class="text-[11px] text-emerald-700 mb-3">Inspect live database records, filter leads, and monitor pipeline status.</p>
                     <a href="submissions.php" class="inline-flex items-center text-xs font-bold text-emerald-900 bg-white px-4 py-2 rounded-xl border border-emerald-300 shadow-sm hover:bg-emerald-100 transition">
                         <i class="fa-solid fa-database mr-1.5 text-emerald-600"></i> Open Submissions Portal &rarr;
                     </a>
-                </div>
+                </div> -->
 
             </div>
 
