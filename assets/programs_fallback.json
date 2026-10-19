@@ -1,0 +1,54 @@
+[
+    {
+        "id": 1,
+        "title": "AgriTech Ignite Accelerator",
+        "stage_tag": "Pre-Seed Stage \u2022 16-Week Structured Sprint",
+        "duration": "16 Weeks (Hybrid: Dhaka & Field Labs)",
+        "funding_text": "$35,000 \u2013 $50,000 Pre-Seed SAFE",
+        "field_access": "Guaranteed Farmland Pilot in Bogura",
+        "description": "Designed for early-stage founders with an MVP, prototype, or validated proof-of-concept. Focuses on field experimentation, smallholder user feedback, unit economics, and initial institutional capital readiness.",
+        "icon": "fa-seedling",
+        "badge_status": "Applications Open",
+        "status": "Active",
+        "sort_order": 1
+    },
+    {
+        "id": 2,
+        "title": "HarvestScale Growth Program",
+        "stage_tag": "Seed to Series A \u2022 6-Month Scale Sprint",
+        "duration": "6 Months Bespoke Advisory",
+        "funding_text": "Up to $250,000 Co-Investment Syndicate",
+        "field_access": "Direct PRAN, ACI, BRAC Integration",
+        "description": "Engineered for startups with proven product-market fit and commercial revenue. Focuses on multi-district distribution scaling, corporate off-take contracts, supply-chain automation, and international venture capital syndication.",
+        "icon": "fa-chart-line",
+        "badge_status": "Rolling Review",
+        "status": "Active",
+        "sort_order": 2
+    },
+    {
+        "id": 3,
+        "title": "ClimateSmart Bio-Residency",
+        "stage_tag": "Deep-Tech Science \u2022 12-Month Academic & Lab Residency",
+        "duration": "12 Months Residency",
+        "funding_text": "Research Commercialization Grant",
+        "field_access": "BAU Genomics & Wageningen Peer Support",
+        "description": "Translating frontier agronomy breakthroughs (saline-tolerant genetics, mycorrhizal bio-fertilizers, and microbial pest management) from university research labs into commercially viable startup spin-offs.",
+        "icon": "fa-dna",
+        "badge_status": "Selective Cohort",
+        "status": "Active",
+        "sort_order": 3
+    },
+    {
+        "id": 4,
+        "title": "Women in AgriTech Fellowship",
+        "stage_tag": "Inclusion & Leadership \u2022 6-Month Catalytic Track",
+        "duration": "6-Month Leadership Track",
+        "funding_text": "$15,000 Equity-Free Innovation Grant",
+        "field_access": "Direct Linkage to 50+ Women Co-ops",
+        "description": "Empowering female founders, agribusiness operators, and rural cooperative organizers. Features dedicated non-dilutive catalytic grants, executive female mentor matching, and distributor network onboarding.",
+        "icon": "fa-venus",
+        "badge_status": "Grant Funded",
+        "status": "Active",
+        "sort_order": 4
+    }
+]
