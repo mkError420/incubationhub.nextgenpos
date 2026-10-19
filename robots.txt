@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /submissions.php
 Disallow: /api/
 Disallow: /includes/
 Disallow: /config.php
