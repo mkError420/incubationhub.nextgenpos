@@ -213,7 +213,7 @@ function renderAdminHeader($activePage = 'dashboard', $pageTitle = 'Dashboard Ov
 
                     <a href="settings.php" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition <?= $activePage === 'settings' ? 'bg-emerald-700 text-white font-bold shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/80' ?>">
                         <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
-                        <span>Admin Profile & DB</span>
+                        <span>Settings & DB</span>
                     </a>
 
                     <a href="../index.php" target="_blank" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-slate-800/80 transition">

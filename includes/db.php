@@ -2185,7 +2185,24 @@ function verifyAdminLogin($username, $password) {
         }
     }
 
-    // Fallback Emergency Admin Mode if MySQL is offline
+    // Fallback Emergency Admin Mode if MySQL is offline or credentials not found in DB
+    $fallbackFile = getAdminsFallbackFilePath();
+    if (file_exists($fallbackFile)) {
+        $fallbackAdmins = json_decode(@file_get_contents($fallbackFile), true) ?: [];
+        foreach ($fallbackAdmins as $fa) {
+            if ((strtolower($fa['username']) === strtolower($username) || strtolower($fa['email']) === strtolower($username))
+                && !empty($fa['password_hash']) && password_verify($password, $fa['password_hash'])) {
+                return [
+                    'id'        => (int)($fa['id'] ?? 1),
+                    'username'  => $fa['username'] ?? $username,
+                    'email'     => $fa['email'] ?? '',
+                    'full_name' => $fa['full_name'] ?? 'Administrator',
+                    'role'      => $fa['role'] ?? 'Super Admin'
+                ];
+            }
+        }
+    }
+
     if ($username === 'admin' && $password === 'admin123') {
         return [
             'id'        => 1,
@@ -2232,7 +2249,11 @@ function updateAdminProfile($userId, $newPassword = null, $fullName = null, $ema
 
             $sql = "UPDATE admin_users SET " . implode(", ", $fields) . " WHERE id = :id";
             $stmt = $pdo->prepare($sql);
-            return $stmt->execute($params);
+            $saved = $stmt->execute($params);
+            if ($saved) {
+                syncAdminsToFallbackFile();
+            }
+            return $saved;
         } catch (PDOException $e) {
             error_log("Failed to update admin profile: " . $e->getMessage());
             return false;
@@ -2240,6 +2261,268 @@ function updateAdminProfile($userId, $newPassword = null, $fullName = null, $ema
     }
 
     // Gracefully succeed in local fallback mode
+    $filePath = getAdminsFallbackFilePath();
+    if (file_exists($filePath)) {
+        $admins = json_decode(@file_get_contents($filePath), true) ?: [];
+        foreach ($admins as &$a) {
+            if ((int)($a['id'] ?? 0) === (int)$userId) {
+                if (!empty($fullName)) $a['full_name'] = trim($fullName);
+                if (!empty($email)) $a['email'] = trim($email);
+                if (!empty($newPassword)) $a['password_hash'] = password_hash($newPassword, PASSWORD_DEFAULT);
+                break;
+            }
+        }
+        @file_put_contents($filePath, json_encode($admins, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
     return true;
 }
+
+/**
+ * Path to administrators fallback JSON file
+ * 
+ * @return string
+ */
+function getAdminsFallbackFilePath() {
+    return __DIR__ . '/../assets/admins_fallback.json';
+}
+
+/**
+ * Default initial admin seed
+ * 
+ * @return array
+ */
+function getDefaultSeedAdmins() {
+    return [
+        [
+            'id'            => 1,
+            'username'      => 'admin',
+            'email'         => 'admin@nextgenfarminghub.bd',
+            'password_hash' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // admin123
+            'full_name'     => 'Incubation Director',
+            'role'          => 'Super Admin',
+            'last_login'    => null,
+            'created_at'    => date('Y-m-d H:i:s'),
+        ]
+    ];
+}
+
+/**
+ * Fetch all administrator users (Dual persistence: MySQL + Fallback JSON)
+ * 
+ * @return array
+ */
+function getAllAdminUsers() {
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $stmt = $pdo->query("SELECT id, username, email, full_name, role, last_login, created_at FROM admin_users ORDER BY id ASC");
+            $users = $stmt->fetchAll();
+            if (!empty($users)) {
+                return $users;
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to query admin_users: " . $e->getMessage());
+        }
+    }
+
+    // Fallback file
+    $filePath = getAdminsFallbackFilePath();
+    if (file_exists($filePath)) {
+        $json = @file_get_contents($filePath);
+        if ($json) {
+            $data = json_decode($json, true);
+            if (is_array($data) && !empty($data)) {
+                return $data;
+            }
+        }
+    }
+
+    return getDefaultSeedAdmins();
+}
+
+/**
+ * Create a new administrator user
+ * 
+ * @param array $data ['username', 'email', 'password', 'full_name', 'role']
+ * @return array ['success' => bool, 'message' => string, 'id' => int|null]
+ */
+function createAdminUser($data) {
+    $username = trim($data['username'] ?? '');
+    $email    = trim($data['email'] ?? '');
+    $password = trim($data['password'] ?? '');
+    $fullName = trim($data['full_name'] ?? '');
+    $role     = in_array($data['role'] ?? '', ['Super Admin', 'Editor']) ? $data['role'] : 'Super Admin';
+
+    // Validation
+    if ($username === '' || !preg_match('/^[a-zA-Z0-9_\-\.]{3,30}$/', $username)) {
+        return ['success' => false, 'message' => 'Username must be 3-30 characters long and contain only letters, numbers, dots, hyphens or underscores.'];
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'message' => 'Please provide a valid administrator email address.'];
+    }
+
+    if (strlen($password) < 6) {
+        return ['success' => false, 'message' => 'Password must be at least 6 characters long.'];
+    }
+
+    if ($fullName === '') {
+        $fullName = ucfirst($username);
+    }
+
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            // Check if username or email already exists
+            $checkStmt = $pdo->prepare("SELECT id, username, email FROM admin_users WHERE username = :u OR email = :e LIMIT 1");
+            $checkStmt->execute([':u' => $username, ':e' => $email]);
+            $existing = $checkStmt->fetch();
+            if ($existing) {
+                if (strtolower($existing['username']) === strtolower($username)) {
+                    return ['success' => false, 'message' => "An administrator with username '{$username}' already exists."];
+                }
+                return ['success' => false, 'message' => "An administrator with email '{$email}' already exists."];
+            }
+
+            $stmt = $pdo->prepare("INSERT INTO admin_users (username, email, password_hash, full_name, role, created_at)
+                                   VALUES (:u, :e, :p, :f, :r, NOW())");
+            $stmt->execute([
+                ':u' => $username,
+                ':e' => $email,
+                ':p' => $passwordHash,
+                ':f' => $fullName,
+                ':r' => $role
+            ]);
+            $newId = (int)$pdo->lastInsertId();
+
+            // Sync to fallback file
+            syncAdminsToFallbackFile();
+
+            return ['success' => true, 'message' => "Administrator '{$fullName}' (@{$username}) created successfully!", 'id' => $newId];
+        } catch (PDOException $e) {
+            error_log("Failed to insert admin_user: " . $e->getMessage());
+            return ['success' => false, 'message' => "Database error creating administrator: " . $e->getMessage()];
+        }
+    }
+
+    // Fallback mode if MySQL is offline
+    $filePath = getAdminsFallbackFilePath();
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) @mkdir($dir, 0777, true);
+
+    $admins = [];
+    if (file_exists($filePath)) {
+        $admins = json_decode(@file_get_contents($filePath), true) ?: [];
+    }
+    if (empty($admins)) {
+        $admins = getDefaultSeedAdmins();
+    }
+
+    foreach ($admins as $a) {
+        if (strtolower($a['username']) === strtolower($username)) {
+            return ['success' => false, 'message' => "An administrator with username '{$username}' already exists."];
+        }
+        if (strtolower($a['email']) === strtolower($email)) {
+            return ['success' => false, 'message' => "An administrator with email '{$email}' already exists."];
+        }
+    }
+
+    $maxId = 1;
+    foreach ($admins as $a) {
+        if (isset($a['id']) && $a['id'] > $maxId) $maxId = (int)$a['id'];
+    }
+    $newId = $maxId + 1;
+
+    $admins[] = [
+        'id'            => $newId,
+        'username'      => $username,
+        'email'         => $email,
+        'password_hash' => $passwordHash,
+        'full_name'     => $fullName,
+        'role'          => $role,
+        'last_login'    => null,
+        'created_at'    => date('Y-m-d H:i:s'),
+    ];
+
+    @file_put_contents($filePath, json_encode($admins, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return ['success' => true, 'message' => "Administrator '{$fullName}' (@{$username}) created successfully!", 'id' => $newId];
+}
+
+/**
+ * Delete an administrator user
+ * 
+ * @param int $userId
+ * @param int $currentAdminId
+ * @return array ['success' => bool, 'message' => string]
+ */
+function deleteAdminUser($userId, $currentAdminId) {
+    $userId = (int)$userId;
+    $currentAdminId = (int)$currentAdminId;
+
+    if ($userId <= 0) {
+        return ['success' => false, 'message' => 'Invalid administrator ID provided.'];
+    }
+
+    if ($userId === $currentAdminId) {
+        return ['success' => false, 'message' => 'Security constraint: You cannot delete your own active administrator account!'];
+    }
+
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $totalCount = (int)$pdo->query("SELECT COUNT(*) FROM admin_users")->fetchColumn();
+            if ($totalCount <= 1) {
+                return ['success' => false, 'message' => 'Cannot delete the only remaining administrator on the system.'];
+            }
+
+            $stmt = $pdo->prepare("DELETE FROM admin_users WHERE id = :id");
+            $stmt->execute([':id' => $userId]);
+
+            syncAdminsToFallbackFile();
+
+            return ['success' => true, 'message' => 'Administrator account deleted successfully.'];
+        } catch (PDOException $e) {
+            error_log("Failed to delete admin_user: " . $e->getMessage());
+            return ['success' => false, 'message' => "Database error deleting administrator: " . $e->getMessage()];
+        }
+    }
+
+    // Fallback file deletion
+    $filePath = getAdminsFallbackFilePath();
+    if (file_exists($filePath)) {
+        $admins = json_decode(@file_get_contents($filePath), true) ?: [];
+        if (count($admins) <= 1) {
+            return ['success' => false, 'message' => 'Cannot delete the only remaining administrator on the system.'];
+        }
+        $admins = array_values(array_filter($admins, function($a) use ($userId) {
+            return (int)($a['id'] ?? 0) !== $userId;
+        }));
+        @file_put_contents($filePath, json_encode($admins, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    return ['success' => true, 'message' => 'Administrator account deleted successfully.'];
+}
+
+/**
+ * Helper to sync MySQL admin records into fallback JSON file
+ */
+function syncAdminsToFallbackFile() {
+    $pdo = getDbConnection();
+    if ($pdo === null) return;
+    try {
+        $stmt = $pdo->query("SELECT id, username, email, password_hash, full_name, role, last_login, created_at FROM admin_users ORDER BY id ASC");
+        $users = $stmt->fetchAll();
+        if (!empty($users)) {
+            $filePath = getAdminsFallbackFilePath();
+            $dir = dirname($filePath);
+            if (!is_dir($dir)) @mkdir($dir, 0777, true);
+            @file_put_contents($filePath, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        }
+    } catch (PDOException $e) {
+        // Silently ignore
+    }
+}
+
 

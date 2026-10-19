@@ -11,27 +11,70 @@ $successMsg = '';
 $errorMsg = '';
 $dbConnected = isDbConnected();
 
-// Handle Profile & Password Update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_profile') {
-    $fullName = trim($_POST['full_name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $newPass = trim($_POST['new_password'] ?? '');
-    $confirmPass = trim($_POST['confirm_password'] ?? '');
+// Handle Admin Actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    
+    // 1. Update Current Admin Profile & Password
+    if ($_POST['action'] === 'update_profile') {
+        $fullName = trim($_POST['full_name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $newPass = trim($_POST['new_password'] ?? '');
+        $confirmPass = trim($_POST['confirm_password'] ?? '');
 
-    if (!empty($newPass) && $newPass !== $confirmPass) {
-        $errorMsg = 'New password and confirmation password do not match.';
-    } else {
-        if (updateAdminProfile($admin['id'], $newPass ?: null, $fullName ?: null, $email ?: null)) {
-            // Update session values
-            $_SESSION['admin_user']['full_name'] = $fullName;
-            $_SESSION['admin_user']['email'] = $email;
-            $admin = $_SESSION['admin_user'];
-            $successMsg = 'Admin profile and credentials updated successfully!';
+        if (!empty($newPass) && $newPass !== $confirmPass) {
+            $errorMsg = 'New password and confirmation password do not match.';
         } else {
-            $errorMsg = 'Could not update profile. Please verify database connection.';
+            if (updateAdminProfile($admin['id'], $newPass ?: null, $fullName ?: null, $email ?: null)) {
+                // Update session values
+                $_SESSION['admin_user']['full_name'] = $fullName;
+                $_SESSION['admin_user']['email'] = $email;
+                $admin = $_SESSION['admin_user'];
+                $successMsg = 'Admin profile and credentials updated successfully!';
+            } else {
+                $errorMsg = 'Could not update profile. Please verify database connection.';
+            }
+        }
+    } 
+    // 2. Add New Administrator User
+    elseif ($_POST['action'] === 'add_admin') {
+        $username    = trim($_POST['new_admin_username'] ?? '');
+        $fullName    = trim($_POST['new_admin_fullname'] ?? '');
+        $email       = trim($_POST['new_admin_email'] ?? '');
+        $role        = trim($_POST['new_admin_role'] ?? 'Super Admin');
+        $password    = trim($_POST['new_admin_password'] ?? '');
+        $confirmPass = trim($_POST['new_admin_confirm_password'] ?? '');
+
+        if ($password !== $confirmPass) {
+            $errorMsg = 'New administrator password and confirmation password do not match.';
+        } else {
+            $res = createAdminUser([
+                'username'  => $username,
+                'full_name' => $fullName,
+                'email'     => $email,
+                'role'      => $role,
+                'password'  => $password,
+            ]);
+            if ($res['success']) {
+                $successMsg = $res['message'];
+            } else {
+                $errorMsg = $res['message'];
+            }
+        }
+    }
+    // 3. Delete Administrator User
+    elseif ($_POST['action'] === 'delete_admin') {
+        $delId = (int)($_POST['admin_id'] ?? 0);
+        $res = deleteAdminUser($delId, $admin['id']);
+        if ($res['success']) {
+            $successMsg = $res['message'];
+        } else {
+            $errorMsg = $res['message'];
         }
     }
 }
+
+// Fetch all registered admin users
+$allAdmins = getAllAdminUsers();
 
 // Fetch database stats if connected
 $tableCounts = [];
@@ -57,7 +100,7 @@ renderAdminHeader('settings', 'Admin Profile & System Settings', 'Settings & DB'
     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-xl font-bold text-slate-900 tracking-tight">System Settings & Security</h1>
-            <p class="text-xs text-slate-500 mt-0.5">Manage administrator credentials, security access, and database diagnostics.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Manage administrator credentials, team access privileges, and database diagnostics.</p>
         </div>
         <div class="flex items-center space-x-2 text-xs">
             <span class="inline-flex items-center px-2.5 py-1 rounded border font-semibold <?= $dbConnected ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200' ?>">
@@ -82,14 +125,14 @@ renderAdminHeader('settings', 'Admin Profile & System Settings', 'Settings & DB'
         </div>
     <?php endif; ?>
 
-    <!-- 1. Administrator Profile & Security Form -->
+    <!-- 1. Administrator Profile & Security Form (Self) -->
     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
         <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
             <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm font-bold">
                 <i class="fa-solid fa-user-shield"></i>
             </div>
             <div>
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Administrator Profile & Password</h2>
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Your Profile & Password</h2>
                 <p class="text-[11px] text-slate-500">Update your account name, contact email, and secure password.</p>
             </div>
         </div>
@@ -133,7 +176,177 @@ renderAdminHeader('settings', 'Admin Profile & System Settings', 'Settings & DB'
         </form>
     </div>
 
-    <!-- 2. Database Connectivity & Diagnostics -->
+    <!-- 2. Add New Administrator Section -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
+            <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-bold">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <div>
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Add New Administrator</h2>
+                <p class="text-[11px] text-slate-500">Create login credentials and grant portal access to new team members or editors.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="settings.php" class="space-y-4 text-xs">
+            <input type="hidden" name="action" value="add_admin">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">
+                        Username (Login ID) <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="new_admin_username" required placeholder="e.g. rafiqul_hub" pattern="[a-zA-Z0-9_\-\.]{3,30}" title="3-30 letters, numbers, dots, dashes, or underscores" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono focus:outline-none focus:border-purple-600">
+                    <span class="text-[10px] text-slate-400 mt-1 block">Used for sign-in (3-30 letters, numbers, dots or underscores).</span>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">
+                        Full Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="new_admin_fullname" required placeholder="e.g. Dr. Rafiqul Alam" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">
+                        Administrator Email Address <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email" name="new_admin_email" required placeholder="e.g. rafiqul@nextgenfarminghub.bd" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">
+                        Dashboard Role & Access Level <span class="text-red-500">*</span>
+                    </label>
+                    <select name="new_admin_role" required class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600">
+                        <option value="Super Admin">Super Admin (Full Access: CMS, Submissions, Database & Settings)</option>
+                        <option value="Editor">Editor (CMS Content & Submissions Management)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">
+                        Initial Password <span class="text-red-500">*</span>
+                    </label>
+                    <input type="password" name="new_admin_password" required minlength="6" placeholder="Min. 6 characters" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">
+                        Confirm Initial Password <span class="text-red-500">*</span>
+                    </label>
+                    <input type="password" name="new_admin_confirm_password" required minlength="6" placeholder="Re-type password" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600">
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span class="text-[11px] text-slate-500">
+                    <i class="fa-solid fa-shield-halved text-purple-600 mr-1"></i> Passwords are encrypted with standard BCRYPT hashing.
+                </span>
+                <button type="submit" class="px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-lg shadow-sm transition flex items-center justify-center">
+                    <i class="fa-solid fa-user-plus mr-1.5"></i> Create Administrator Account
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 3. Registered Administrators Directory Table -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-sm font-bold">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Registered Administrators (<?= count($allAdmins) ?>)</h2>
+                    <p class="text-[11px] text-slate-500">Accounts authorized to access and manage the NextGen Admin Portal.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
+                    <tr>
+                        <th class="px-4 py-2.5">Administrator</th>
+                        <th class="px-4 py-2.5">Email Address</th>
+                        <th class="px-4 py-2.5">Assigned Role</th>
+                        <th class="px-4 py-2.5">Last Sign In</th>
+                        <th class="px-4 py-2.5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    <?php foreach ($allAdmins as $u): 
+                        $isSelf = ((int)$u['id'] === (int)$admin['id'] || $u['username'] === $admin['username']);
+                        $initials = '';
+                        $parts = preg_split('/\s+/', trim($u['full_name'] ?? ''));
+                        if (count($parts) >= 2) {
+                            $initials = strtoupper(substr($parts[0], 0, 1) . substr(end($parts), 0, 1));
+                        } else {
+                            $initials = strtoupper(substr($u['username'] ?? 'AD', 0, 2));
+                        }
+                    ?>
+                    <tr class="hover:bg-slate-50/70 transition">
+                        <td class="px-4 py-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs shrink-0">
+                                    <?= htmlspecialchars($initials) ?>
+                                </div>
+                                <div>
+                                    <span class="font-bold text-slate-900 block"><?= htmlspecialchars($u['full_name'] ?? $u['username']) ?></span>
+                                    <span class="font-mono text-[11px] text-slate-500">@<?= htmlspecialchars($u['username']) ?></span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-slate-600 font-medium">
+                            <a href="mailto:<?= htmlspecialchars($u['email']) ?>" class="hover:text-emerald-700 underline decoration-slate-300">
+                                <?= htmlspecialchars($u['email']) ?>
+                            </a>
+                        </td>
+                        <td class="px-4 py-3">
+                            <?php if (($u['role'] ?? '') === 'Super Admin'): ?>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                    <i class="fa-solid fa-crown mr-1 text-[9px]"></i> Super Admin
+                                </span>
+                            <?php else: ?>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                    <i class="fa-solid fa-user-pen mr-1 text-[9px]"></i> Editor
+                                </span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="px-4 py-3 text-slate-500 text-[11px]">
+                            <?php if (!empty($u['last_login'])): ?>
+                                <span title="<?= htmlspecialchars($u['last_login']) ?>">
+                                    <i class="fa-regular fa-clock text-slate-400 mr-1"></i>
+                                    <?= date('M j, Y g:i A', strtotime($u['last_login'])) ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="text-slate-400 italic">Never signed in</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <?php if ($isSelf): ?>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                    <i class="fa-solid fa-check-circle mr-1"></i> You (Active)
+                                </span>
+                            <?php else: ?>
+                                <form method="POST" action="settings.php" class="inline" onsubmit="return confirm('Are you sure you want to delete administrator \'<?= htmlspecialchars(addslashes($u['full_name'] ?? $u['username'])) ?>\' (@<?= htmlspecialchars(addslashes($u['username'])) ?>)? This action cannot be reversed.');">
+                                    <input type="hidden" name="action" value="delete_admin">
+                                    <input type="hidden" name="admin_id" value="<?= (int)$u['id'] ?>">
+                                    <button type="submit" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 font-semibold rounded text-[11px] border border-red-200 transition">
+                                        <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. Database Connectivity & Diagnostics -->
     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
         <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
             <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-sm font-bold">
@@ -213,5 +426,16 @@ renderAdminHeader('settings', 'Admin Profile & System Settings', 'Settings & DB'
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.alert-close-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const box = this.closest('.alert-box');
+            if (box) box.style.display = 'none';
+        });
+    });
+});
+</script>
 
 <?php renderAdminFooter(); ?>
