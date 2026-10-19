@@ -71,95 +71,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="h-full flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-agro-950 to-slate-900 text-slate-100">
+<body class="h-full flex items-center justify-center p-4 bg-slate-900 text-slate-800">
 
     <div class="w-full max-w-md">
         
         <!-- Brand Header -->
-        <div class="text-center mb-8">
-            <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-agro-600 to-agro-800 flex items-center justify-center text-white shadow-xl shadow-agro-800/30 mb-4">
-                <i class="fa-solid fa-leaf text-2xl text-emerald-300"></i>
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 mx-auto rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md mb-3">
+                <i class="fa-solid fa-leaf text-xl text-emerald-100"></i>
             </div>
-            <h1 class="text-2xl font-black text-white tracking-tight">NextGen Farming</h1>
-            <p class="text-xs text-slate-400 mt-1 uppercase tracking-widest font-semibold">Incubation Hub Management Portal</p>
+            <h1 class="text-xl font-bold text-white tracking-tight">NextGen Farming Incubation Hub</h1>
+            <p class="text-xs text-slate-400 mt-0.5 uppercase tracking-wider font-semibold">Admin Authentication Console</p>
         </div>
 
-        <!-- Login Card -->
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl relative">
+        <!-- Classic Login Card -->
+        <div class="bg-white border border-slate-200 rounded-xl p-7 shadow-lg">
             
             <?php if (!empty($error)): ?>
-                <div class="mb-6 p-4 rounded-xl bg-red-950/80 border border-red-800 text-red-200 text-xs flex items-center space-x-3">
-                    <i class="fa-solid fa-circle-exclamation text-base text-red-400"></i>
-                    <span><?= htmlspecialchars($error) ?></span>
+                <div class="mb-5 p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center space-x-2.5">
+                    <i class="fa-solid fa-circle-exclamation text-sm text-red-600"></i>
+                    <span class="font-semibold"><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (isset($_GET['logout'])): ?>
-                <div class="mb-6 p-4 rounded-xl bg-emerald-950/80 border border-emerald-800 text-emerald-200 text-xs flex items-center space-x-3">
-                    <i class="fa-solid fa-circle-check text-base text-emerald-400"></i>
-                    <span>You have been securely signed out. Login required to re-enter.</span>
+                <div class="mb-5 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2.5">
+                    <i class="fa-solid fa-circle-check text-sm text-emerald-600"></i>
+                    <span class="font-semibold">You have been securely signed out.</span>
                 </div>
             <?php endif; ?>
 
             <?php if (isset($_GET['auth_required'])): ?>
-                <div class="mb-6 p-4 rounded-xl bg-amber-950/80 border border-amber-800 text-amber-200 text-xs flex items-center space-x-3">
-                    <i class="fa-solid fa-lock text-base text-amber-400"></i>
-                    <span>Access Denied. Please log in first to access the admin dashboard.</span>
+                <div class="mb-5 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center space-x-2.5">
+                    <i class="fa-solid fa-lock text-sm text-amber-600"></i>
+                    <span class="font-semibold">Access Denied. Please log in first to access the dashboard.</span>
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="login.php?redirect=<?= htmlspecialchars($redirect) ?>" class="space-y-5">
+            <form method="POST" action="login.php?redirect=<?= htmlspecialchars($redirect) ?>" class="space-y-4 text-xs">
                 
                 <div>
-                    <label for="username" class="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
-                        Username or Email
+                    <label for="username" class="block font-semibold text-slate-700 mb-1">
+                        Username or Email <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 pointer-events-none">
-                            <i class="fa-solid fa-user text-sm"></i>
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+                            <i class="fa-solid fa-user text-xs"></i>
                         </span>
-                        <input type="text" id="username" name="username" required value="admin" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+                        <input type="text" id="username" name="username" required value="admin" class="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition">
                     </div>
                 </div>
 
                 <div>
-                    <label for="password" class="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
-                        Admin Password
+                    <label for="password" class="block font-semibold text-slate-700 mb-1">
+                        Password <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 pointer-events-none">
-                            <i class="fa-solid fa-lock text-sm"></i>
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+                            <i class="fa-solid fa-lock text-xs"></i>
                         </span>
-                        <input type="password" id="password" name="password" required value="admin123" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+                        <input type="password" id="password" name="password" required value="admin123" class="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition">
                     </div>
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit" class="w-full py-3.5 px-4 bg-gradient-to-r from-agro-700 to-agro-600 hover:from-agro-600 hover:to-agro-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-agro-700/30 transition flex items-center justify-center space-x-2">
+                    <button type="submit" class="w-full py-2.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center justify-center space-x-1.5">
                         <span>Sign In to Dashboard</span>
-                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>
                 </div>
 
             </form>
 
             <!-- Default Credentials Notice -->
-            <div class="mt-6 pt-5 border-t border-slate-800 text-center">
-                <span class="text-[11px] text-slate-400 block mb-1">Default Admin Credentials</span>
-                <div class="inline-flex items-center space-x-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 text-xs font-mono text-emerald-400">
-                    <span>Username: <strong>admin</strong></span>
-                    <span class="text-slate-600">•</span>
-                    <span>Password: <strong>admin123</strong></span>
+            <div class="mt-5 pt-4 border-t border-slate-200 text-center">
+                <span class="text-[11px] text-slate-500 block mb-1 font-medium">Default Administrator Credentials:</span>
+                <div class="inline-flex items-center space-x-2 bg-slate-50 px-3 py-1 rounded border border-slate-200 text-xs font-mono text-slate-700">
+                    <span>User: <strong>admin</strong></span>
+                    <span class="text-slate-300">|</span>
+                    <span>Pass: <strong>admin123</strong></span>
                 </div>
-                <p class="text-[10px] text-slate-500 mt-2">Credentials can be changed anytime from the Settings page.</p>
             </div>
 
         </div>
 
-        <div class="text-center mt-6">
-            <a href="../index.php" class="text-xs text-slate-400 hover:text-emerald-400 transition flex items-center justify-center space-x-1.5">
+        <div class="text-center mt-5">
+            <a href="../index.php" class="text-xs text-slate-400 hover:text-white transition flex items-center justify-center space-x-1">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
-                <span>Back to Website Homepage</span>
+                <span>Return to Public Website</span>
             </a>
         </div>
 

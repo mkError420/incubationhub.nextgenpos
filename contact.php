@@ -204,7 +204,7 @@ require_once __DIR__ . '/includes/header.php';
                             <i class="fa-solid fa-location-dot text-agro-700 mt-1"></i>
                             <div>
                                 <strong class="text-slate-800 block">Headquarters:</strong>
-                                <span>Level 7, Venture Tower, Road 11, Gulshan-2, Dhaka 1212, Bangladesh</span>
+                                <span><?= htmlspecialchars(getSiteSetting('contact_address', 'Level 7, Venture Tower, Road 11, Gulshan-2, Dhaka 1212, Bangladesh')) ?></span>
                             </div>
                         </div>
 
@@ -212,7 +212,7 @@ require_once __DIR__ . '/includes/header.php';
                             <i class="fa-solid fa-envelope text-agro-700 mt-1"></i>
                             <div>
                                 <strong class="text-slate-800 block">General Inquiries:</strong>
-                                <span>connect@nextgenfarminghub.bd</span>
+                                <span><?= htmlspecialchars(getSiteSetting('contact_email', 'connect@nextgenfarminghub.bd')) ?></span>
                             </div>
                         </div>
 
@@ -220,7 +220,7 @@ require_once __DIR__ . '/includes/header.php';
                             <i class="fa-solid fa-phone text-agro-700 mt-1"></i>
                             <div>
                                 <strong class="text-slate-800 block">Telephone:</strong>
-                                <span>+880 2 988-5544 / +880 1711-002233</span>
+                                <span><?= htmlspecialchars(getSiteSetting('contact_phone', '+880 2 988-5544 / +880 1711-002233')) ?></span>
                             </div>
                         </div>
                     </div>
@@ -233,7 +233,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="p-3 rounded-xl bg-gray-50 flex items-center justify-between">
                         <div>
                             <span class="font-bold text-slate-800 block">Startup Admissions</span>
-                            <span class="text-slate-500">accelerate@nextgenfarminghub.bd</span>
+                            <span class="text-slate-500"><?= htmlspecialchars(getSiteSetting('admissions_email', 'accelerate@nextgenfarminghub.bd')) ?></span>
                         </div>
                         <i class="fa-solid fa-seedling text-emerald-600"></i>
                     </div>
@@ -241,7 +241,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="p-3 rounded-xl bg-gray-50 flex items-center justify-between">
                         <div>
                             <span class="font-bold text-slate-800 block">Investor Relations</span>
-                            <span class="text-slate-500">investors@nextgenfarminghub.bd</span>
+                            <span class="text-slate-500"><?= htmlspecialchars(getSiteSetting('investors_email', 'investors@nextgenfarminghub.bd')) ?></span>
                         </div>
                         <i class="fa-solid fa-chart-line text-amber-600"></i>
                     </div>
@@ -249,7 +249,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="p-3 rounded-xl bg-gray-50 flex items-center justify-between">
                         <div>
                             <span class="font-bold text-slate-800 block">Institutional Alliances</span>
-                            <span class="text-slate-500">partners@nextgenfarminghub.bd</span>
+                            <span class="text-slate-500"><?= htmlspecialchars(getSiteSetting('contact_email', 'partners@nextgenfarminghub.bd')) ?></span>
                         </div>
                         <i class="fa-solid fa-handshake text-blue-600"></i>
                     </div>
