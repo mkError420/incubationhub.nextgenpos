@@ -2161,13 +2161,36 @@ function verifyAdminLogin($username, $password) {
 
     if ($pdo !== null) {
         try {
-            // Check if admin_users has any records; if empty, seed default admin
+            // Check if admin_users has any records; if empty, seed default admin or from fallback
             $count = (int)$pdo->query("SELECT COUNT(*) FROM admin_users")->fetchColumn();
             if ($count === 0) {
-                $seedHash = password_hash('admin123', PASSWORD_DEFAULT);
-                $seedStmt = $pdo->prepare("INSERT INTO admin_users (username, email, password_hash, full_name, role)
-                                           VALUES ('admin', 'admin@nextgenfarminghub.bd', :hash, 'Incubation Director', 'Super Admin')");
-                $seedStmt->execute([':hash' => $seedHash]);
+                // If fallback file has admins, seed from fallback file
+                $fallbackFile = getAdminsFallbackFilePath();
+                $seeded = false;
+                if (file_exists($fallbackFile)) {
+                    $fallbackAdmins = json_decode(@file_get_contents($fallbackFile), true) ?: [];
+                    if (!empty($fallbackAdmins)) {
+                        $seedStmt = $pdo->prepare("INSERT INTO admin_users (id, username, email, password_hash, full_name, role)
+                                                   VALUES (:id, :u, :e, :p, :f, :r)");
+                        foreach ($fallbackAdmins as $fa) {
+                            $seedStmt->execute([
+                                ':id' => (int)($fa['id'] ?? 1),
+                                ':u'  => $fa['username'],
+                                ':e'  => $fa['email'],
+                                ':p'  => $fa['password_hash'],
+                                ':f'  => $fa['full_name'],
+                                ':r'  => $fa['role'] ?? 'Super Admin'
+                            ]);
+                        }
+                        $seeded = true;
+                    }
+                }
+                if (!$seeded) {
+                    $seedHash = password_hash('admin123', PASSWORD_DEFAULT);
+                    $seedStmt = $pdo->prepare("INSERT INTO admin_users (username, email, password_hash, full_name, role)
+                                               VALUES ('admin', 'admin@nextgenfarminghub.bd', :hash, 'Incubation Director', 'Super Admin')");
+                    $seedStmt->execute([':hash' => $seedHash]);
+                }
             }
 
             $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = :u OR email = :u LIMIT 1");
@@ -2185,7 +2208,7 @@ function verifyAdminLogin($username, $password) {
         }
     }
 
-    // Fallback Emergency Admin Mode if MySQL is offline or credentials not found in DB
+    // Fallback mode if MySQL is offline or credentials not found in DB
     $fallbackFile = getAdminsFallbackFilePath();
     if (file_exists($fallbackFile)) {
         $fallbackAdmins = json_decode(@file_get_contents($fallbackFile), true) ?: [];
@@ -2203,14 +2226,17 @@ function verifyAdminLogin($username, $password) {
         }
     }
 
-    if ($username === 'admin' && $password === 'admin123') {
-        return [
-            'id'        => 1,
-            'username'  => 'admin',
-            'email'     => 'admin@nextgenfarminghub.bd',
-            'full_name' => 'Incubation Director',
-            'role'      => 'Super Admin'
-        ];
+    // Only allow default admin / admin123 if fallback file does NOT exist
+    if (!file_exists($fallbackFile)) {
+        if ($username === 'admin' && $password === 'admin123') {
+            return [
+                'id'        => 1,
+                'username'  => 'admin',
+                'email'     => 'admin@nextgenfarminghub.bd',
+                'full_name' => 'Incubation Director',
+                'role'      => 'Super Admin'
+            ];
+        }
     }
 
     return false;
@@ -2219,18 +2245,21 @@ function verifyAdminLogin($username, $password) {
 /**
  * Update Admin Password & Profile
  * 
- * @param int $userId
+ * @param int|string $userId
  * @param string|null $newPassword
  * @param string|null $fullName
  * @param string|null $email
+ * @param string|null $username
  * @return bool
  */
-function updateAdminProfile($userId, $newPassword = null, $fullName = null, $email = null) {
+function updateAdminProfile($userId, $newPassword = null, $fullName = null, $email = null, $username = null) {
+    $dbSaved = false;
     $pdo = getDbConnection();
+
     if ($pdo !== null) {
         try {
             $fields = [];
-            $params = [':id' => (int)$userId];
+            $params = [];
 
             if (!empty($newPassword)) {
                 $fields[] = "password_hash = :hash";
@@ -2245,36 +2274,97 @@ function updateAdminProfile($userId, $newPassword = null, $fullName = null, $ema
                 $params[':email'] = trim($email);
             }
 
-            if (empty($fields)) return true;
+            if (!empty($fields)) {
+                $updated = false;
 
-            $sql = "UPDATE admin_users SET " . implode(", ", $fields) . " WHERE id = :id";
-            $stmt = $pdo->prepare($sql);
-            $saved = $stmt->execute($params);
-            if ($saved) {
+                // 1. Try update by user ID
+                if (!empty($userId)) {
+                    $idParams = $params;
+                    $idParams[':id'] = (int)$userId;
+                    $stmt = $pdo->prepare("UPDATE admin_users SET " . implode(", ", $fields) . " WHERE id = :id");
+                    $stmt->execute($idParams);
+                    if ($stmt->rowCount() > 0) {
+                        $updated = true;
+                    }
+                }
+
+                // 2. If no row updated and username provided, try update by username
+                if (!$updated && !empty($username)) {
+                    $userParams = $params;
+                    $userParams[':uname'] = $username;
+                    $stmt = $pdo->prepare("UPDATE admin_users SET " . implode(", ", $fields) . " WHERE username = :uname");
+                    $stmt->execute($userParams);
+                    if ($stmt->rowCount() > 0) {
+                        $updated = true;
+                    }
+                }
+
+                // 3. If user doesn't exist yet in MySQL table, insert them
+                if (!$updated) {
+                    $passHash = !empty($newPassword) ? password_hash($newPassword, PASSWORD_DEFAULT) : password_hash('admin123', PASSWORD_DEFAULT);
+                    $insStmt = $pdo->prepare("INSERT INTO admin_users (username, email, password_hash, full_name, role)
+                                              VALUES (:u, :e, :p, :f, 'Super Admin')");
+                    $insStmt->execute([
+                        ':u' => $username ?: 'admin',
+                        ':e' => $email ?: 'admin@nextgenfarminghub.bd',
+                        ':p' => $passHash,
+                        ':f' => $fullName ?: 'Incubation Director'
+                    ]);
+                }
+
+                $dbSaved = true;
                 syncAdminsToFallbackFile();
+            } else {
+                $dbSaved = true;
             }
-            return $saved;
         } catch (PDOException $e) {
-            error_log("Failed to update admin profile: " . $e->getMessage());
-            return false;
+            error_log("Failed to update admin profile in DB: " . $e->getMessage());
         }
     }
 
-    // Gracefully succeed in local fallback mode
+    // Always update/mirror to fallback file assets/admins_fallback.json
     $filePath = getAdminsFallbackFilePath();
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) @mkdir($dir, 0777, true);
+
+    $admins = [];
     if (file_exists($filePath)) {
         $admins = json_decode(@file_get_contents($filePath), true) ?: [];
-        foreach ($admins as &$a) {
-            if ((int)($a['id'] ?? 0) === (int)$userId) {
-                if (!empty($fullName)) $a['full_name'] = trim($fullName);
-                if (!empty($email)) $a['email'] = trim($email);
-                if (!empty($newPassword)) $a['password_hash'] = password_hash($newPassword, PASSWORD_DEFAULT);
-                break;
-            }
-        }
-        @file_put_contents($filePath, json_encode($admins, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
-    return true;
+    if (empty($admins)) {
+        $admins = getDefaultSeedAdmins();
+    }
+
+    $found = false;
+    foreach ($admins as &$a) {
+        $matchId = !empty($userId) && (int)($a['id'] ?? 0) === (int)$userId;
+        $matchUser = !empty($username) && strtolower($a['username'] ?? '') === strtolower($username);
+
+        if ($matchId || $matchUser) {
+            if (!empty($fullName)) $a['full_name'] = trim($fullName);
+            if (!empty($email)) $a['email'] = trim($email);
+            if (!empty($newPassword)) $a['password_hash'] = password_hash($newPassword, PASSWORD_DEFAULT);
+            $found = true;
+            break;
+        }
+    }
+
+    if (!$found) {
+        $admins[] = [
+            'id'            => (int)$userId ?: 1,
+            'username'      => $username ?: 'admin',
+            'email'         => $email ?: 'admin@nextgenfarminghub.bd',
+            'password_hash' => !empty($newPassword) ? password_hash($newPassword, PASSWORD_DEFAULT) : password_hash('admin123', PASSWORD_DEFAULT),
+            'full_name'     => $fullName ?: 'Administrator',
+            'role'          => 'Super Admin',
+            'last_login'    => null,
+            'created_at'    => date('Y-m-d H:i:s'),
+        ];
+    }
+
+    $fileSaved = @file_put_contents($filePath, json_encode($admins, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) !== false;
+
+    return ($dbSaved || $fileSaved);
 }
 
 /**

@@ -23,13 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         if (!empty($newPass) && $newPass !== $confirmPass) {
             $errorMsg = 'New password and confirmation password do not match.';
+        } elseif (!empty($newPass) && strlen($newPass) < 6) {
+            $errorMsg = 'New password must be at least 6 characters long.';
         } else {
-            if (updateAdminProfile($admin['id'], $newPass ?: null, $fullName ?: null, $email ?: null)) {
+            $currentUsername = $admin['username'] ?? 'admin';
+            if (updateAdminProfile($admin['id'], $newPass ?: null, $fullName ?: null, $email ?: null, $currentUsername)) {
                 // Update session values
                 $_SESSION['admin_user']['full_name'] = $fullName;
                 $_SESSION['admin_user']['email'] = $email;
                 $admin = $_SESSION['admin_user'];
-                $successMsg = 'Admin profile and credentials updated successfully!';
+                $successMsg = !empty($newPass) 
+                    ? 'Admin profile and new password updated successfully! You can now use your new password.'
+                    : 'Admin profile updated successfully!';
             } else {
                 $errorMsg = 'Could not update profile. Please verify database connection.';
             }
@@ -159,12 +164,22 @@ renderAdminHeader('settings', 'Admin Profile & System Settings', 'Settings & DB'
 
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">New Password (Leave blank to keep current)</label>
-                    <input type="password" name="new_password" placeholder="••••••••" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-emerald-600">
+                    <div class="relative">
+                        <input type="password" name="new_password" minlength="6" placeholder="Min. 6 characters" class="w-full pl-3 pr-10 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-emerald-600 transition">
+                        <button type="button" class="password-toggle-btn absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition" aria-label="Toggle password visibility">
+                            <i class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Confirm New Password</label>
-                    <input type="password" name="confirm_password" placeholder="••••••••" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-emerald-600">
+                    <div class="relative">
+                        <input type="password" name="confirm_password" minlength="6" placeholder="Re-type new password" class="w-full pl-3 pr-10 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-emerald-600 transition">
+                        <button type="button" class="password-toggle-btn absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition" aria-label="Toggle password visibility">
+                            <i class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -228,14 +243,24 @@ renderAdminHeader('settings', 'Admin Profile & System Settings', 'Settings & DB'
                     <label class="block font-semibold text-slate-700 mb-1">
                         Initial Password <span class="text-red-500">*</span>
                     </label>
-                    <input type="password" name="new_admin_password" required minlength="6" placeholder="Min. 6 characters" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600">
+                    <div class="relative">
+                        <input type="password" name="new_admin_password" required minlength="6" placeholder="Min. 6 characters" class="w-full pl-3 pr-10 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600 transition">
+                        <button type="button" class="password-toggle-btn absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition" aria-label="Toggle password visibility">
+                            <i class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">
                         Confirm Initial Password <span class="text-red-500">*</span>
                     </label>
-                    <input type="password" name="new_admin_confirm_password" required minlength="6" placeholder="Re-type password" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600">
+                    <div class="relative">
+                        <input type="password" name="new_admin_confirm_password" required minlength="6" placeholder="Re-type password" class="w-full pl-3 pr-10 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-purple-600 transition">
+                        <button type="button" class="password-toggle-btn absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition" aria-label="Toggle password visibility">
+                            <i class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -433,6 +458,23 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const box = this.closest('.alert-box');
             if (box) box.style.display = 'none';
+        });
+    });
+
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('input');
+            const icon = this.querySelector('i');
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
         });
     });
 });

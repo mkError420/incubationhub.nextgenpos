@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
                             <i class="fa-solid fa-user text-xs"></i>
                         </span>
-                        <input type="text" id="username" name="username" required value="admin" class="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition">
+                        <input type="text" id="username" name="username" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" placeholder="Enter your username or email" class="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition">
                     </div>
                 </div>
 
@@ -130,7 +130,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
                             <i class="fa-solid fa-lock text-xs"></i>
                         </span>
-                        <input type="password" id="password" name="password" required value="admin123" class="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition">
+                        <input type="password" id="password" name="password" required placeholder="Enter your password" class="w-full pl-9 pr-10 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition">
+                        <button type="button" class="password-toggle-btn absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition" aria-label="Toggle password visibility">
+                            <i class="fa-solid fa-eye text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -142,17 +145,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
             </form>
-
-            <!-- Default Credentials Notice -->
-            <div class="mt-5 pt-4 border-t border-slate-200 text-center">
-                <span class="text-[11px] text-slate-500 block mb-1 font-medium">Default Administrator Credentials:</span>
-                <div class="inline-flex items-center space-x-2 bg-slate-50 px-3 py-1 rounded border border-slate-200 text-xs font-mono text-slate-700">
-                    <span>User: <strong>admin</strong></span>
-                    <span class="text-slate-300">|</span>
-                    <span>Pass: <strong>admin123</strong></span>
-                </div>
-            </div>
-
         </div>
 
         <div class="text-center mt-5">
@@ -164,5 +156,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </div>
 
+    <script>
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('input');
+            const icon = this.querySelector('i');
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+    </script>
 </body>
 </html>
