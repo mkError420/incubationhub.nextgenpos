@@ -255,14 +255,6 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                 </div>
 
-                <!-- Live Submissions Portal Link -->
-                <div class="p-5 rounded-3xl bg-emerald-50 border border-emerald-200 text-center">
-                    <span class="text-xs font-bold text-emerald-900 block mb-1">Developer / Reviewer Verification</span>
-                    <p class="text-[11px] text-emerald-700 mb-3">Inspect live database records, filter leads, and monitor pipeline status.</p>
-                    <a href="submissions.php" class="inline-flex items-center text-xs font-bold text-emerald-900 bg-white px-4 py-2 rounded-xl border border-emerald-300 shadow-sm hover:bg-emerald-100 transition">
-                        <i class="fa-solid fa-database mr-1.5 text-emerald-600"></i> Open Submissions Portal &rarr;
-                    </a>
-                </div>
 
             </div>
 

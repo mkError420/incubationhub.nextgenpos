@@ -93,14 +93,8 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                 <span><?= htmlspecialchars($dynBannerText) ?></span>
                 <a href="<?= htmlspecialchars($dynBannerLink) ?>" class="underline font-semibold hover:text-amber-400 transition ml-2">Apply Now &rarr;</a>
             </div>
-            <div class="hidden lg:flex items-center space-x-4 text-xs">
-                <a href="submissions.php" class="text-emerald-300 hover:text-white transition flex items-center">
-                    <i class="fa-solid fa-database mr-1"></i> Submissions
-                </a>
-                <span class="text-slate-600">|</span>
-                <a href="admin/index.php" class="text-amber-400 hover:text-amber-300 font-bold transition flex items-center">
-                    <i class="fa-solid fa-gauge-high mr-1"></i> Admin Portal
-                </a>
+            <div class="hidden lg:flex items-center space-x-3 text-xs text-emerald-300">
+                <span><i class="fa-solid fa-seedling mr-1"></i> Accelerating AgriTech Ventures</span>
             </div>
         </div>
     </div>
@@ -141,9 +135,7 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                     <a href="index.php#partners" class="px-3 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-agro-800 hover:bg-gray-50 transition">
                         Network
                     </a>
-                    <a href="submissions.php" class="px-3 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-agro-800 transition flex items-center">
-                        <i class="fa-solid fa-list-check mr-1.5 text-xs text-emerald-600"></i> Records
-                    </a>
+
                 </nav>
 
                 <!-- Action Button -->
@@ -181,9 +173,7 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                 <a href="index.php#partners" class="px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-gray-50">
                     <i class="fa-solid fa-globe w-6 text-agro-700"></i> Global Network
                 </a>
-                <a href="submissions.php" class="px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-gray-50">
-                    <i class="fa-solid fa-database w-6 text-agro-700"></i> Submissions Portal
-                </a>
+
                 <div class="pt-3">
                     <a href="contact.php" class="w-full flex items-center justify-center px-4 py-3 text-sm font-bold text-white bg-agro-800 rounded-xl shadow-md">
                         <i class="fa-solid fa-paper-plane mr-2 text-emerald-300"></i> Apply / Connect Now
