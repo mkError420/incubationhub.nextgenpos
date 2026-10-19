@@ -1,0 +1,80 @@
+[
+    {
+        "id": 1,
+        "title": "Empirical Living Farmland Testbeds",
+        "category": "field",
+        "badge": "Testbeds",
+        "icon": "fa-wheat-awn",
+        "description": "Over 500+ dedicated acreage in Bogura (vegetable clusters), Rajshahi (drought/Barind), and Khulna (coastal saline delta) equipped with real smallholder farmer co-ops.",
+        "features": "On-site IoT telemetry stations & weather radar\nMulti-spectral drone corridor approvals\nCohorts of 200+ participatory farmers",
+        "button_text": "Request Farmland Access \u2192",
+        "button_url": "contact.php?category=Entrepreneur",
+        "sort_order": 1,
+        "status": "Active"
+    },
+    {
+        "id": 2,
+        "title": "Catalytic Capital & Seed Syndication",
+        "category": "capital",
+        "badge": "Venture Capital",
+        "icon": "fa-sack-dollar",
+        "description": "Direct pre-seed SAFE capital injections and coordinated syndicate matching with top-tier angel investors and institutional venture capital across Asia & Europe.",
+        "features": "$35k - $50k Founder-Friendly SAFE terms\nDemo Day showcase to 60+ global funds\nNon-dilutive grant application matching",
+        "button_text": "Explore Capital Syndicates \u2192",
+        "button_url": "contact.php?category=Investor",
+        "sort_order": 2,
+        "status": "Active"
+    },
+    {
+        "id": 3,
+        "title": "Corporate Off-Take & Procurement",
+        "category": "commercial",
+        "badge": "Enterprise",
+        "icon": "fa-truck-ramp-box",
+        "description": "Pre-structured pilot integrations with Bangladesh\u2019s premier agribusiness conglomerates (PRAN-RFL, ACI Agribusiness, Square Foods, BRAC Enterprises).",
+        "features": "Guaranteed pilot off-take commercial contracts\nNationwide retail & rural dealer network access\nStrategic corporate venture co-investment",
+        "button_text": "Corporate Partnership Inquiry \u2192",
+        "button_url": "contact.php?category=Support%20Organisation",
+        "sort_order": 3,
+        "status": "Active"
+    },
+    {
+        "id": 4,
+        "title": "Hardware & Agronomy Sensor Workshop",
+        "category": "tech",
+        "badge": "Deep-Tech",
+        "icon": "fa-microchip",
+        "description": "Dedicated lab facilities in Gulshan for rapid hardware iteration: SMD soldering, LoRaWAN gateways, 3D casing prototyping, and IP67 weather-proofing.",
+        "features": "Multi-sensor calibration benches (NPK, soil pH)\nLow-power micro-controller inventory\nCloud API telemetry test harness",
+        "button_text": "Book Prototyping Bench \u2192",
+        "button_url": "contact.php?category=Entrepreneur",
+        "sort_order": 4,
+        "status": "Active"
+    },
+    {
+        "id": 5,
+        "title": "Biosafety & Regulatory Sandbox",
+        "category": "regulatory",
+        "badge": "Compliance",
+        "icon": "fa-stamp",
+        "description": "Navigating agricultural approvals in South Asia can take years. Our institutional sandbox fast-tracks phytosanitary, seed registration, and bio-fertilizer certifications.",
+        "features": "Direct liaison with DAE, BARC & BARI\nStandardized bio-safety & toxicity validation\nIntellectual Property & patent filings clinic",
+        "button_text": "Consult Regulatory Desk \u2192",
+        "button_url": "contact.php?category=Mentor",
+        "sort_order": 5,
+        "status": "Active"
+    },
+    {
+        "id": 6,
+        "title": "Decentralized Solar Cold Storage",
+        "category": "field",
+        "badge": "Infrastructure",
+        "icon": "fa-snowflake",
+        "description": "Testing and scaling micro-cold room solutions at farm-gate collection centers to tackle the 30-35% post-harvest spoilage crisis across perishables.",
+        "features": "Solar thermal & phase-change cooling tests\nFirst-mile aggregation logistics algorithms\nExport-grade packaging & ripening chambers",
+        "button_text": "Test Cold Storage Unit \u2192",
+        "button_url": "contact.php?category=Entrepreneur",
+        "sort_order": 6,
+        "status": "Active"
+    }
+]

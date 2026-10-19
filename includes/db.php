@@ -81,6 +81,194 @@ function getDefaultSeedPrograms() {
 }
 
 /**
+ * Returns canonical seed data for core offerings
+ * 
+ * @return array
+ */
+function getDefaultSeedOfferings() {
+    return [
+        [
+            'id' => 1,
+            'title' => 'Empirical Living Farmland Testbeds',
+            'category' => 'field',
+            'badge' => 'Testbeds',
+            'icon' => 'fa-wheat-awn',
+            'description' => 'Over 500+ dedicated acreage in Bogura (vegetable clusters), Rajshahi (drought/Barind), and Khulna (coastal saline delta) equipped with real smallholder farmer co-ops.',
+            'features' => "On-site IoT telemetry stations & weather radar\nMulti-spectral drone corridor approvals\nCohorts of 200+ participatory farmers",
+            'button_text' => 'Request Farmland Access →',
+            'button_url' => 'contact.php?category=Entrepreneur',
+            'sort_order' => 1,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 2,
+            'title' => 'Catalytic Capital & Seed Syndication',
+            'category' => 'capital',
+            'badge' => 'Venture Capital',
+            'icon' => 'fa-sack-dollar',
+            'description' => 'Direct pre-seed SAFE capital injections and coordinated syndicate matching with top-tier angel investors and institutional venture capital across Asia & Europe.',
+            'features' => "$35k - $50k Founder-Friendly SAFE terms\nDemo Day showcase to 60+ global funds\nNon-dilutive grant application matching",
+            'button_text' => 'Explore Capital Syndicates →',
+            'button_url' => 'contact.php?category=Investor',
+            'sort_order' => 2,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 3,
+            'title' => 'Corporate Off-Take & Procurement',
+            'category' => 'commercial',
+            'badge' => 'Enterprise',
+            'icon' => 'fa-truck-ramp-box',
+            'description' => 'Pre-structured pilot integrations with Bangladesh’s premier agribusiness conglomerates (PRAN-RFL, ACI Agribusiness, Square Foods, BRAC Enterprises).',
+            'features' => "Guaranteed pilot off-take commercial contracts\nNationwide retail & rural dealer network access\nStrategic corporate venture co-investment",
+            'button_text' => 'Corporate Partnership Inquiry →',
+            'button_url' => 'contact.php?category=Support%20Organisation',
+            'sort_order' => 3,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 4,
+            'title' => 'Hardware & Agronomy Sensor Workshop',
+            'category' => 'tech',
+            'badge' => 'Deep-Tech',
+            'icon' => 'fa-microchip',
+            'description' => 'Dedicated lab facilities in Gulshan for rapid hardware iteration: SMD soldering, LoRaWAN gateways, 3D casing prototyping, and IP67 weather-proofing.',
+            'features' => "Multi-sensor calibration benches (NPK, soil pH)\nLow-power micro-controller inventory\nCloud API telemetry test harness",
+            'button_text' => 'Book Prototyping Bench →',
+            'button_url' => 'contact.php?category=Entrepreneur',
+            'sort_order' => 4,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 5,
+            'title' => 'Biosafety & Regulatory Sandbox',
+            'category' => 'regulatory',
+            'badge' => 'Compliance',
+            'icon' => 'fa-stamp',
+            'description' => 'Navigating agricultural approvals in South Asia can take years. Our institutional sandbox fast-tracks phytosanitary, seed registration, and bio-fertilizer certifications.',
+            'features' => "Direct liaison with DAE, BARC & BARI\nStandardized bio-safety & toxicity validation\nIntellectual Property & patent filings clinic",
+            'button_text' => 'Consult Regulatory Desk →',
+            'button_url' => 'contact.php?category=Mentor',
+            'sort_order' => 5,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 6,
+            'title' => 'Decentralized Solar Cold Storage',
+            'category' => 'field',
+            'badge' => 'Infrastructure',
+            'icon' => 'fa-snowflake',
+            'description' => 'Testing and scaling micro-cold room solutions at farm-gate collection centers to tackle the 30-35% post-harvest spoilage crisis across perishables.',
+            'features' => "Solar thermal & phase-change cooling tests\nFirst-mile aggregation logistics algorithms\nExport-grade packaging & ripening chambers",
+            'button_text' => 'Test Cold Storage Unit →',
+            'button_url' => 'contact.php?category=Entrepreneur',
+            'sort_order' => 6,
+            'status' => 'Active'
+        ]
+    ];
+}
+
+/**
+ * Returns canonical seed data for ecosystem directory partners
+ * 
+ * @return array
+ */
+function getDefaultSeedNetworkPartners() {
+    return [
+        [
+            'id' => 1,
+            'name' => 'KrishiSense IoT',
+            'category' => 'founder',
+            'badge' => 'Portfolio Startup',
+            'location' => 'Bogura & Dhaka',
+            'tagline' => 'Precision Soil & Irrigation Tech',
+            'description' => 'Deployed solar IoT sensors across 4,200 acres in Bogura and Rajshahi, reducing smallholder nitrogen fertilizer overuse by 28% and water waste by 35%.',
+            'icon' => 'fa-seedling',
+            'meta_label' => 'Cohort 02 Alum',
+            'link_text' => 'Connect →',
+            'link_url' => 'contact.php?category=Entrepreneur',
+            'sort_order' => 1,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 2,
+            'name' => 'Bengal Delta Capital',
+            'category' => 'investor',
+            'badge' => 'Syndicate Partner',
+            'location' => 'Dhaka & Singapore',
+            'tagline' => 'Seed & Series A Venture Fund',
+            'description' => 'A $20M early-stage fund backing climate-smart agriculture, digital input distribution marketplaces, and cold chain logistics across Bangladesh.',
+            'icon' => 'fa-landmark',
+            'meta_label' => 'Co-Investment Lead',
+            'link_text' => 'Syndicate Deals →',
+            'link_url' => 'contact.php?category=Investor',
+            'sort_order' => 2,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 3,
+            'name' => 'BAU Research Institute',
+            'category' => 'academic',
+            'badge' => 'Research Anchor',
+            'location' => 'Mymensingh',
+            'tagline' => 'Agronomy & Soil Sciences',
+            'description' => 'Collaborating on academic lab commercialization, saline-tolerant rice germplasm trials, and doctoral mentor residencies for deep-tech agri founders.',
+            'icon' => 'fa-microscope',
+            'meta_label' => 'Founding Science Partner',
+            'link_text' => 'Academic R&D →',
+            'link_url' => 'contact.php?category=Mentor',
+            'sort_order' => 3,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 4,
+            'name' => 'PRAN-RFL Agro',
+            'category' => 'corporate',
+            'badge' => 'Corporate Partner',
+            'location' => 'Nationwide',
+            'tagline' => 'Processing & Rural Procurement',
+            'description' => 'Providing our accelerated startups with contracted corporate off-take agreements, raw produce sourcing channels, and nationwide distribution integration.',
+            'icon' => 'fa-truck-fast',
+            'meta_label' => 'Off-Take Offerer',
+            'link_text' => 'Partner Terms →',
+            'link_url' => 'contact.php?category=Support%20Organisation',
+            'sort_order' => 4,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 5,
+            'name' => 'Wageningen Agri Partners',
+            'category' => 'academic',
+            'badge' => 'Global Knowledge',
+            'location' => 'Netherlands',
+            'tagline' => 'Controlled Environment & Post-Harvest',
+            'description' => 'Global knowledge exchange bringing Dutch protected greenhouse engineering and biological pest management to Bangladesh horticulture clusters.',
+            'icon' => 'fa-dna',
+            'meta_label' => 'Bilateral Knowledge Link',
+            'link_text' => 'Exchange Info →',
+            'link_url' => 'contact.php?category=Support%20Organisation',
+            'sort_order' => 5,
+            'status' => 'Active'
+        ],
+        [
+            'id' => 6,
+            'name' => 'Startup Bangladesh Ltd.',
+            'category' => 'impact',
+            'badge' => 'Sovereign VC',
+            'location' => 'Agargaon, Dhaka',
+            'tagline' => 'ICT Division Sovereign Fund',
+            'description' => 'Co-sponsoring catalytic seed rounds and providing regulatory sandboxing for digital financial inclusion and drone spray licensing in agriculture.',
+            'icon' => 'fa-building-columns',
+            'meta_label' => 'Policy & Co-Investment',
+            'link_text' => 'Government Grants →',
+            'link_url' => 'contact.php?category=Support%20Organisation',
+            'sort_order' => 6,
+            'status' => 'Active'
+        ]
+    ];
+}
+
+/**
  * Ensure all required database tables exist and are seeded
  * 
  * @param PDO $pdo
@@ -157,6 +345,46 @@ function ensureDatabaseSchema(PDO $pdo) {
             `subscribed_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+        // 6. offerings
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `offerings` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `title` VARCHAR(150) NOT NULL,
+            `category` ENUM('field', 'capital', 'commercial', 'tech', 'regulatory') NOT NULL DEFAULT 'field',
+            `badge` VARCHAR(50) DEFAULT 'Testbeds',
+            `icon` VARCHAR(50) DEFAULT 'fa-wheat-awn',
+            `description` TEXT NOT NULL,
+            `features` TEXT DEFAULT NULL,
+            `button_text` VARCHAR(100) DEFAULT 'Request Farmland Access →',
+            `button_url` VARCHAR(255) DEFAULT 'contact.php?category=Entrepreneur',
+            `sort_order` INT DEFAULT 0,
+            `status` ENUM('Active', 'Draft') DEFAULT 'Active',
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX `idx_category` (`category`),
+            INDEX `idx_status` (`status`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        // 7. network_partners
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `network_partners` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `name` VARCHAR(150) NOT NULL,
+            `category` ENUM('founder', 'investor', 'academic', 'corporate', 'impact') NOT NULL DEFAULT 'founder',
+            `badge` VARCHAR(50) DEFAULT 'Portfolio Startup',
+            `location` VARCHAR(100) DEFAULT 'Dhaka',
+            `tagline` VARCHAR(150) DEFAULT NULL,
+            `description` TEXT NOT NULL,
+            `icon` VARCHAR(50) DEFAULT 'fa-seedling',
+            `meta_label` VARCHAR(100) DEFAULT 'Cohort Alum',
+            `link_text` VARCHAR(100) DEFAULT 'Connect →',
+            `link_url` VARCHAR(255) DEFAULT 'contact.php',
+            `sort_order` INT DEFAULT 0,
+            `status` ENUM('Active', 'Draft') DEFAULT 'Active',
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX `idx_category` (`category`),
+            INDEX `idx_status` (`status`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
         // Seed default admin if empty
         $cnt = (int)$pdo->query("SELECT COUNT(*) FROM `admin_users`")->fetchColumn();
         if ($cnt === 0) {
@@ -182,6 +410,50 @@ function ensureDatabaseSchema(PDO $pdo) {
                     ':badge_status' => $dp['badge_status'],
                     ':status'       => $dp['status'],
                     ':sort_order'   => $dp['sort_order'],
+                ]);
+            }
+        }
+
+        // Seed default offerings if empty
+        $offCount = (int)$pdo->query("SELECT COUNT(*) FROM `offerings`")->fetchColumn();
+        if ($offCount === 0) {
+            $defOfferings = getDefaultSeedOfferings();
+            $stmt = $pdo->prepare("INSERT INTO `offerings` (title, category, badge, icon, description, features, button_text, button_url, sort_order, status) VALUES (:title, :category, :badge, :icon, :description, :features, :button_text, :button_url, :sort_order, :status)");
+            foreach ($defOfferings as $do) {
+                $stmt->execute([
+                    ':title'       => $do['title'],
+                    ':category'    => $do['category'],
+                    ':badge'       => $do['badge'],
+                    ':icon'        => $do['icon'],
+                    ':description' => $do['description'],
+                    ':features'    => $do['features'],
+                    ':button_text' => $do['button_text'],
+                    ':button_url'  => $do['button_url'],
+                    ':sort_order'  => $do['sort_order'],
+                    ':status'      => $do['status'],
+                ]);
+            }
+        }
+
+        // Seed default network partners if empty
+        $partCount = (int)$pdo->query("SELECT COUNT(*) FROM `network_partners`")->fetchColumn();
+        if ($partCount === 0) {
+            $defPartners = getDefaultSeedNetworkPartners();
+            $stmt = $pdo->prepare("INSERT INTO `network_partners` (name, category, badge, location, tagline, description, icon, meta_label, link_text, link_url, sort_order, status) VALUES (:name, :category, :badge, :location, :tagline, :description, :icon, :meta_label, :link_text, :link_url, :sort_order, :status)");
+            foreach ($defPartners as $dn) {
+                $stmt->execute([
+                    ':name'        => $dn['name'],
+                    ':category'    => $dn['category'],
+                    ':badge'       => $dn['badge'],
+                    ':location'    => $dn['location'],
+                    ':tagline'     => $dn['tagline'],
+                    ':description' => $dn['description'],
+                    ':icon'        => $dn['icon'],
+                    ':meta_label'  => $dn['meta_label'],
+                    ':link_text'   => $dn['link_text'],
+                    ':link_url'    => $dn['link_url'],
+                    ':sort_order'  => $dn['sort_order'],
+                    ':status'      => $dn['status'],
                 ]);
             }
         }
@@ -504,6 +776,63 @@ function getDefaultSiteSettings() {
         'contact_address'        => 'Level 7, Venture Tower, Gulshan-2, Dhaka 1212, Bangladesh',
         'admissions_email'       => 'accelerate@nextgenfarminghub.bd',
         'investors_email'        => 'investors@nextgenfarminghub.bd',
+
+        // Programs & Cohorts Page Dynamic Content
+        'programs_badge'         => 'Structured Incubation Tracks',
+        'programs_title'         => 'Programs & Founder Residencies',
+        'programs_desc'          => 'From early lab prototypes to multi-district commercial scale, our specialized tracks provide catalytic risk capital, empirical farmland living labs, and global venture guidance.',
+        'curriculum_phase1_weeks'=> 'Weeks 1 - 4',
+        'curriculum_phase1_title'=> 'Phase 1: Problem & Agronomy Grounding',
+        'curriculum_phase1_desc' => 'Farmer stakeholder immersion, soil & climate mapping, customer pain validation, and technical architecture review.',
+        'curriculum_phase2_weeks'=> 'Weeks 5 - 8',
+        'curriculum_phase2_title'=> 'Phase 2: Living Lab Farmland Trials',
+        'curriculum_phase2_desc' => 'Deploying sensors, micro-drip prototypes, or biological formulations on 150-hectare pilot fields with cooperative farmers.',
+        'curriculum_phase3_weeks'=> 'Weeks 9 - 12',
+        'curriculum_phase3_title'=> 'Phase 3: Unit Economics & Distribution',
+        'curriculum_phase3_desc' => 'Refining CAC/LTV, pricing models suited for smallholders, cold-chain logistics agreements, and supply partner contracts.',
+        'curriculum_phase4_weeks'=> 'Weeks 13 - 16',
+        'curriculum_phase4_title'=> 'Phase 4: Demo Day & Capital Syndicate',
+        'curriculum_phase4_desc' => 'Pitching live to 40+ regional and international VC funds, angel syndicates, and corporate venture capital executives.',
+        'faq1_q'                 => 'What stage of startup is eligible for the AgriTech Ignite Accelerator?',
+        'faq1_a'                 => 'We accept early-stage teams with at least a functioning prototype, biological bench trial, software MVP, or deep-rooted domain insight. Full commercial revenue is not mandatory at entry; our goal is to help you achieve your first paid farmer or B2B enterprise pilot during the cohort.',
+        'faq2_q'                 => 'Do founders need to relocate to Dhaka during the program?',
+        'faq2_a'                 => 'No. Our program is hybrid. Core masterclasses and pitch clinics occur virtually, while intensive pilot trials take place in regional agricultural corridors (e.g. Bogura, Dinajpur, and Mymensingh) where our living testbeds and cooperative partner hubs are situated.',
+        'faq3_q'                 => 'Can international startups outside Bangladesh apply?',
+        'faq3_a'                 => 'Yes. We actively encourage startups from South Asia, Southeast Asia, the Netherlands, and across emerging markets who wish to pilot their technology or establish a joint venture in Bangladesh\'s high-density agricultural ecosystem.',
+        'faq4_q'                 => 'How does the hub protect our proprietary intellectual property (IP)?',
+        'faq4_a'                 => 'All mentor engagements, advisory reviews, and living lab testing protocols are conducted under strict mutual non-disclosure agreements (NDAs). Founders retain 100% ownership of their IP, hardware designs, algorithms, and biological formulas.',
+
+        // Core Offerings Page Dynamic Content
+        'offerings_badge'        => 'Venture Studio & Technical Infrastructure',
+        'offerings_title_main'   => 'Full-Stack Capabilities Built for',
+        'offerings_title_highlight' => 'Agricultural Transformation',
+        'offerings_desc'         => 'Generalist tech accelerators cannot solve the physical complexities of biology, volatile weather, rural logistics, and fragmented middleman chains. NextGen Farming Hub provides purpose-built technical, empirical, and commercial infrastructure tailored for emerging deltaic markets.',
+        'offering_stat1_num'     => '500+ Farmland Acres',
+        'offering_stat1_desc'    => 'Active living labs in Bogura, Khulna & Rajshahi.',
+        'offering_stat2_num'     => '48+ Off-Take Channels',
+        'offering_stat2_desc'    => 'Direct procurement bridges with leading agribusinesses.',
+        'offering_stat3_num'     => '$28.5M+ Syndicated Capital',
+        'offering_stat3_desc'    => 'Pre-seed, angel syndicate & international VC co-investment.',
+        'offering_stat4_num'     => '14-Day Regulatory Sandbox',
+        'offering_stat4_desc'    => 'Streamlined DAE, seed certification, and bio-input clearance.',
+
+        // Networking Page Dynamic Content
+        'networking_badge'       => 'Connecting Entrepreneur Ecosystem Builders',
+        'networking_title_main'  => 'A Connected Web of',
+        'networking_title_highlight' => 'Founders, Investors & Scientists',
+        'networking_desc'        => 'Agriculture cannot be transformed in isolation. NextGen Farming Incubation Hub weaves together Bangladesh’s rural innovators, leading agronomy universities, regional venture syndicates, and global emerging market networks.',
+        'network_stat1_num'      => '5,200+',
+        'network_stat1_label'    => 'Network Members',
+        'network_stat1_desc'     => 'Across all 64 agricultural districts',
+        'network_stat2_num'      => '128+',
+        'network_stat2_label'    => 'Ventures Accelerated',
+        'network_stat2_desc'     => 'High-impact AgriTech solutions',
+        'network_stat3_num'      => '48+',
+        'network_stat3_label'    => 'Institutional Partners',
+        'network_stat3_desc'     => 'Universities, corporates & donors',
+        'network_stat4_num'      => '18',
+        'network_stat4_label'    => 'Global Corridors',
+        'network_stat4_desc'     => 'South Asia, Netherlands & Africa',
     ];
 }
 
@@ -919,6 +1248,481 @@ function deleteProgram($id) {
 
 /**
  * ============================================================
+ * Dynamic Core Offerings Management (Dual Persistence)
+ * ============================================================
+ */
+
+function getOfferingsFallbackFilePath() {
+    return __DIR__ . '/../assets/offerings_fallback.json';
+}
+
+function getOfferingsFromFallbackFile() {
+    $filePath = getOfferingsFallbackFilePath();
+    if (file_exists($filePath)) {
+        $json = @file_get_contents($filePath);
+        if ($json) {
+            $data = json_decode($json, true);
+            if (is_array($data) && !empty($data)) {
+                return $data;
+            }
+        }
+    }
+    $defaults = getDefaultSeedOfferings();
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+    @file_put_contents($filePath, json_encode($defaults, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return $defaults;
+}
+
+function saveOfferingToFallbackFile(array $data) {
+    $filePath = getOfferingsFallbackFilePath();
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+
+    $offerings = getOfferingsFromFallbackFile();
+    $id = !empty($data['id']) ? (int)$data['id'] : null;
+
+    $record = [
+        'id'          => $id,
+        'title'       => (string)($data['title'] ?? ''),
+        'category'    => in_array($data['category'] ?? '', ['field', 'capital', 'commercial', 'tech', 'regulatory']) ? $data['category'] : 'field',
+        'badge'       => (string)($data['badge'] ?? 'Testbeds'),
+        'icon'        => (string)($data['icon'] ?? 'fa-wheat-awn'),
+        'description' => (string)($data['description'] ?? ''),
+        'features'    => (string)($data['features'] ?? ''),
+        'button_text' => (string)($data['button_text'] ?? 'Request Farmland Access →'),
+        'button_url'  => (string)($data['button_url'] ?? 'contact.php?category=Entrepreneur'),
+        'sort_order'  => (int)($data['sort_order'] ?? 1),
+        'status'      => in_array($data['status'] ?? '', ['Active', 'Draft']) ? $data['status'] : 'Active'
+    ];
+
+    $found = false;
+    if ($id) {
+        foreach ($offerings as $idx => $o) {
+            if ((int)$o['id'] === $id) {
+                $offerings[$idx] = array_merge($o, $record);
+                $found = true;
+                break;
+            }
+        }
+    }
+
+    if (!$found) {
+        $maxId = 0;
+        foreach ($offerings as $o) {
+            if ((int)$o['id'] > $maxId) {
+                $maxId = (int)$o['id'];
+            }
+        }
+        $record['id'] = $maxId + 1;
+        $offerings[] = $record;
+    }
+
+    usort($offerings, function($a, $b) {
+        $soA = (int)($a['sort_order'] ?? 0);
+        $soB = (int)($b['sort_order'] ?? 0);
+        if ($soA === $soB) {
+            return ((int)($a['id'] ?? 0)) <=> ((int)($b['id'] ?? 0));
+        }
+        return $soA <=> $soB;
+    });
+
+    @file_put_contents($filePath, json_encode($offerings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return true;
+}
+
+function deleteOfferingFromFallbackFile($id) {
+    $filePath = getOfferingsFallbackFilePath();
+    $offerings = getOfferingsFromFallbackFile();
+    $filtered = [];
+    foreach ($offerings as $o) {
+        if ((int)$o['id'] !== (int)$id) {
+            $filtered[] = $o;
+        }
+    }
+    @file_put_contents($filePath, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return true;
+}
+
+function getOfferings($activeOnly = false) {
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $sql = "SELECT * FROM offerings";
+            if ($activeOnly) {
+                $sql .= " WHERE status = 'Active'";
+            }
+            $sql .= " ORDER BY sort_order ASC, id ASC";
+            $stmt = $pdo->query($sql);
+            $results = $stmt->fetchAll();
+            if (!empty($results)) {
+                return $results;
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to fetch offerings from MySQL: " . $e->getMessage());
+        }
+    }
+
+    $offerings = getOfferingsFromFallbackFile();
+    if ($activeOnly) {
+        $offerings = array_filter($offerings, function($o) {
+            return isset($o['status']) && $o['status'] === 'Active';
+        });
+    }
+    return array_values($offerings);
+}
+
+function getOfferingById($id) {
+    $id = (int)$id;
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM offerings WHERE id = :id LIMIT 1");
+            $stmt->execute([':id' => $id]);
+            $row = $stmt->fetch();
+            if ($row) return $row;
+        } catch (PDOException $e) {
+            error_log("Failed to get offering by id from MySQL: " . $e->getMessage());
+        }
+    }
+
+    $all = getOfferingsFromFallbackFile();
+    foreach ($all as $o) {
+        if ((int)$o['id'] === $id) {
+            return $o;
+        }
+    }
+    return null;
+}
+
+function saveOffering(array $data) {
+    $id          = !empty($data['id']) ? (int)$data['id'] : null;
+    $title       = trim($data['title'] ?? '');
+    $category    = in_array($data['category'] ?? '', ['field', 'capital', 'commercial', 'tech', 'regulatory']) ? $data['category'] : 'field';
+    $badge       = trim($data['badge'] ?? 'Testbeds');
+    $icon        = trim($data['icon'] ?? 'fa-wheat-awn');
+    $description = trim($data['description'] ?? '');
+    $features    = trim($data['features'] ?? '');
+    $buttonText  = trim($data['button_text'] ?? 'Request Farmland Access →');
+    $buttonUrl   = trim($data['button_url'] ?? 'contact.php?category=Entrepreneur');
+    $sortOrder   = (int)($data['sort_order'] ?? 0);
+    $status      = in_array($data['status'] ?? '', ['Active', 'Draft']) ? $data['status'] : 'Active';
+
+    $pdo = getDbConnection();
+    $dbSaved = false;
+
+    if ($pdo !== null) {
+        try {
+            if ($id) {
+                $stmt = $pdo->prepare("UPDATE offerings SET 
+                    title = :title, category = :category, badge = :badge, icon = :icon,
+                    description = :description, features = :features, button_text = :button_text,
+                    button_url = :button_url, sort_order = :sort_order, status = :status WHERE id = :id");
+                $dbSaved = $stmt->execute([
+                    ':title'       => $title,
+                    ':category'    => $category,
+                    ':badge'       => $badge,
+                    ':icon'        => $icon,
+                    ':description' => $description,
+                    ':features'    => $features,
+                    ':button_text' => $buttonText,
+                    ':button_url'  => $buttonUrl,
+                    ':sort_order'  => $sortOrder,
+                    ':status'      => $status,
+                    ':id'          => $id
+                ]);
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO offerings 
+                    (title, category, badge, icon, description, features, button_text, button_url, sort_order, status)
+                    VALUES (:title, :category, :badge, :icon, :description, :features, :button_text, :button_url, :sort_order, :status)");
+                $dbSaved = $stmt->execute([
+                    ':title'       => $title,
+                    ':category'    => $category,
+                    ':badge'       => $badge,
+                    ':icon'        => $icon,
+                    ':description' => $description,
+                    ':features'    => $features,
+                    ':button_text' => $buttonText,
+                    ':button_url'  => $buttonUrl,
+                    ':sort_order'  => $sortOrder,
+                    ':status'      => $status
+                ]);
+                if ($dbSaved) {
+                    $data['id'] = (int)$pdo->lastInsertId();
+                }
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to save offering to MySQL: " . $e->getMessage());
+            $dbSaved = false;
+        }
+    }
+
+    $fileSaved = saveOfferingToFallbackFile($data);
+    return ($dbSaved || $fileSaved);
+}
+
+function deleteOffering($id) {
+    $delId = (int)$id;
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $stmt = $pdo->prepare("DELETE FROM offerings WHERE id = :id");
+            $stmt->execute([':id' => $delId]);
+        } catch (PDOException $e) {
+            error_log("Failed to delete offering from MySQL: " . $e->getMessage());
+        }
+    }
+    return deleteOfferingFromFallbackFile($delId);
+}
+
+/**
+ * ============================================================
+ * Dynamic Network & Partners Management (Dual Persistence)
+ * ============================================================
+ */
+
+function getNetworkPartnersFallbackFilePath() {
+    return __DIR__ . '/../assets/network_fallback.json';
+}
+
+function getNetworkPartnersFromFallbackFile() {
+    $filePath = getNetworkPartnersFallbackFilePath();
+    if (file_exists($filePath)) {
+        $json = @file_get_contents($filePath);
+        if ($json) {
+            $data = json_decode($json, true);
+            if (is_array($data) && !empty($data)) {
+                return $data;
+            }
+        }
+    }
+    $defaults = getDefaultSeedNetworkPartners();
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+    @file_put_contents($filePath, json_encode($defaults, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return $defaults;
+}
+
+function saveNetworkPartnerToFallbackFile(array $data) {
+    $filePath = getNetworkPartnersFallbackFilePath();
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+
+    $partners = getNetworkPartnersFromFallbackFile();
+    $id = !empty($data['id']) ? (int)$data['id'] : null;
+
+    $record = [
+        'id'          => $id,
+        'name'        => (string)($data['name'] ?? ''),
+        'category'    => in_array($data['category'] ?? '', ['founder', 'investor', 'academic', 'corporate', 'impact']) ? $data['category'] : 'founder',
+        'badge'       => (string)($data['badge'] ?? 'Portfolio Startup'),
+        'location'    => (string)($data['location'] ?? 'Dhaka'),
+        'tagline'     => (string)($data['tagline'] ?? ''),
+        'description' => (string)($data['description'] ?? ''),
+        'icon'        => (string)($data['icon'] ?? 'fa-seedling'),
+        'meta_label'  => (string)($data['meta_label'] ?? 'Cohort Alum'),
+        'link_text'   => (string)($data['link_text'] ?? 'Connect →'),
+        'link_url'    => (string)($data['link_url'] ?? 'contact.php?category=Entrepreneur'),
+        'sort_order'  => (int)($data['sort_order'] ?? 1),
+        'status'      => in_array($data['status'] ?? '', ['Active', 'Draft']) ? $data['status'] : 'Active'
+    ];
+
+    $found = false;
+    if ($id) {
+        foreach ($partners as $idx => $p) {
+            if ((int)$p['id'] === $id) {
+                $partners[$idx] = array_merge($p, $record);
+                $found = true;
+                break;
+            }
+        }
+    }
+
+    if (!$found) {
+        $maxId = 0;
+        foreach ($partners as $p) {
+            if ((int)$p['id'] > $maxId) {
+                $maxId = (int)$p['id'];
+            }
+        }
+        $record['id'] = $maxId + 1;
+        $partners[] = $record;
+    }
+
+    usort($partners, function($a, $b) {
+        $soA = (int)($a['sort_order'] ?? 0);
+        $soB = (int)($b['sort_order'] ?? 0);
+        if ($soA === $soB) {
+            return ((int)($a['id'] ?? 0)) <=> ((int)($b['id'] ?? 0));
+        }
+        return $soA <=> $soB;
+    });
+
+    @file_put_contents($filePath, json_encode($partners, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return true;
+}
+
+function deleteNetworkPartnerFromFallbackFile($id) {
+    $filePath = getNetworkPartnersFallbackFilePath();
+    $partners = getNetworkPartnersFromFallbackFile();
+    $filtered = [];
+    foreach ($partners as $p) {
+        if ((int)$p['id'] !== (int)$id) {
+            $filtered[] = $p;
+        }
+    }
+    @file_put_contents($filePath, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return true;
+}
+
+function getNetworkPartners($activeOnly = false) {
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $sql = "SELECT * FROM network_partners";
+            if ($activeOnly) {
+                $sql .= " WHERE status = 'Active'";
+            }
+            $sql .= " ORDER BY sort_order ASC, id ASC";
+            $stmt = $pdo->query($sql);
+            $results = $stmt->fetchAll();
+            if (!empty($results)) {
+                return $results;
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to fetch network partners from MySQL: " . $e->getMessage());
+        }
+    }
+
+    $partners = getNetworkPartnersFromFallbackFile();
+    if ($activeOnly) {
+        $partners = array_filter($partners, function($p) {
+            return isset($p['status']) && $p['status'] === 'Active';
+        });
+    }
+    return array_values($partners);
+}
+
+function getNetworkPartnerById($id) {
+    $id = (int)$id;
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM network_partners WHERE id = :id LIMIT 1");
+            $stmt->execute([':id' => $id]);
+            $row = $stmt->fetch();
+            if ($row) return $row;
+        } catch (PDOException $e) {
+            error_log("Failed to get network partner by id from MySQL: " . $e->getMessage());
+        }
+    }
+
+    $all = getNetworkPartnersFromFallbackFile();
+    foreach ($all as $p) {
+        if ((int)$p['id'] === $id) {
+            return $p;
+        }
+    }
+    return null;
+}
+
+function saveNetworkPartner(array $data) {
+    $id          = !empty($data['id']) ? (int)$data['id'] : null;
+    $name        = trim($data['name'] ?? '');
+    $category    = in_array($data['category'] ?? '', ['founder', 'investor', 'academic', 'corporate', 'impact']) ? $data['category'] : 'founder';
+    $badge       = trim($data['badge'] ?? 'Portfolio Startup');
+    $location    = trim($data['location'] ?? 'Dhaka');
+    $tagline     = trim($data['tagline'] ?? '');
+    $description = trim($data['description'] ?? '');
+    $icon        = trim($data['icon'] ?? 'fa-seedling');
+    $metaLabel   = trim($data['meta_label'] ?? 'Cohort Alum');
+    $linkText    = trim($data['link_text'] ?? 'Connect →');
+    $linkUrl     = trim($data['link_url'] ?? 'contact.php?category=Entrepreneur');
+    $sortOrder   = (int)($data['sort_order'] ?? 0);
+    $status      = in_array($data['status'] ?? '', ['Active', 'Draft']) ? $data['status'] : 'Active';
+
+    $pdo = getDbConnection();
+    $dbSaved = false;
+
+    if ($pdo !== null) {
+        try {
+            if ($id) {
+                $stmt = $pdo->prepare("UPDATE network_partners SET 
+                    name = :name, category = :category, badge = :badge, location = :location,
+                    tagline = :tagline, description = :description, icon = :icon,
+                    meta_label = :meta_label, link_text = :link_text, link_url = :link_url,
+                    sort_order = :sort_order, status = :status WHERE id = :id");
+                $dbSaved = $stmt->execute([
+                    ':name'        => $name,
+                    ':category'    => $category,
+                    ':badge'       => $badge,
+                    ':location'    => $location,
+                    ':tagline'     => $tagline,
+                    ':description' => $description,
+                    ':icon'        => $icon,
+                    ':meta_label'  => $metaLabel,
+                    ':link_text'   => $linkText,
+                    ':link_url'    => $linkUrl,
+                    ':sort_order'  => $sortOrder,
+                    ':status'      => $status,
+                    ':id'          => $id
+                ]);
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO network_partners 
+                    (name, category, badge, location, tagline, description, icon, meta_label, link_text, link_url, sort_order, status)
+                    VALUES (:name, :category, :badge, :location, :tagline, :description, :icon, :meta_label, :link_text, :link_url, :sort_order, :status)");
+                $dbSaved = $stmt->execute([
+                    ':name'        => $name,
+                    ':category'    => $category,
+                    ':badge'       => $badge,
+                    ':location'    => $location,
+                    ':tagline'     => $tagline,
+                    ':description' => $description,
+                    ':icon'        => $icon,
+                    ':meta_label'  => $metaLabel,
+                    ':link_text'   => $linkText,
+                    ':link_url'    => $linkUrl,
+                    ':sort_order'  => $sortOrder,
+                    ':status'      => $status
+                ]);
+                if ($dbSaved) {
+                    $data['id'] = (int)$pdo->lastInsertId();
+                }
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to save network partner to MySQL: " . $e->getMessage());
+            $dbSaved = false;
+        }
+    }
+
+    $fileSaved = saveNetworkPartnerToFallbackFile($data);
+    return ($dbSaved || $fileSaved);
+}
+
+function deleteNetworkPartner($id) {
+    $delId = (int)$id;
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $stmt = $pdo->prepare("DELETE FROM network_partners WHERE id = :id");
+            $stmt->execute([':id' => $delId]);
+        } catch (PDOException $e) {
+            error_log("Failed to delete network partner from MySQL: " . $e->getMessage());
+        }
+    }
+    return deleteNetworkPartnerFromFallbackFile($delId);
+}
+
+/**
+ * ============================================================
  * Submissions & Pipeline Management
  * ============================================================
  */
@@ -1021,7 +1825,9 @@ function getAdminDashboardStats() {
         'organisations'  => 0,
         'mentors'        => 0,
         'subscribers'    => 0,
-        'total_programs' => 0
+        'total_programs' => 0,
+        'total_offerings'=> 0,
+        'total_partners' => 0
     ];
 
     $pdo = getDbConnection();
@@ -1051,6 +1857,14 @@ function getAdminDashboardStats() {
             $progStmt = $pdo->query("SELECT COUNT(*) FROM programs");
             $stats['total_programs'] = (int)$progStmt->fetchColumn();
 
+            // Count offerings
+            $offStmt = $pdo->query("SELECT COUNT(*) FROM offerings");
+            $stats['total_offerings'] = (int)$offStmt->fetchColumn();
+
+            // Count network partners
+            $partStmt = $pdo->query("SELECT COUNT(*) FROM network_partners");
+            $stats['total_partners'] = (int)$partStmt->fetchColumn();
+
             return $stats;
         } catch (PDOException $e) {
             error_log("Failed to get admin stats from MySQL: " . $e->getMessage());
@@ -1060,9 +1874,13 @@ function getAdminDashboardStats() {
     // Dynamic fallback calculation from local files
     $fallbackFile = __DIR__ . '/../assets/data_fallback.json';
     $programsFile = __DIR__ . '/../assets/programs_fallback.json';
+    $offeringsFile= __DIR__ . '/../assets/offerings_fallback.json';
+    $partnersFile = __DIR__ . '/../assets/network_fallback.json';
 
     $submissions = file_exists($fallbackFile) ? (json_decode(@file_get_contents($fallbackFile), true) ?: []) : [];
     $programs = file_exists($programsFile) ? (json_decode(@file_get_contents($programsFile), true) ?: []) : [];
+    $offerings = file_exists($offeringsFile) ? (json_decode(@file_get_contents($offeringsFile), true) ?: []) : [];
+    $partners = file_exists($partnersFile) ? (json_decode(@file_get_contents($partnersFile), true) ?: []) : [];
 
     foreach ($submissions as $row) {
         $stats['total']++;
@@ -1078,6 +1896,8 @@ function getAdminDashboardStats() {
     }
 
     $stats['total_programs'] = count($programs) ?: 4;
+    $stats['total_offerings'] = count($offerings) ?: 6;
+    $stats['total_partners'] = count($partners) ?: 6;
     $stats['subscribers'] = 148;
     return $stats;
 }

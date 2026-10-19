@@ -3,6 +3,11 @@ $currentPage = 'programs';
 $pageTitle = 'Accelerator Programs & Residencies | NextGen Farming Incubation Hub';
 $pageDescription = 'Discover NextGen Farming Incubation Hub accelerator cohorts, deep-tech founder residencies, seed capital, and farmland living labs in Bangladesh and emerging markets.';
 require_once __DIR__ . '/includes/header.php';
+
+// Dynamic CMS content
+$progBadge = getSiteSetting('programs_badge', 'Structured Incubation Tracks');
+$progTitle = getSiteSetting('programs_title', 'Programs & Founder Residencies');
+$progDesc  = getSiteSetting('programs_desc', 'From early lab prototypes to multi-district commercial scale, our specialized tracks provide catalytic risk capital, empirical farmland living labs, and global venture guidance.');
 ?>
 
 <!-- Header Banner -->
@@ -10,19 +15,19 @@ require_once __DIR__ . '/includes/header.php';
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl">
             <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-agro-100 text-agro-800 border border-agro-200 mb-4">
-                <i class="fa-solid fa-rocket mr-1.5 text-agro-700"></i> Structured Incubation Tracks
+                <i class="fa-solid fa-rocket mr-1.5 text-agro-700"></i> <?= htmlspecialchars($progBadge) ?>
             </span>
             <h1 class="text-4xl sm:text-5xl font-extrabold text-agro-950 tracking-tight leading-tight">
-                Programs & Founder Residencies
+                <?= htmlspecialchars($progTitle) ?>
             </h1>
             <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
-                From early lab prototypes to multi-district commercial scale, our specialized tracks provide catalytic risk capital, empirical farmland living labs, and global venture guidance.
+                <?= htmlspecialchars($progDesc) ?>
             </p>
         </div>
     </div>
 </section>
 
-<!-- Active Accelerator Programs Section -->
+<!-- Active Accelerator Programs Section (Dynamic from Database & Admin) -->
 <section class="py-20 bg-white border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -92,12 +97,12 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
             <?php endforeach; ?>
-        </div>    </div>
+        </div>
 
     </div>
 </section>
 
-<!-- Curriculum Timeline Breakdown -->
+<!-- Curriculum Timeline Breakdown (Dynamic from Admin Dashboard) -->
 <section id="curriculum" class="py-20 bg-[#f8fafc] border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -108,45 +113,25 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            
+            <?php for ($i = 1; $i <= 4; $i++): 
+                $weeks = getSiteSetting("curriculum_phase{$i}_weeks", "Weeks " . (($i-1)*4 + 1) . " - " . ($i*4));
+                $title = getSiteSetting("curriculum_phase{$i}_title", "Phase {$i}");
+                $desc  = getSiteSetting("curriculum_phase{$i}_desc", "");
+            ?>
             <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative">
-                <span class="text-xs font-black text-agro-700 bg-agro-50 px-2.5 py-1 rounded-md inline-block mb-3">Weeks 1 - 4</span>
-                <h4 class="font-bold text-base text-slate-900 mb-2">Phase 1: Problem & Agronomy Grounding</h4>
+                <span class="text-xs font-black text-agro-700 bg-agro-50 px-2.5 py-1 rounded-md inline-block mb-3"><?= htmlspecialchars($weeks) ?></span>
+                <h4 class="font-bold text-base text-slate-900 mb-2"><?= htmlspecialchars($title) ?></h4>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                    Farmer stakeholder immersion, soil & climate mapping, customer pain validation, and technical architecture review.
+                    <?= htmlspecialchars($desc) ?>
                 </p>
             </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative">
-                <span class="text-xs font-black text-agro-700 bg-agro-50 px-2.5 py-1 rounded-md inline-block mb-3">Weeks 5 - 8</span>
-                <h4 class="font-bold text-base text-slate-900 mb-2">Phase 2: Living Lab Farmland Trials</h4>
-                <p class="text-xs text-slate-500 leading-relaxed">
-                    Deploying sensors, micro-drip prototypes, or biological formulations on 150-hectare pilot fields with cooperative farmers.
-                </p>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative">
-                <span class="text-xs font-black text-agro-700 bg-agro-50 px-2.5 py-1 rounded-md inline-block mb-3">Weeks 9 - 12</span>
-                <h4 class="font-bold text-base text-slate-900 mb-2">Phase 3: Unit Economics & Distribution</h4>
-                <p class="text-xs text-slate-500 leading-relaxed">
-                    Refining CAC/LTV, pricing models suited for smallholders, cold-chain logistics agreements, and supply partner contracts.
-                </p>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative">
-                <span class="text-xs font-black text-agro-700 bg-agro-50 px-2.5 py-1 rounded-md inline-block mb-3">Weeks 13 - 16</span>
-                <h4 class="font-bold text-base text-slate-900 mb-2">Phase 4: Demo Day & Capital Syndicate</h4>
-                <p class="text-xs text-slate-500 leading-relaxed">
-                    Pitching live to 40+ regional and international VC funds, angel syndicates, and corporate venture capital executives.
-                </p>
-            </div>
-
+            <?php endfor; ?>
         </div>
 
     </div>
 </section>
 
-<!-- Frequently Asked Questions Accordion -->
+<!-- Frequently Asked Questions Accordion (Dynamic from Admin Dashboard) -->
 <section class="py-20 bg-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -156,47 +141,21 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <div class="space-y-4">
-            
+            <?php for ($f = 1; $f <= 4; $f++): 
+                $faqQ = getSiteSetting("faq{$f}_q", "");
+                $faqA = getSiteSetting("faq{$f}_a", "");
+                if (empty($faqQ)) continue;
+            ?>
             <div class="border border-gray-200 rounded-2xl overflow-hidden">
                 <button type="button" class="w-full text-left px-6 py-4.5 bg-gray-50/70 hover:bg-gray-100 flex items-center justify-between font-bold text-slate-900 text-sm faq-question-btn">
-                    <span>What stage of startup is eligible for the AgriTech Ignite Accelerator?</span>
+                    <span><?= htmlspecialchars($faqQ) ?></span>
                     <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200 faq-chevron"></i>
                 </button>
                 <div class="px-6 py-4 text-xs text-slate-600 leading-relaxed hidden faq-answer-content bg-white border-t border-gray-100">
-                    We accept early-stage teams with at least a functioning prototype, biological bench trial, software MVP, or deep-rooted domain insight. Full commercial revenue is not mandatory at entry; our goal is to help you achieve your first paid farmer or B2B enterprise pilot during the cohort.
+                    <?= nl2br(htmlspecialchars($faqA)) ?>
                 </div>
             </div>
-
-            <div class="border border-gray-200 rounded-2xl overflow-hidden">
-                <button type="button" class="w-full text-left px-6 py-4.5 bg-gray-50/70 hover:bg-gray-100 flex items-center justify-between font-bold text-slate-900 text-sm faq-question-btn">
-                    <span>Do founders need to relocate to Dhaka during the program?</span>
-                    <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200 faq-chevron"></i>
-                </button>
-                <div class="px-6 py-4 text-xs text-slate-600 leading-relaxed hidden faq-answer-content bg-white border-t border-gray-100">
-                    No. Our program is hybrid. Core masterclasses and pitch clinics occur virtually, while intensive pilot trials take place in regional agricultural corridors (e.g. Bogura, Dinajpur, and Mymensingh) where our living testbeds and cooperative partner hubs are situated.
-                </div>
-            </div>
-
-            <div class="border border-gray-200 rounded-2xl overflow-hidden">
-                <button type="button" class="w-full text-left px-6 py-4.5 bg-gray-50/70 hover:bg-gray-100 flex items-center justify-between font-bold text-slate-900 text-sm faq-question-btn">
-                    <span>Can international startups outside Bangladesh apply?</span>
-                    <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200 faq-chevron"></i>
-                </button>
-                <div class="px-6 py-4 text-xs text-slate-600 leading-relaxed hidden faq-answer-content bg-white border-t border-gray-100">
-                    Yes. We actively encourage startups from South Asia, Southeast Asia, the Netherlands, and across emerging markets who wish to pilot their technology or establish a joint venture in Bangladesh's high-density agricultural ecosystem.
-                </div>
-            </div>
-
-            <div class="border border-gray-200 rounded-2xl overflow-hidden">
-                <button type="button" class="w-full text-left px-6 py-4.5 bg-gray-50/70 hover:bg-gray-100 flex items-center justify-between font-bold text-slate-900 text-sm faq-question-btn">
-                    <span>How does the hub protect our proprietary intellectual property (IP)?</span>
-                    <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200 faq-chevron"></i>
-                </button>
-                <div class="px-6 py-4 text-xs text-slate-600 leading-relaxed hidden faq-answer-content bg-white border-t border-gray-100">
-                    All mentor engagements, advisory reviews, and living lab testing protocols are conducted under strict mutual non-disclosure agreements (NDAs). Founders retain 100% ownership of their IP, hardware designs, algorithms, and biological formulas.
-                </div>
-            </div>
-
+            <?php endfor; ?>
         </div>
 
     </div>

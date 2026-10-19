@@ -3,6 +3,23 @@ $currentPage = 'offerings';
 $pageTitle = 'Core Offerings & Incubation Infrastructure | NextGen Farming Hub';
 $pageDescription = 'Explore the full suite of venture studio capabilities, living farmland testbeds, biosafety certifications, catalytic capital syndication, and enterprise off-take bridges at NextGen Farming Incubation Hub.';
 require_once __DIR__ . '/includes/header.php';
+
+// Dynamic CMS content
+$offBadge          = getSiteSetting('offerings_badge', 'Venture Studio & Technical Infrastructure');
+$offTitleMain      = getSiteSetting('offerings_title_main', 'Full-Stack Capabilities Built for');
+$offTitleHighlight = getSiteSetting('offerings_title_highlight', 'Agricultural Transformation');
+$offDesc           = getSiteSetting('offerings_desc', 'Generalist tech accelerators cannot solve the physical complexities of biology, volatile weather, rural logistics, and fragmented middleman chains. NextGen Farming Hub provides purpose-built technical, empirical, and commercial infrastructure tailored for emerging deltaic markets.');
+
+$offStat1Num  = getSiteSetting('offering_stat1_num', '500+ Farmland Acres');
+$offStat1Desc = getSiteSetting('offering_stat1_desc', 'Active living labs in Bogura, Khulna & Rajshahi.');
+$offStat2Num  = getSiteSetting('offering_stat2_num', '48+ Off-Take Channels');
+$offStat2Desc = getSiteSetting('offering_stat2_desc', 'Direct procurement bridges with leading agribusinesses.');
+$offStat3Num  = getSiteSetting('offering_stat3_num', '$28.5M+ Syndicated Capital');
+$offStat3Desc = getSiteSetting('offering_stat3_desc', 'Pre-seed, angel syndicate & international VC co-investment.');
+$offStat4Num  = getSiteSetting('offering_stat4_num', '14-Day Regulatory Sandbox');
+$offStat4Desc = getSiteSetting('offering_stat4_desc', 'Streamlined DAE, seed certification, and bio-input clearance.');
+
+$activeOfferings = getOfferings(true);
 ?>
 
 <!-- Header Hero Banner -->
@@ -16,13 +33,13 @@ require_once __DIR__ . '/includes/header.php';
             
             <div class="lg:col-span-8 space-y-5">
                 <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-agro-100 text-agro-800 border border-agro-200">
-                    <i class="fa-solid fa-layer-group mr-1.5 text-agro-700"></i> Venture Studio & Technical Infrastructure
+                    <i class="fa-solid fa-layer-group mr-1.5 text-agro-700"></i> <?= htmlspecialchars($offBadge) ?>
                 </span>
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-agro-950 tracking-tight leading-tight">
-                    Full-Stack Capabilities Built for <span class="text-gradient-emerald">Agricultural Transformation</span>
+                    <?= htmlspecialchars($offTitleMain) ?> <span class="text-gradient-emerald"><?= htmlspecialchars($offTitleHighlight) ?></span>
                 </h1>
                 <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
-                    Generalist tech accelerators cannot solve the physical complexities of biology, volatile weather, rural logistics, and fragmented middleman chains. NextGen Farming Hub provides purpose-built technical, empirical, and commercial infrastructure tailored for emerging deltaic markets.
+                    <?= htmlspecialchars($offDesc) ?>
                 </p>
                 <div class="pt-2 flex flex-wrap gap-4">
                     <a href="contact.php?category=Entrepreneur" class="inline-flex items-center px-6 py-3.5 rounded-xl font-bold text-white bg-agro-800 hover:bg-agro-900 shadow-lg shadow-agro-800/20 transition transform hover:-translate-y-0.5 text-sm">
@@ -34,7 +51,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
 
-            <!-- Hero Highlights Stats Box -->
+            <!-- Hero Highlights Stats Box (Dynamic from Admin Dashboard) -->
             <div class="lg:col-span-4">
                 <div class="bg-gradient-to-br from-agro-950 to-agro-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-agro-800/50 space-y-5">
                     <div class="flex items-center justify-between pb-4 border-b border-agro-800">
@@ -48,8 +65,8 @@ require_once __DIR__ . '/includes/header.php';
                                 <i class="fa-solid fa-map-location-dot text-sm"></i>
                             </div>
                             <div>
-                                <h4 class="font-extrabold text-base text-white">500+ Farmland Acres</h4>
-                                <p class="text-xs text-slate-300">Active living labs in Bogura, Khulna & Rajshahi.</p>
+                                <h4 class="font-extrabold text-base text-white"><?= htmlspecialchars($offStat1Num) ?></h4>
+                                <p class="text-xs text-slate-300"><?= htmlspecialchars($offStat1Desc) ?></p>
                             </div>
                         </div>
 
@@ -58,8 +75,8 @@ require_once __DIR__ . '/includes/header.php';
                                 <i class="fa-solid fa-handshake-simple text-sm"></i>
                             </div>
                             <div>
-                                <h4 class="font-extrabold text-base text-white">48+ Off-Take Channels</h4>
-                                <p class="text-xs text-slate-300">Direct procurement bridges with leading agribusinesses.</p>
+                                <h4 class="font-extrabold text-base text-white"><?= htmlspecialchars($offStat2Num) ?></h4>
+                                <p class="text-xs text-slate-300"><?= htmlspecialchars($offStat2Desc) ?></p>
                             </div>
                         </div>
 
@@ -68,8 +85,8 @@ require_once __DIR__ . '/includes/header.php';
                                 <i class="fa-solid fa-sack-dollar text-sm"></i>
                             </div>
                             <div>
-                                <h4 class="font-extrabold text-base text-white">$28.5M+ Syndicated Capital</h4>
-                                <p class="text-xs text-slate-300">Pre-seed, angel syndicate & international VC co-investment.</p>
+                                <h4 class="font-extrabold text-base text-white"><?= htmlspecialchars($offStat3Num) ?></h4>
+                                <p class="text-xs text-slate-300"><?= htmlspecialchars($offStat3Desc) ?></p>
                             </div>
                         </div>
 
@@ -78,8 +95,8 @@ require_once __DIR__ . '/includes/header.php';
                                 <i class="fa-solid fa-shield-halved text-sm"></i>
                             </div>
                             <div>
-                                <h4 class="font-extrabold text-base text-white">14-Day Regulatory Sandbox</h4>
-                                <p class="text-xs text-slate-300">Streamlined DAE, seed certification, and bio-input clearance.</p>
+                                <h4 class="font-extrabold text-base text-white"><?= htmlspecialchars($offStat4Num) ?></h4>
+                                <p class="text-xs text-slate-300"><?= htmlspecialchars($offStat4Desc) ?></p>
                             </div>
                         </div>
                     </div>
@@ -118,156 +135,71 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<!-- Core Offerings Grid -->
+<!-- Core Offerings Grid (Dynamic from Database & Admin Dashboard) -->
 <section class="py-16 sm:py-20 bg-[#fbfdfc]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="offerings-grid">
-            
-            <!-- Offering 1: Farmland Living Labs -->
-            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="field">
+            <?php foreach ($activeOfferings as $off): 
+                $cat = htmlspecialchars($off['category'] ?? 'field');
+                $features = array_filter(array_map('trim', explode("\n", $off['features'] ?? '')));
+                
+                // Color palette according to category
+                $badgeBg = match ($off['category'] ?? 'field') {
+                    'capital' => 'bg-amber-100 text-amber-900',
+                    'commercial' => 'bg-blue-100 text-blue-900',
+                    'tech' => 'bg-purple-100 text-purple-900',
+                    'regulatory' => 'bg-teal-100 text-teal-900',
+                    default => 'bg-emerald-100 text-emerald-800'
+                };
+                $iconBox = match ($off['category'] ?? 'field') {
+                    'capital' => 'bg-amber-50 text-amber-600 border-amber-100',
+                    'commercial' => 'bg-blue-50 text-blue-600 border-blue-100',
+                    'tech' => 'bg-purple-50 text-purple-600 border-purple-100',
+                    'regulatory' => 'bg-teal-50 text-teal-600 border-teal-100',
+                    default => 'bg-agro-50 text-agro-700 border-agro-100'
+                };
+                $btnColor = match ($off['category'] ?? 'field') {
+                    'capital' => 'text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200',
+                    'commercial' => 'text-blue-800 bg-blue-50 hover:bg-blue-100 border-blue-200',
+                    'tech' => 'text-purple-800 bg-purple-50 hover:bg-purple-100 border-purple-200',
+                    'regulatory' => 'text-teal-800 bg-teal-50 hover:bg-teal-100 border-teal-200',
+                    default => 'text-agro-800 bg-agro-50 hover:bg-agro-100 border-agro-200'
+                };
+            ?>
+            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="<?= $cat ?>">
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl bg-agro-50 text-agro-800 border border-agro-100 flex items-center justify-center text-2xl">
-                            <i class="fa-solid fa-wheat-awn text-agro-700"></i>
+                        <div class="w-14 h-14 rounded-2xl border flex items-center justify-center text-2xl <?= $iconBox ?>">
+                            <i class="fa-solid <?= htmlspecialchars($off['icon'] ?? 'fa-wheat-awn') ?>"></i>
                         </div>
-                        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full">Testbeds</span>
+                        <span class="px-3 py-1 font-bold text-xs rounded-full <?= $badgeBg ?>">
+                            <?= htmlspecialchars($off['badge'] ?? 'Testbeds') ?>
+                        </span>
                     </div>
-                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Empirical Living Farmland Testbeds</h3>
+
+                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3"><?= htmlspecialchars($off['title']) ?></h3>
                     <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                        Over 500+ dedicated acreage in Bogura (vegetable clusters), Rajshahi (drought/Barind), and Khulna (coastal saline delta) equipped with real smallholder farmer co-ops.
+                        <?= htmlspecialchars($off['description']) ?>
                     </p>
-                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> On-site IoT telemetry stations & weather radar</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Multi-spectral drone corridor approvals</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Cohorts of 200+ participatory farmers</li>
-                    </ul>
+
+                    <?php if (!empty($features)): ?>
+                        <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
+                            <?php foreach ($features as $f): ?>
+                                <li class="flex items-center">
+                                    <i class="fa-solid fa-circle-check text-emerald-600 mr-2 shrink-0"></i>
+                                    <span><?= htmlspecialchars($f) ?></span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
-                <a href="contact.php?category=Entrepreneur" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-agro-800 bg-agro-50 hover:bg-agro-100 border border-agro-200 transition">
-                    Request Farmland Access &rarr;
+
+                <a href="<?= htmlspecialchars($off['button_url'] ?? 'contact.php') ?>" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs border transition <?= $btnColor ?>">
+                    <?= htmlspecialchars($off['button_text'] ?? 'Learn More →') ?>
                 </a>
             </div>
-
-            <!-- Offering 2: Catalytic Capital & Syndication -->
-            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="capital">
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-700 border border-amber-100 flex items-center justify-center text-2xl">
-                            <i class="fa-solid fa-sack-dollar text-amber-600"></i>
-                        </div>
-                        <span class="px-3 py-1 bg-amber-100 text-amber-900 font-bold text-xs rounded-full">Venture Capital</span>
-                    </div>
-                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Catalytic Capital & Seed Syndication</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                        Direct pre-seed SAFE capital injections and coordinated syndicate matching with top-tier angel investors and institutional venture capital across Asia & Europe.
-                    </p>
-                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-amber-600 mr-2"></i> $35k - $50k Founder-Friendly SAFE terms</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-amber-600 mr-2"></i> Demo Day showcase to 60+ global funds</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-amber-600 mr-2"></i> Non-dilutive grant application matching</li>
-                    </ul>
-                </div>
-                <a href="contact.php?category=Investor" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition">
-                    Explore Capital Syndicates &rarr;
-                </a>
-            </div>
-
-            <!-- Offering 3: Enterprise Off-Take & Value Chain -->
-            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="commercial">
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center text-2xl">
-                            <i class="fa-solid fa-truck-ramp-box text-blue-600"></i>
-                        </div>
-                        <span class="px-3 py-1 bg-blue-100 text-blue-900 font-bold text-xs rounded-full">Enterprise</span>
-                    </div>
-                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Corporate Off-Take & Procurement</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                        Pre-structured pilot integrations with Bangladesh’s premier agribusiness conglomerates (PRAN-RFL, ACI Agribusiness, Square Foods, BRAC Enterprises).
-                    </p>
-                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-blue-600 mr-2"></i> Guaranteed pilot off-take commercial contracts</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-blue-600 mr-2"></i> Nationwide retail & rural dealer network access</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-blue-600 mr-2"></i> Strategic corporate venture co-investment</li>
-                    </ul>
-                </div>
-                <a href="contact.php?category=Support%20Organisation" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition">
-                    Corporate Partnership Inquiry &rarr;
-                </a>
-            </div>
-
-            <!-- Offering 4: Hardware & Bio-Prototyping Workshop -->
-            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="tech">
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 border border-purple-100 flex items-center justify-center text-2xl">
-                            <i class="fa-solid fa-microchip text-purple-600"></i>
-                        </div>
-                        <span class="px-3 py-1 bg-purple-100 text-purple-900 font-bold text-xs rounded-full">Deep-Tech</span>
-                    </div>
-                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Hardware & Agronomy Sensor Workshop</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                        Dedicated lab facilities in Gulshan for rapid hardware iteration: SMD soldering, LoRaWAN gateways, 3D casing prototyping, and IP67 weather-proofing.
-                    </p>
-                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-purple-600 mr-2"></i> Multi-sensor calibration benches (NPK, soil pH)</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-purple-600 mr-2"></i> Low-power micro-controller inventory</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-purple-600 mr-2"></i> Cloud API telemetry test harness</li>
-                    </ul>
-                </div>
-                <a href="contact.php?category=Entrepreneur" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-purple-800 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition">
-                    Book Prototyping Bench &rarr;
-                </a>
-            </div>
-
-            <!-- Offering 5: Biosafety & Regulatory Sandbox -->
-            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="regulatory">
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-100 flex items-center justify-center text-2xl">
-                            <i class="fa-solid fa-stamp text-emerald-700"></i>
-                        </div>
-                        <span class="px-3 py-1 bg-emerald-100 text-emerald-900 font-bold text-xs rounded-full">Compliance</span>
-                    </div>
-                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Biosafety & Regulatory Sandbox</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                        Navigating agricultural approvals in South Asia can take years. Our institutional sandbox fast-tracks phytosanitary, seed registration, and bio-fertilizer certifications.
-                    </p>
-                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Direct liaison with DAE, BARC & BARI</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Standardized bio-safety & toxicity validation</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Intellectual Property & patent filings clinic</li>
-                    </ul>
-                </div>
-                <a href="contact.php?category=Mentor" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition">
-                    Consult Regulatory Desk &rarr;
-                </a>
-            </div>
-
-            <!-- Offering 6: Cold-Chain & Rural Logistics Cloud -->
-            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="field">
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl bg-sky-50 text-sky-700 border border-sky-100 flex items-center justify-center text-2xl">
-                            <i class="fa-solid fa-snowflake text-sky-600"></i>
-                        </div>
-                        <span class="px-3 py-1 bg-sky-100 text-sky-900 font-bold text-xs rounded-full">Infrastructure</span>
-                    </div>
-                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Decentralized Solar Cold Storage</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                        Testing and scaling micro-cold room solutions at farm-gate collection centers to tackle the 30-35% post-harvest spoilage crisis across perishables.
-                    </p>
-                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-sky-600 mr-2"></i> Solar thermal & phase-change cooling tests</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-sky-600 mr-2"></i> First-mile aggregation logistics algorithms</li>
-                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-sky-600 mr-2"></i> Export-grade packaging & ripening chambers</li>
-                    </ul>
-                </div>
-                <a href="contact.php?category=Entrepreneur" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition">
-                    Test Cold Storage Unit &rarr;
-                </a>
-            </div>
-
+            <?php endforeach; ?>
         </div>
 
     </div>

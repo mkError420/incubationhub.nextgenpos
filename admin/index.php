@@ -50,7 +50,13 @@ renderAdminHeader('dashboard', 'Dashboard Overview', 'Dashboard Overview');
             <i class="fa-solid fa-pen-to-square mr-1.5"></i> Edit Site Content
         </a>
         <a href="programs.php?action=new" class="inline-flex items-center px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg shadow-sm transition">
-            <i class="fa-solid fa-plus mr-1.5"></i> New Program
+            <i class="fa-solid fa-rocket mr-1.5"></i> Programs
+        </a>
+        <a href="offerings.php" class="inline-flex items-center px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg shadow-sm transition">
+            <i class="fa-solid fa-layer-group mr-1.5"></i> Offerings
+        </a>
+        <a href="networking.php" class="inline-flex items-center px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg shadow-sm transition">
+            <i class="fa-solid fa-network-wired mr-1.5"></i> Network
         </a>
         <a href="submissions.php?action=export_csv" class="inline-flex items-center px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-semibold rounded-lg shadow-sm transition">
             <i class="fa-solid fa-download mr-1.5 text-slate-500"></i> Export CSV
@@ -58,19 +64,19 @@ renderAdminHeader('dashboard', 'Dashboard Overview', 'Dashboard Overview');
     </div>
 </div>
 
-<!-- 4 Classic Metric KPI Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<!-- Classic Metric KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
     
     <!-- KPI 1: Total Leads -->
     <a href="submissions.php" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition flex items-center justify-between group">
         <div>
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Total Submissions</span>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Submissions</span>
             <span class="text-2xl font-extrabold text-slate-900 mt-1 block"><?= $stats['total'] ?></span>
             <span class="text-[11px] text-emerald-600 font-semibold mt-0.5 block flex items-center">
                 <i class="fa-solid fa-database mr-1"></i> Logged in MySQL
             </span>
         </div>
-        <div class="w-11 h-11 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+        <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition">
             <i class="fa-solid fa-inbox"></i>
         </div>
     </a>
@@ -78,13 +84,13 @@ renderAdminHeader('dashboard', 'Dashboard Overview', 'Dashboard Overview');
     <!-- KPI 2: Pending Action -->
     <a href="submissions.php?status=New" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-amber-300 transition flex items-center justify-between group">
         <div>
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Pending Review</span>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Pending</span>
             <span class="text-2xl font-extrabold text-amber-600 mt-1 block"><?= $stats['new'] ?> New</span>
             <span class="text-[11px] text-amber-700 font-semibold mt-0.5 block flex items-center">
-                <i class="fa-solid fa-clock mr-1"></i> Awaiting screening
+                <i class="fa-solid fa-clock mr-1"></i> Awaiting review
             </span>
         </div>
-        <div class="w-11 h-11 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+        <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition">
             <i class="fa-solid fa-hourglass-half"></i>
         </div>
     </a>
@@ -92,27 +98,55 @@ renderAdminHeader('dashboard', 'Dashboard Overview', 'Dashboard Overview');
     <!-- KPI 3: Cohort Programs -->
     <a href="programs.php" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-blue-300 transition flex items-center justify-between group">
         <div>
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Incubation Tracks</span>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Programs</span>
             <span class="text-2xl font-extrabold text-blue-900 mt-1 block"><?= $stats['total_programs'] ?></span>
             <span class="text-[11px] text-blue-600 font-semibold mt-0.5 block flex items-center">
-                <i class="fa-solid fa-rocket mr-1"></i> Active in Database
+                <i class="fa-solid fa-rocket mr-1"></i> Flagship tracks
             </span>
         </div>
-        <div class="w-11 h-11 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+        <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition">
             <i class="fa-solid fa-seedling"></i>
         </div>
     </a>
 
-    <!-- KPI 4: Subscribers -->
+    <!-- KPI 4: Core Offerings -->
+    <a href="offerings.php" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-300 transition flex items-center justify-between group">
+        <div>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Offerings</span>
+            <span class="text-2xl font-extrabold text-emerald-800 mt-1 block"><?= $stats['total_offerings'] ?? 6 ?></span>
+            <span class="text-[11px] text-emerald-600 font-semibold mt-0.5 block flex items-center">
+                <i class="fa-solid fa-layer-group mr-1"></i> Capabilities
+            </span>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition">
+            <i class="fa-solid fa-tractor"></i>
+        </div>
+    </a>
+
+    <!-- KPI 5: Network Partners -->
+    <a href="networking.php" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-purple-300 transition flex items-center justify-between group">
+        <div>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Partners</span>
+            <span class="text-2xl font-extrabold text-purple-900 mt-1 block"><?= $stats['total_partners'] ?? 6 ?></span>
+            <span class="text-[11px] text-purple-600 font-semibold mt-0.5 block flex items-center">
+                <i class="fa-solid fa-network-wired mr-1"></i> Ecosystem
+            </span>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition">
+            <i class="fa-solid fa-handshake"></i>
+        </div>
+    </a>
+
+    <!-- KPI 6: Subscribers -->
     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
             <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Subscribers</span>
-            <span class="text-2xl font-extrabold text-purple-900 mt-1 block"><?= $stats['subscribers'] ?></span>
-            <span class="text-[11px] text-purple-600 font-semibold mt-0.5 block flex items-center">
-                <i class="fa-solid fa-paper-plane mr-1"></i> Monthly Agri-Briefing
+            <span class="text-2xl font-extrabold text-slate-900 mt-1 block"><?= $stats['subscribers'] ?></span>
+            <span class="text-[11px] text-slate-500 font-semibold mt-0.5 block flex items-center">
+                <i class="fa-solid fa-envelope mr-1"></i> Newsletter
             </span>
         </div>
-        <div class="w-11 h-11 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center text-lg shrink-0">
+        <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-base shrink-0">
             <i class="fa-solid fa-envelope-open-text"></i>
         </div>
     </div>

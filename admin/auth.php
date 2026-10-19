@@ -195,6 +195,18 @@ function renderAdminHeader($activePage = 'dashboard', $pageTitle = 'Dashboard Ov
                         <span class="ml-auto text-[10px] bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded font-mono"><?= $stats['total_programs'] ?></span>
                     </a>
 
+                    <a href="offerings.php" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition <?= $activePage === 'offerings' ? 'bg-emerald-700 text-white font-bold shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/80' ?>">
+                        <i class="fa-solid fa-layer-group w-5 text-center text-sm"></i>
+                        <span>Core Offerings</span>
+                        <span class="ml-auto text-[10px] bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded font-mono"><?= $stats['total_offerings'] ?? 6 ?></span>
+                    </a>
+
+                    <a href="networking.php" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition <?= $activePage === 'networking' ? 'bg-emerald-700 text-white font-bold shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/80' ?>">
+                        <i class="fa-solid fa-network-wired w-5 text-center text-sm"></i>
+                        <span>Network & Partners</span>
+                        <span class="ml-auto text-[10px] bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded font-mono"><?= $stats['total_partners'] ?? 6 ?></span>
+                    </a>
+
                     <div class="px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                         System & Security
                     </div>
