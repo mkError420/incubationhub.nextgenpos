@@ -94,9 +94,9 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                 <a href="<?= htmlspecialchars($dynBannerLink) ?>" class="underline font-semibold hover:text-amber-400 transition ml-2">Apply Now &rarr;</a>
             </div>
             <div class="hidden lg:flex items-center space-x-4 text-xs">
-                <a href="submissions.php" class="text-emerald-300 hover:text-white transition flex items-center">
+ <!--                <a href="submissions.php" class="text-emerald-300 hover:text-white transition flex items-center">
                     <i class="fa-solid fa-database mr-1"></i> Submissions
-                </a>
+                </a> -->
                 <span class="text-slate-600">|</span>
                 <a href="admin/index.php" class="text-amber-400 hover:text-amber-300 font-bold transition flex items-center">
                     <i class="fa-solid fa-gauge-high mr-1"></i> Admin Portal
@@ -141,9 +141,6 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                     <a href="networking.php" class="px-3 py-2 text-sm font-semibold rounded-lg transition <?= $currentPage === 'networking' ? 'text-agro-800 bg-agro-50/80 font-bold' : 'text-slate-600 hover:text-agro-800 hover:bg-gray-50' ?>">
                         Networking
                     </a>
-                    <a href="submissions.php" class="px-3 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-agro-800 transition flex items-center">
-                        <i class="fa-solid fa-list-check mr-1.5 text-xs text-emerald-600"></i> Records
-                    </a>
                 </nav>
 
                 <!-- Action Button -->
@@ -180,9 +177,6 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                 </a>
                 <a href="networking.php" class="px-3 py-2.5 rounded-lg text-sm font-bold <?= $currentPage === 'networking' ? 'bg-agro-50 text-agro-800' : 'text-slate-700' ?>">
                     <i class="fa-solid fa-network-wired w-6 text-agro-700"></i> Networking
-                </a>
-                <a href="submissions.php" class="px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-gray-50">
-                    <i class="fa-solid fa-database w-6 text-agro-700"></i> Submissions Portal
                 </a>
                 <div class="pt-3">
                     <a href="contact.php" class="w-full flex items-center justify-center px-4 py-3 text-sm font-bold text-white bg-agro-800 rounded-xl shadow-md">
