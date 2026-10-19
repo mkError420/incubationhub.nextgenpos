@@ -100,6 +100,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $updates['offerings_matrix_json'] = json_encode($cleanMatrixRows, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
+    // Process dynamic Leadership & Advisory Board members with photo upload
+    if (isset($_POST['advisors']) && is_array($_POST['advisors'])) {
+        $cleanAdvisors = [];
+        $targetUploadDir = __DIR__ . '/../assets/uploads/team/';
+        if (!is_dir($targetUploadDir)) {
+            @mkdir($targetUploadDir, 0777, true);
+        }
+        $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
+        foreach ($_POST['advisors'] as $key => $adv) {
+            $name = trim($adv['name'] ?? '');
+            if ($name === '') continue;
+
+            $existingImage = trim($adv['existing_image'] ?? '');
+            $imagePath = $existingImage;
+
+            // Remove photo request
+            if (!empty($adv['remove_image'])) {
+                if ($imagePath && strpos($imagePath, 'assets/uploads/team/') === 0) {
+                    $oldFullPath = __DIR__ . '/../' . $imagePath;
+                    if (file_exists($oldFullPath)) {
+                        @unlink($oldFullPath);
+                    }
+                }
+                $imagePath = '';
+            }
+
+            // File upload handling
+            $fileKey = 'advisor_image_' . $key;
+            if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                $fileTmp = $_FILES[$fileKey]['tmp_name'];
+                $origName = $_FILES[$fileKey]['name'];
+                $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+
+                if (in_array($ext, $allowedExts) && $_FILES[$fileKey]['size'] <= 5 * 1024 * 1024) {
+                    $safeFileName = 'advisor_' . time() . '_' . substr(md5(uniqid(mt_rand(), true)), 0, 8) . '.' . $ext;
+                    $destPath = $targetUploadDir . $safeFileName;
+                    if (move_uploaded_file($fileTmp, $destPath)) {
+                        // Delete previous uploaded photo if it existed
+                        if ($imagePath && strpos($imagePath, 'assets/uploads/team/') === 0) {
+                            $oldFullPath = __DIR__ . '/../' . $imagePath;
+                            if (file_exists($oldFullPath)) {
+                                @unlink($oldFullPath);
+                            }
+                        }
+                        $imagePath = 'assets/uploads/team/' . $safeFileName;
+                    }
+                }
+            }
+
+            $initials = trim($adv['initials'] ?? '');
+            if ($initials === '') {
+                $parts = preg_split('/\s+/', $name);
+                if (count($parts) >= 2) {
+                    $initials = strtoupper(substr($parts[0], 0, 1) . substr(end($parts), 0, 1));
+                } else {
+                    $initials = strtoupper(substr($name, 0, 2));
+                }
+            }
+
+            $cleanAdvisors[] = [
+                'id'       => is_numeric($key) ? (int)$key : time(),
+                'name'     => $name,
+                'role'     => trim($adv['role'] ?? ''),
+                'initials' => $initials,
+                'bio'      => trim($adv['bio'] ?? ''),
+                'image'    => $imagePath,
+                'color'    => trim($adv['color'] ?? 'from-agro-700 to-agro-900 text-white'),
+            ];
+        }
+
+        $updates['about_advisors_json'] = json_encode($cleanAdvisors, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        // Keep individual leader keys synced for backward compatibility
+        for ($i = 1; $i <= 4; $i++) {
+            $idx = $i - 1;
+            if (isset($cleanAdvisors[$idx])) {
+                $updates["about_leader{$i}_name"] = $cleanAdvisors[$idx]['name'];
+                $updates["about_leader{$i}_role"] = $cleanAdvisors[$idx]['role'];
+                $updates["about_leader{$i}_initials"] = $cleanAdvisors[$idx]['initials'];
+                $updates["about_leader{$i}_bio"] = $cleanAdvisors[$idx]['bio'];
+            }
+        }
+    }
+
     if (updateSiteSettings($updates)) {
         $successMsg = 'Content across selected pages has been successfully published live!';
     } else {
@@ -181,7 +266,7 @@ renderAdminHeader('content', 'Website Content CMS', 'Content CMS');
         </button>
     </div>
 
-    <form method="POST" action="content.php" class="space-y-6">
+    <form method="POST" action="content.php" enctype="multipart/form-data" class="space-y-6">
         <input type="hidden" name="action" value="save_content">
 
         <!-- ======================================================== -->
@@ -979,30 +1064,92 @@ renderAdminHeader('content', 'Website Content CMS', 'Content CMS');
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                        <?php for ($l = 1; $l <= 4; $l++): ?>
-                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
-                            <span class="text-xs font-bold text-slate-800">Leader / Advisor #<?= $l ?></span>
-                            <div class="grid grid-cols-3 gap-2">
-                                <div class="col-span-2">
-                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Full Name</label>
-                                    <input type="text" name="about_leader<?= $l ?>_name" value="<?= htmlspecialchars($settings["about_leader{$l}_name"] ?? '') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                    <!-- Dynamic Advisors Header & Add Button -->
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Advisors & Key Leaders List</h3>
+                            <p class="text-[11px] text-slate-500">Manage advisors, upload portraits, or add new members to the leadership board.</p>
+                        </div>
+                        <button type="button" id="add-advisor-btn" class="px-3.5 py-1.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-lg transition shadow-sm flex items-center">
+                            <i class="fa-solid fa-user-plus mr-1.5"></i> Add New Advisor
+                        </button>
+                    </div>
+
+                    <div id="advisors-list" class="space-y-4 pt-2">
+                        <?php 
+                        $aboutAdvisors = getAboutAdvisors();
+                        foreach ($aboutAdvisors as $k => $adv): 
+                            $hasImg = !empty($adv['image']) && file_exists(__DIR__ . '/../' . $adv['image']);
+                            $advNum = $k + 1;
+                        ?>
+                        <div class="advisor-item p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                                <span class="text-xs font-bold text-slate-800 flex items-center">
+                                    <i class="fa-solid fa-user-tie text-purple-600 mr-2"></i>
+                                    Advisor #<span class="advisor-item-num"><?= $advNum ?></span>: <span class="ml-1 text-slate-900"><?= htmlspecialchars($adv['name'] ?? 'New Advisor') ?></span>
+                                </span>
+                                <button type="button" class="remove-advisor-btn text-xs text-red-600 hover:text-red-800 font-semibold flex items-center transition">
+                                    <i class="fa-solid fa-trash-can mr-1"></i> Remove Advisor
+                                </button>
+                            </div>
+
+                            <input type="hidden" name="advisors[<?= $k ?>][existing_image]" value="<?= htmlspecialchars($adv['image'] ?? '') ?>">
+                            <input type="hidden" name="advisors[<?= $k ?>][color]" value="<?= htmlspecialchars($adv['color'] ?? 'from-agro-700 to-agro-900 text-white') ?>">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="sm:col-span-2">
+                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Full Name *</label>
+                                    <input type="text" name="advisors[<?= $k ?>][name]" value="<?= htmlspecialchars($adv['name'] ?? '') ?>" placeholder="e.g. Dr. Rafiqul Alam" required class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Initials</label>
-                                    <input type="text" name="about_leader<?= $l ?>_initials" value="<?= htmlspecialchars($settings["about_leader{$l}_initials"] ?? '') ?>" placeholder="RA" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-center text-slate-900">
+                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Initials (Badge Fallback)</label>
+                                    <input type="text" name="advisors[<?= $k ?>][initials]" value="<?= htmlspecialchars($adv['initials'] ?? '') ?>" placeholder="RA" maxlength="4" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-center text-slate-900">
                                 </div>
                             </div>
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Role / Designation</label>
-                                <input type="text" name="about_leader<?= $l ?>_role" value="<?= htmlspecialchars($settings["about_leader{$l}_role"] ?? '') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-agro-700">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Role / Designation</label>
+                                    <input type="text" name="advisors[<?= $k ?>][role]" value="<?= htmlspecialchars($adv['role'] ?? '') ?>" placeholder="e.g. Executive Director & Co-Founder" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-agro-700">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">
+                                        <i class="fa-solid fa-camera text-agro-600 mr-1"></i> Photo Portrait
+                                    </label>
+                                    <div class="flex items-center space-x-3 p-2 bg-white border border-slate-300 rounded-lg">
+                                        <?php if ($hasImg): ?>
+                                            <div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-300 bg-slate-100 shrink-0">
+                                                <img src="../<?= htmlspecialchars($adv['image']) ?>" alt="Photo" class="w-full h-full object-cover">
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <span class="text-[11px] text-slate-700 font-medium block truncate"><?= htmlspecialchars(basename($adv['image'])) ?></span>
+                                                <label class="inline-flex items-center text-[10px] text-red-600 hover:text-red-700 cursor-pointer">
+                                                    <input type="checkbox" name="advisors[<?= $k ?>][remove_image]" value="1" class="mr-1 rounded text-red-600 focus:ring-0">
+                                                    Remove photo
+                                                </label>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="w-10 h-10 rounded-lg bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-600 text-xs font-bold shrink-0">
+                                                <?= htmlspecialchars(!empty($adv['initials']) ? $adv['initials'] : 'AD') ?>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <span class="text-[11px] text-slate-400 italic">No image (initials badge)</span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="mt-1.5">
+                                        <input type="file" name="advisor_image_<?= $k ?>" accept="image/png, image/jpeg, image/webp" class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
+                                        <span class="text-[10px] text-slate-400 block mt-0.5">JPG, PNG, WebP up to 5MB</span>
+                                    </div>
+                                </div>
                             </div>
+
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Bio / Track Record</label>
-                                <textarea name="about_leader<?= $l ?>_bio" rows="2" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700"><?= htmlspecialchars($settings["about_leader{$l}_bio"] ?? '') ?></textarea>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Bio / Track Record</label>
+                                <textarea name="advisors[<?= $k ?>][bio]" rows="2" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700" placeholder="Brief background, research experience, or career achievements..."><?= htmlspecialchars($adv['bio'] ?? '') ?></textarea>
                             </div>
                         </div>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -1143,6 +1290,80 @@ document.addEventListener('DOMContentLoaded', function() {
                     item.remove();
                     matrixList.querySelectorAll('.matrix-row-item').forEach((row, i) => {
                         const numSpan = row.querySelector('.matrix-row-num');
+                        if (numSpan) numSpan.textContent = i + 1;
+                    });
+                }
+            }
+        });
+    }
+
+    // Dynamic Advisors Add & Remove
+    const advisorsList = document.getElementById('advisors-list');
+    const addAdvisorBtn = document.getElementById('add-advisor-btn');
+
+    if (addAdvisorBtn && advisorsList) {
+        addAdvisorBtn.addEventListener('click', function() {
+            const advisorCount = advisorsList.querySelectorAll('.advisor-item').length;
+            const newIndex = Date.now();
+            const newAdvNum = advisorCount + 1;
+
+            const div = document.createElement('div');
+            div.className = 'advisor-item p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3';
+            div.innerHTML = `
+                <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                    <span class="text-xs font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-user-tie text-purple-600 mr-2"></i>
+                        Advisor #<span class="advisor-item-num">${newAdvNum}</span> (New)
+                    </span>
+                    <button type="button" class="remove-advisor-btn text-xs text-red-600 hover:text-red-800 font-semibold flex items-center transition">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Remove Advisor
+                    </button>
+                </div>
+
+                <input type="hidden" name="advisors[${newIndex}][existing_image]" value="">
+                <input type="hidden" name="advisors[${newIndex}][color]" value="from-purple-600 to-purple-800 text-white">
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Full Name *</label>
+                        <input type="text" name="advisors[${newIndex}][name]" value="" placeholder="e.g. Dr. Jane Doe" required class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Initials (Badge Fallback)</label>
+                        <input type="text" name="advisors[${newIndex}][initials]" value="" placeholder="JD" maxlength="4" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-center text-slate-900">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Role / Designation</label>
+                        <input type="text" name="advisors[${newIndex}][role]" value="" placeholder="e.g. Principal Agritech Fellow" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-agro-700">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">
+                            <i class="fa-solid fa-camera text-agro-600 mr-1"></i> Upload Photo
+                        </label>
+                        <input type="file" name="advisor_image_${newIndex}" accept="image/png, image/jpeg, image/webp" class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
+                        <span class="text-[10px] text-slate-400 block mt-0.5">JPG, PNG, WebP up to 5MB</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Bio / Track Record</label>
+                    <textarea name="advisors[${newIndex}][bio]" rows="2" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700" placeholder="Brief background, research experience, or career achievements..."></textarea>
+                </div>
+            `;
+            advisorsList.appendChild(div);
+        });
+
+        advisorsList.addEventListener('click', function(e) {
+            const btn = e.target.closest('.remove-advisor-btn');
+            if (btn) {
+                const item = btn.closest('.advisor-item');
+                if (item && confirm('Are you sure you want to remove this advisor from the board?')) {
+                    item.remove();
+                    advisorsList.querySelectorAll('.advisor-item').forEach((row, i) => {
+                        const numSpan = row.querySelector('.advisor-item-num');
                         if (numSpan) numSpan.textContent = i + 1;
                     });
                 }

@@ -182,43 +182,36 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            
+            <?php 
+            $advisors = getAboutAdvisors();
+            $colors = [
+                'from-agro-700 to-agro-900 text-white',
+                'from-amber-600 to-amber-800 text-white',
+                'from-blue-600 to-blue-800 text-white',
+                'from-purple-600 to-purple-800 text-white',
+                'from-emerald-600 to-emerald-800 text-white',
+                'from-rose-600 to-rose-800 text-white',
+            ];
+            foreach ($advisors as $i => $adv): 
+                $color = !empty($adv['color']) ? $adv['color'] : $colors[$i % count($colors)];
+                $initials = !empty($adv['initials']) ? $adv['initials'] : strtoupper(substr($adv['name'] ?? 'AD', 0, 2));
+                $hasImage = !empty($adv['image']) && file_exists(__DIR__ . '/' . $adv['image']);
+            ?>
             <div class="text-center group">
-                <div class="w-32 h-32 mx-auto rounded-3xl bg-gradient-to-br from-agro-700 to-agro-900 text-white flex items-center justify-center text-3xl font-bold shadow-lg mb-4 group-hover:scale-105 transition">
-                    <?= htmlspecialchars(getSiteSetting('about_leader1_initials', 'RA')) ?>
-                </div>
-                <h3 class="font-bold text-base text-slate-900"><?= htmlspecialchars(getSiteSetting('about_leader1_name', 'Dr. Rafiqul Alam')) ?></h3>
-                <span class="text-xs text-agro-700 font-semibold block"><?= htmlspecialchars(getSiteSetting('about_leader1_role', 'Executive Director & Co-Founder')) ?></span>
-                <p class="text-xs text-slate-500 mt-2"><?= htmlspecialchars(getSiteSetting('about_leader1_bio', 'Former Senior Advisor, FAO & Bangladesh Agricultural Research Council (BARC).')) ?></p>
+                <?php if ($hasImage): ?>
+                    <div class="w-32 h-32 mx-auto rounded-3xl overflow-hidden shadow-lg mb-4 group-hover:scale-105 transition border-2 border-agro-100 bg-slate-100">
+                        <img src="<?= htmlspecialchars($adv['image']) ?>" alt="<?= htmlspecialchars($adv['name'] ?? '') ?>" class="w-full h-full object-cover">
+                    </div>
+                <?php else: ?>
+                    <div class="w-32 h-32 mx-auto rounded-3xl bg-gradient-to-br <?= htmlspecialchars($color) ?> flex items-center justify-center text-3xl font-bold shadow-lg mb-4 group-hover:scale-105 transition">
+                        <?= htmlspecialchars($initials) ?>
+                    </div>
+                <?php endif; ?>
+                <h3 class="font-bold text-base text-slate-900"><?= htmlspecialchars($adv['name'] ?? '') ?></h3>
+                <span class="text-xs text-agro-700 font-semibold block"><?= htmlspecialchars($adv['role'] ?? '') ?></span>
+                <p class="text-xs text-slate-500 mt-2"><?= htmlspecialchars($adv['bio'] ?? '') ?></p>
             </div>
-
-            <div class="text-center group">
-                <div class="w-32 h-32 mx-auto rounded-3xl bg-gradient-to-br from-amber-600 to-amber-800 text-white flex items-center justify-center text-3xl font-bold shadow-lg mb-4 group-hover:scale-105 transition">
-                    <?= htmlspecialchars(getSiteSetting('about_leader2_initials', 'SZ')) ?>
-                </div>
-                <h3 class="font-bold text-base text-slate-900"><?= htmlspecialchars(getSiteSetting('about_leader2_name', 'Syeda Zarin Tasnim')) ?></h3>
-                <span class="text-xs text-amber-700 font-semibold block"><?= htmlspecialchars(getSiteSetting('about_leader2_role', 'Head of Venture Acceleration')) ?></span>
-                <p class="text-xs text-slate-500 mt-2"><?= htmlspecialchars(getSiteSetting('about_leader2_bio', 'Ex-Venture Partner at regional Seed VC; led 20+ emerging market startup investments.')) ?></p>
-            </div>
-
-            <div class="text-center group">
-                <div class="w-32 h-32 mx-auto rounded-3xl bg-gradient-to-br from-blue-600 to-blue-800 text-white flex items-center justify-center text-3xl font-bold shadow-lg mb-4 group-hover:scale-105 transition">
-                    <?= htmlspecialchars(getSiteSetting('about_leader3_initials', 'MK')) ?>
-                </div>
-                <h3 class="font-bold text-base text-slate-900"><?= htmlspecialchars(getSiteSetting('about_leader3_name', 'Mahmudul Karim, PhD')) ?></h3>
-                <span class="text-xs text-blue-700 font-semibold block"><?= htmlspecialchars(getSiteSetting('about_leader3_role', 'Chief Agronomy Scientist')) ?></span>
-                <p class="text-xs text-slate-500 mt-2"><?= htmlspecialchars(getSiteSetting('about_leader3_bio', 'Professor of Soil Genomics, BAU Mymensingh; specialist in saline-tolerant cultivars.')) ?></p>
-            </div>
-
-            <div class="text-center group">
-                <div class="w-32 h-32 mx-auto rounded-3xl bg-gradient-to-br from-purple-600 to-purple-800 text-white flex items-center justify-center text-3xl font-bold shadow-lg mb-4 group-hover:scale-105 transition">
-                    <?= htmlspecialchars(getSiteSetting('about_leader4_initials', 'AL')) ?>
-                </div>
-                <h3 class="font-bold text-base text-slate-900"><?= htmlspecialchars(getSiteSetting('about_leader4_name', 'Annelies de Lange')) ?></h3>
-                <span class="text-xs text-purple-700 font-semibold block"><?= htmlspecialchars(getSiteSetting('about_leader4_role', 'Global Alliances & ESG Advisor')) ?></span>
-                <p class="text-xs text-slate-500 mt-2"><?= htmlspecialchars(getSiteSetting('about_leader4_bio', 'Wageningen Agri-Advisory; leading Dutch-Bangladesh sustainable greenhouse initiatives.')) ?></p>
-            </div>
-
+            <?php endforeach; ?>
         </div>
 
     </div>

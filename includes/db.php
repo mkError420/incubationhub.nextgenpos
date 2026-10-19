@@ -255,6 +255,68 @@ function getOfferingsMatrixRows() {
 }
 
 /**
+ * Returns canonical seed data for Leadership & Advisory Board
+ * 
+ * @return array
+ */
+function getDefaultAboutAdvisors() {
+    return [
+        [
+            'id'       => 1,
+            'name'     => 'Dr. Rafiqul Alam',
+            'role'     => 'Executive Director & Co-Founder',
+            'initials' => 'RA',
+            'bio'      => 'Former Senior Advisor, FAO & Bangladesh Agricultural Research Council (BARC).',
+            'image'    => '',
+            'color'    => 'from-agro-700 to-agro-900 text-white',
+        ],
+        [
+            'id'       => 2,
+            'name'     => 'Syeda Zarin Tasnim',
+            'role'     => 'Head of Venture Acceleration',
+            'initials' => 'SZ',
+            'bio'      => 'Ex-Venture Partner at regional Seed VC; led 20+ emerging market startup investments.',
+            'image'    => '',
+            'color'    => 'from-amber-600 to-amber-800 text-white',
+        ],
+        [
+            'id'       => 3,
+            'name'     => 'Mahmudul Karim, PhD',
+            'role'     => 'Chief Agronomy Scientist',
+            'initials' => 'MK',
+            'bio'      => 'Professor of Soil Genomics, BAU Mymensingh; specialist in saline-tolerant cultivars.',
+            'image'    => '',
+            'color'    => 'from-blue-600 to-blue-800 text-white',
+        ],
+        [
+            'id'       => 4,
+            'name'     => 'Annelies de Lange',
+            'role'     => 'Global Alliances & ESG Advisor',
+            'initials' => 'AL',
+            'bio'      => 'Wageningen Agri-Advisory; leading Dutch-Bangladesh sustainable greenhouse initiatives.',
+            'image'    => '',
+            'color'    => 'from-purple-600 to-purple-800 text-white',
+        ],
+    ];
+}
+
+/**
+ * Returns dynamic or seed advisors for Leadership & Advisory Board
+ * 
+ * @return array
+ */
+function getAboutAdvisors() {
+    $json = getSiteSetting('about_advisors_json', '');
+    if (!empty($json)) {
+        $decoded = json_decode($json, true);
+        if (is_array($decoded) && !empty($decoded)) {
+            return $decoded;
+        }
+    }
+    return getDefaultAboutAdvisors();
+}
+
+/**
  * Returns canonical seed data for ecosystem directory partners
  * 
  * @return array
@@ -1009,6 +1071,7 @@ function getDefaultSiteSettings() {
         'about_leader4_role'         => 'Global Alliances & ESG Advisor',
         'about_leader4_initials'     => 'AL',
         'about_leader4_bio'          => 'Wageningen Agri-Advisory; leading Dutch-Bangladesh sustainable greenhouse initiatives.',
+        'about_advisors_json'        => '',
     ];
 }
 
