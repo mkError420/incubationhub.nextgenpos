@@ -66,8 +66,9 @@
                     <ul class="space-y-2.5 text-sm">
                         <li><a href="index.php" class="hover:text-emerald-400 transition">Home Overview</a></li>
                         <li><a href="about.php" class="hover:text-emerald-400 transition">About the Hub</a></li>
-                        <li><a href="programs.php" class="hover:text-emerald-400 transition">Programs & Residencies</a></li>
-                        <li><a href="index.php#offerings" class="hover:text-emerald-400 transition">Core Offerings</a></li>
+                        <li><a href="programs.php" class="hover:text-emerald-400 transition">Programs & Cohorts</a></li>
+                        <li><a href="offerings.php" class="hover:text-emerald-400 transition">Core Offerings</a></li>
+                        <li><a href="networking.php" class="hover:text-emerald-400 transition">Global Networking</a></li>
                         <li><a href="submissions.php" class="hover:text-emerald-400 transition flex items-center"><i class="fa-solid fa-database mr-1 text-xs text-emerald-400"></i> Submissions</a></li>
                         <li><a href="admin/index.php" class="text-amber-400 hover:text-amber-300 font-bold transition flex items-center"><i class="fa-solid fa-lock mr-1.5 text-xs"></i> Admin Dashboard</a></li>
                     </ul>

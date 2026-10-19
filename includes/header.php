@@ -135,11 +135,11 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                     <a href="programs.php" class="px-3 py-2 text-sm font-semibold rounded-lg transition <?= $currentPage === 'programs' ? 'text-agro-800 bg-agro-50/80 font-bold' : 'text-slate-600 hover:text-agro-800 hover:bg-gray-50' ?>">
                         Programs & Cohorts
                     </a>
-                    <a href="index.php#offerings" class="px-3 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-agro-800 hover:bg-gray-50 transition">
+                    <a href="offerings.php" class="px-3 py-2 text-sm font-semibold rounded-lg transition <?= $currentPage === 'offerings' ? 'text-agro-800 bg-agro-50/80 font-bold' : 'text-slate-600 hover:text-agro-800 hover:bg-gray-50' ?>">
                         Core Offerings
                     </a>
-                    <a href="index.php#partners" class="px-3 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-agro-800 hover:bg-gray-50 transition">
-                        Network
+                    <a href="networking.php" class="px-3 py-2 text-sm font-semibold rounded-lg transition <?= $currentPage === 'networking' ? 'text-agro-800 bg-agro-50/80 font-bold' : 'text-slate-600 hover:text-agro-800 hover:bg-gray-50' ?>">
+                        Networking
                     </a>
                     <a href="submissions.php" class="px-3 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-agro-800 transition flex items-center">
                         <i class="fa-solid fa-list-check mr-1.5 text-xs text-emerald-600"></i> Records
@@ -173,13 +173,13 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                     <i class="fa-solid fa-compass w-6 text-agro-700"></i> About Us
                 </a>
                 <a href="programs.php" class="px-3 py-2.5 rounded-lg text-sm font-bold <?= $currentPage === 'programs' ? 'bg-agro-50 text-agro-800' : 'text-slate-700' ?>">
-                    <i class="fa-solid fa-rocket w-6 text-agro-700"></i> Programs & Accelerators
+                    <i class="fa-solid fa-rocket w-6 text-agro-700"></i> Programs & Cohorts
                 </a>
-                <a href="index.php#offerings" class="px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-gray-50">
+                <a href="offerings.php" class="px-3 py-2.5 rounded-lg text-sm font-bold <?= $currentPage === 'offerings' ? 'bg-agro-50 text-agro-800' : 'text-slate-700' ?>">
                     <i class="fa-solid fa-layer-group w-6 text-agro-700"></i> Core Offerings
                 </a>
-                <a href="index.php#partners" class="px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-gray-50">
-                    <i class="fa-solid fa-globe w-6 text-agro-700"></i> Global Network
+                <a href="networking.php" class="px-3 py-2.5 rounded-lg text-sm font-bold <?= $currentPage === 'networking' ? 'bg-agro-50 text-agro-800' : 'text-slate-700' ?>">
+                    <i class="fa-solid fa-network-wired w-6 text-agro-700"></i> Networking
                 </a>
                 <a href="submissions.php" class="px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-gray-50">
                     <i class="fa-solid fa-database w-6 text-agro-700"></i> Submissions Portal

@@ -1,0 +1,417 @@
+<?php
+$currentPage = 'offerings';
+$pageTitle = 'Core Offerings & Incubation Infrastructure | NextGen Farming Hub';
+$pageDescription = 'Explore the full suite of venture studio capabilities, living farmland testbeds, biosafety certifications, catalytic capital syndication, and enterprise off-take bridges at NextGen Farming Incubation Hub.';
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<!-- Header Hero Banner -->
+<section class="relative bg-gradient-to-b from-agro-50/80 via-white to-white pt-16 pb-20 border-b border-agro-100 overflow-hidden">
+    <!-- Ambient Glow Backgrounds -->
+    <div class="absolute top-0 right-10 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-10 w-80 h-80 bg-amber-300/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            
+            <div class="lg:col-span-8 space-y-5">
+                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-agro-100 text-agro-800 border border-agro-200">
+                    <i class="fa-solid fa-layer-group mr-1.5 text-agro-700"></i> Venture Studio & Technical Infrastructure
+                </span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-agro-950 tracking-tight leading-tight">
+                    Full-Stack Capabilities Built for <span class="text-gradient-emerald">Agricultural Transformation</span>
+                </h1>
+                <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+                    Generalist tech accelerators cannot solve the physical complexities of biology, volatile weather, rural logistics, and fragmented middleman chains. NextGen Farming Hub provides purpose-built technical, empirical, and commercial infrastructure tailored for emerging deltaic markets.
+                </p>
+                <div class="pt-2 flex flex-wrap gap-4">
+                    <a href="contact.php?category=Entrepreneur" class="inline-flex items-center px-6 py-3.5 rounded-xl font-bold text-white bg-agro-800 hover:bg-agro-900 shadow-lg shadow-agro-800/20 transition transform hover:-translate-y-0.5 text-sm">
+                        <i class="fa-solid fa-seedling mr-2 text-emerald-300"></i> Access Hub Offerings
+                    </a>
+                    <a href="#matrix" class="inline-flex items-center px-6 py-3.5 rounded-xl font-bold text-slate-700 bg-white hover:bg-agro-50 border border-gray-200 shadow-sm transition text-sm">
+                        <i class="fa-solid fa-table-list mr-2 text-agro-700"></i> View Capability Matrix
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Highlights Stats Box -->
+            <div class="lg:col-span-4">
+                <div class="bg-gradient-to-br from-agro-950 to-agro-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-agro-800/50 space-y-5">
+                    <div class="flex items-center justify-between pb-4 border-b border-agro-800">
+                        <span class="text-xs uppercase font-bold tracking-widest text-emerald-400">Hub Infrastructure</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Fully Operational</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0 mt-0.5">
+                                <i class="fa-solid fa-map-location-dot text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-base text-white">500+ Farmland Acres</h4>
+                                <p class="text-xs text-slate-300">Active living labs in Bogura, Khulna & Rajshahi.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0 mt-0.5">
+                                <i class="fa-solid fa-handshake-simple text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-base text-white">48+ Off-Take Channels</h4>
+                                <p class="text-xs text-slate-300">Direct procurement bridges with leading agribusinesses.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0 mt-0.5">
+                                <i class="fa-solid fa-sack-dollar text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-base text-white">$28.5M+ Syndicated Capital</h4>
+                                <p class="text-xs text-slate-300">Pre-seed, angel syndicate & international VC co-investment.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0 mt-0.5">
+                                <i class="fa-solid fa-shield-halved text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-base text-white">14-Day Regulatory Sandbox</h4>
+                                <p class="text-xs text-slate-300">Streamlined DAE, seed certification, and bio-input clearance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Category Filter Tabs -->
+<section class="py-12 bg-white border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3" id="offering-filter-buttons">
+            <button type="button" data-filter="all" class="filter-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-agro-800 text-white shadow-sm transition">
+                All Core Offerings
+            </button>
+            <button type="button" data-filter="field" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gray-100 text-slate-700 hover:bg-agro-50 hover:text-agro-800 transition">
+                <i class="fa-solid fa-tractor mr-1 text-agro-600"></i> Farmland Living Labs
+            </button>
+            <button type="button" data-filter="capital" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gray-100 text-slate-700 hover:bg-agro-50 hover:text-agro-800 transition">
+                <i class="fa-solid fa-coins mr-1 text-agro-600"></i> Capital & Syndicates
+            </button>
+            <button type="button" data-filter="commercial" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gray-100 text-slate-700 hover:bg-agro-50 hover:text-agro-800 transition">
+                <i class="fa-solid fa-building-wheat mr-1 text-agro-600"></i> Corporate Off-Take
+            </button>
+            <button type="button" data-filter="tech" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gray-100 text-slate-700 hover:bg-agro-50 hover:text-agro-800 transition">
+                <i class="fa-solid fa-microchip mr-1 text-agro-600"></i> Hardware & Bio Labs
+            </button>
+            <button type="button" data-filter="regulatory" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gray-100 text-slate-700 hover:bg-agro-50 hover:text-agro-800 transition">
+                <i class="fa-solid fa-certificate mr-1 text-agro-600"></i> Policy & Standards
+            </button>
+        </div>
+
+    </div>
+</section>
+
+<!-- Core Offerings Grid -->
+<section class="py-16 sm:py-20 bg-[#fbfdfc]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="offerings-grid">
+            
+            <!-- Offering 1: Farmland Living Labs -->
+            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="field">
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-agro-50 text-agro-800 border border-agro-100 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-wheat-awn text-agro-700"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full">Testbeds</span>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Empirical Living Farmland Testbeds</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                        Over 500+ dedicated acreage in Bogura (vegetable clusters), Rajshahi (drought/Barind), and Khulna (coastal saline delta) equipped with real smallholder farmer co-ops.
+                    </p>
+                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> On-site IoT telemetry stations & weather radar</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Multi-spectral drone corridor approvals</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Cohorts of 200+ participatory farmers</li>
+                    </ul>
+                </div>
+                <a href="contact.php?category=Entrepreneur" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-agro-800 bg-agro-50 hover:bg-agro-100 border border-agro-200 transition">
+                    Request Farmland Access &rarr;
+                </a>
+            </div>
+
+            <!-- Offering 2: Catalytic Capital & Syndication -->
+            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="capital">
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-700 border border-amber-100 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-sack-dollar text-amber-600"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-amber-100 text-amber-900 font-bold text-xs rounded-full">Venture Capital</span>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Catalytic Capital & Seed Syndication</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                        Direct pre-seed SAFE capital injections and coordinated syndicate matching with top-tier angel investors and institutional venture capital across Asia & Europe.
+                    </p>
+                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-amber-600 mr-2"></i> $35k - $50k Founder-Friendly SAFE terms</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-amber-600 mr-2"></i> Demo Day showcase to 60+ global funds</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-amber-600 mr-2"></i> Non-dilutive grant application matching</li>
+                    </ul>
+                </div>
+                <a href="contact.php?category=Investor" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition">
+                    Explore Capital Syndicates &rarr;
+                </a>
+            </div>
+
+            <!-- Offering 3: Enterprise Off-Take & Value Chain -->
+            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="commercial">
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-truck-ramp-box text-blue-600"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-900 font-bold text-xs rounded-full">Enterprise</span>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Corporate Off-Take & Procurement</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                        Pre-structured pilot integrations with Bangladesh’s premier agribusiness conglomerates (PRAN-RFL, ACI Agribusiness, Square Foods, BRAC Enterprises).
+                    </p>
+                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-blue-600 mr-2"></i> Guaranteed pilot off-take commercial contracts</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-blue-600 mr-2"></i> Nationwide retail & rural dealer network access</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-blue-600 mr-2"></i> Strategic corporate venture co-investment</li>
+                    </ul>
+                </div>
+                <a href="contact.php?category=Support%20Organisation" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition">
+                    Corporate Partnership Inquiry &rarr;
+                </a>
+            </div>
+
+            <!-- Offering 4: Hardware & Bio-Prototyping Workshop -->
+            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="tech">
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 border border-purple-100 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-microchip text-purple-600"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-900 font-bold text-xs rounded-full">Deep-Tech</span>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Hardware & Agronomy Sensor Workshop</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                        Dedicated lab facilities in Gulshan for rapid hardware iteration: SMD soldering, LoRaWAN gateways, 3D casing prototyping, and IP67 weather-proofing.
+                    </p>
+                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-purple-600 mr-2"></i> Multi-sensor calibration benches (NPK, soil pH)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-purple-600 mr-2"></i> Low-power micro-controller inventory</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-purple-600 mr-2"></i> Cloud API telemetry test harness</li>
+                    </ul>
+                </div>
+                <a href="contact.php?category=Entrepreneur" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-purple-800 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition">
+                    Book Prototyping Bench &rarr;
+                </a>
+            </div>
+
+            <!-- Offering 5: Biosafety & Regulatory Sandbox -->
+            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="regulatory">
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-100 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-stamp text-emerald-700"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-900 font-bold text-xs rounded-full">Compliance</span>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Biosafety & Regulatory Sandbox</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                        Navigating agricultural approvals in South Asia can take years. Our institutional sandbox fast-tracks phytosanitary, seed registration, and bio-fertilizer certifications.
+                    </p>
+                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Direct liaison with DAE, BARC & BARI</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Standardized bio-safety & toxicity validation</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Intellectual Property & patent filings clinic</li>
+                    </ul>
+                </div>
+                <a href="contact.php?category=Mentor" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition">
+                    Consult Regulatory Desk &rarr;
+                </a>
+            </div>
+
+            <!-- Offering 6: Cold-Chain & Rural Logistics Cloud -->
+            <div class="offering-card bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-agro-300 transition duration-300 flex flex-col justify-between" data-category="field">
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-sky-50 text-sky-700 border border-sky-100 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-snowflake text-sky-600"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-sky-100 text-sky-900 font-bold text-xs rounded-full">Infrastructure</span>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-slate-900 mb-3">Decentralized Solar Cold Storage</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                        Testing and scaling micro-cold room solutions at farm-gate collection centers to tackle the 30-35% post-harvest spoilage crisis across perishables.
+                    </p>
+                    <ul class="space-y-2.5 text-xs text-slate-600 border-t border-gray-100 pt-4 mb-6">
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-sky-600 mr-2"></i> Solar thermal & phase-change cooling tests</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-sky-600 mr-2"></i> First-mile aggregation logistics algorithms</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-sky-600 mr-2"></i> Export-grade packaging & ripening chambers</li>
+                    </ul>
+                </div>
+                <a href="contact.php?category=Entrepreneur" class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl font-bold text-xs text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition">
+                    Test Cold Storage Unit &rarr;
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- Capability Access Matrix Section -->
+<section id="matrix" class="py-20 bg-white border-t border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-xs font-bold uppercase tracking-wider text-agro-700">Tailored For Every Stage</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2">Stakeholder Capability Matrix</h2>
+            <p class="mt-3 text-slate-600 text-sm sm:text-base">
+                How founders, research spin-offs, corporate partners, and institutional investors engage with NextGen Farming Hub’s core infrastructure.
+            </p>
+        </div>
+
+        <div class="overflow-x-auto rounded-3xl border border-gray-200 shadow-sm">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-slate-900 text-white">
+                        <th class="p-5 font-bold">Capabilities & Resources</th>
+                        <th class="p-5 font-bold text-emerald-400">Pre-Seed Startups</th>
+                        <th class="p-5 font-bold text-amber-300">Scaling Growth Ventures</th>
+                        <th class="p-5 font-bold text-sky-300">Academic / Science Spin-offs</th>
+                        <th class="p-5 font-bold text-slate-300">Corporate Agribusiness</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 bg-white">
+                    <tr class="hover:bg-agro-50/50 transition">
+                        <td class="p-5 font-semibold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-tractor text-agro-600 mr-2"></i> Farmland Living Labs Access
+                        </td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Up to 5 Acres</td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> 25+ Commercial Acres</td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Dedicated Trial Plots</td>
+                        <td class="p-5 text-slate-500 font-medium">Bespoke Contract Plots</td>
+                    </tr>
+                    <tr class="hover:bg-agro-50/50 transition">
+                        <td class="p-5 font-semibold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-coins text-amber-600 mr-2"></i> Direct Risk Capital
+                        </td>
+                        <td class="p-5 text-agro-800 font-bold">$35k - $50k SAFE</td>
+                        <td class="p-5 text-agro-800 font-bold">Up to $250k Syndicate</td>
+                        <td class="p-5 text-agro-800 font-bold">Innovation Grants</td>
+                        <td class="p-5 text-slate-500 font-medium">Co-Investment Rights</td>
+                    </tr>
+                    <tr class="hover:bg-agro-50/50 transition">
+                        <td class="p-5 font-semibold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-microchip text-purple-600 mr-2"></i> Sensor & Hardware Lab
+                        </td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Full Access</td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Full Access</td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> BAU / Wageningen Lab</td>
+                        <td class="p-5 text-slate-500 font-medium">Collaborative R&D</td>
+                    </tr>
+                    <tr class="hover:bg-agro-50/50 transition">
+                        <td class="p-5 font-semibold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-handshake text-blue-600 mr-2"></i> Corporate Off-Take Linkage
+                        </td>
+                        <td class="p-5 text-slate-500 font-medium">Pilot Introductions</td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Guaranteed Off-Take</td>
+                        <td class="p-5 text-slate-500 font-medium">Commercial Licensing</td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Preferred Supplier</td>
+                    </tr>
+                    <tr class="hover:bg-agro-50/50 transition">
+                        <td class="p-5 font-semibold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-stamp text-emerald-600 mr-2"></i> Regulatory Fast-Track
+                        </td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Advisory Desk</td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Expedited DAE/BARC</td>
+                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Biosafety Protocols</td>
+                        <td class="p-5 text-slate-500 font-medium">Joint Policy Advocacy</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</section>
+
+<!-- Frequently Asked Questions -->
+<section class="py-20 bg-agro-50/60 border-t border-agro-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center mb-14">
+            <span class="text-xs font-bold uppercase tracking-wider text-agro-700">Have Questions?</span>
+            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Offerings & Infrastructure FAQ</h2>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <h4 class="font-extrabold text-slate-900 text-base mb-2">Who retains the Intellectual Property (IP) developed using Hub testbeds?</h4>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    100% of the Intellectual Property belongs to the startup founder or spinning-off institution. NextGen Farming Hub takes no claim over proprietary algorithms, hardware schematics, seed genomics, or formulations.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <h4 class="font-extrabold text-slate-900 text-base mb-2">How quickly can our team begin field trials on the living farmland testbeds?</h4>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Upon cohort admission or technical review approval, teams can begin sensor deployment and soil baseline sampling within 10 to 14 business days across our Bogura or Rajshahi living field stations.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <h4 class="font-extrabold text-slate-900 text-base mb-2">Can overseas/international AgriTech startups access NextGen Farming Hub offerings?</h4>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Yes! International ventures looking to localize agronomic technologies into Bangladesh, South Asia, or frontier deltaic environments are welcomed through our Cross-Border Landing Track, which includes regulatory clearance, local pilot facilitation, and corporate introductions.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+// Filter Tab Interactivity for Core Offerings
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('#offering-filter-buttons .filter-btn');
+    const cards = document.querySelectorAll('#offerings-grid .offering-card');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            buttons.forEach(b => {
+                b.classList.remove('bg-agro-800', 'text-white');
+                b.classList.add('bg-gray-100', 'text-slate-700');
+            });
+            this.classList.remove('bg-gray-100', 'text-slate-700');
+            this.classList.add('bg-agro-800', 'text-white');
+
+            const filter = this.getAttribute('data-filter');
+
+            cards.forEach(card => {
+                const category = card.getAttribute('data-category');
+                if (filter === 'all' || category === filter) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        });
+    });
+});
+</script>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

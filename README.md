@@ -22,9 +22,11 @@ nextgen-service/
 │   └── db.php                   # Robust PDO MySQL connector with error handling & fallback
 ├── api/
 │   └── submit.php               # RESTful endpoint handling AJAX POST submissions with CSRF/validation
-├── index.php                    # Hero, The Track Record, Core Offerings, Trusted Global Network
-├── about.php                    # Mission, Bangladesh deltaic context, 4 pillars, leadership
-├── programs.php                 # Accelerator cohorts, curriculum phases, FAQ accordion
+├── index.php                    # Home: Hero, metrics, stakeholder pathways, venture showcases
+├── about.php                    # About Us: Mission, Bangladesh deltaic context, living labs, leadership
+├── programs.php                 # Programs & Cohorts: Dynamic accelerator tracks, curriculum, terms
+├── offerings.php                # Core Offerings: Living testbeds, capital syndicates, off-take, hardware lab
+├── networking.php               # Networking: Ecosystem partner directory, regional nodes, roundtables
 ├── contact.php                  # Interactive application form with dynamic category fields
 ├── submissions.php              # Real-time MySQL pipeline review portal & filtering dashboard
 ├── schema.sql                   # Production-ready MySQL schema with seed records
