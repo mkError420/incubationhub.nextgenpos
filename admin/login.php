@@ -7,10 +7,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Send anti-caching HTTP headers
+if (!headers_sent()) {
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+    header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+}
+
 require_once __DIR__ . '/../includes/db.php';
 
-// Redirect if already logged in
-if (!empty($_SESSION['admin_user'])) {
+// Redirect if already logged in with verified session
+if (!empty($_SESSION['admin_user']) && is_array($_SESSION['admin_user']) && !empty($_SESSION['admin_user']['id'])) {
     header("Location: index.php");
     exit;
 }
@@ -27,8 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $user = verifyAdminLogin($username, $password);
         if ($user) {
+            // Regenerate session ID to prevent session fixation attacks
+            session_regenerate_id(true);
             $_SESSION['admin_user'] = $user;
-            header("Location: " . filter_var($redirect, FILTER_SANITIZE_URL));
+            
+            // Safe redirect verification
+            $target = (!empty($redirect) && !str_contains($redirect, 'login.php') && !str_contains($redirect, 'logout.php')) 
+                      ? filter_var($redirect, FILTER_SANITIZE_URL) 
+                      : 'index.php';
+            header("Location: " . $target);
             exit;
         } else {
             $error = 'Invalid credentials. Please verify username and password.';
@@ -41,6 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Prevent caching on client browsers -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title>Admin Login | NextGen Farming Incubation Hub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,7 +97,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if (isset($_GET['logout'])): ?>
                 <div class="mb-6 p-4 rounded-xl bg-emerald-950/80 border border-emerald-800 text-emerald-200 text-xs flex items-center space-x-3">
                     <i class="fa-solid fa-circle-check text-base text-emerald-400"></i>
-                    <span>You have been securely signed out.</span>
+                    <span>You have been securely signed out. Login required to re-enter.</span>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($_GET['auth_required'])): ?>
+                <div class="mb-6 p-4 rounded-xl bg-amber-950/80 border border-amber-800 text-amber-200 text-xs flex items-center space-x-3">
+                    <i class="fa-solid fa-lock text-base text-amber-400"></i>
+                    <span>Access Denied. Please log in first to access the admin dashboard.</span>
                 </div>
             <?php endif; ?>
 

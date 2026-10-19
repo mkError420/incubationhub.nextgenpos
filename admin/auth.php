@@ -11,11 +11,22 @@ require_once __DIR__ . '/../includes/db.php';
 
 /**
  * Enforce admin authentication
+ * Sends strict anti-caching headers and verifies session legitimacy
  */
 function requireAdminAuth() {
-    if (empty($_SESSION['admin_user'])) {
-        $redirect = urlencode($_SERVER['REQUEST_URI']);
-        header("Location: login.php?redirect={$redirect}");
+    // 1. Prevent all browser caching of admin dashboard pages
+    if (!headers_sent()) {
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+    }
+
+    // 2. Strict session existence and integrity validation
+    if (empty($_SESSION['admin_user']) || !is_array($_SESSION['admin_user']) || empty($_SESSION['admin_user']['id'])) {
+        $_SESSION = [];
+        $redirect = urlencode($_SERVER['REQUEST_URI'] ?? 'index.php');
+        header("Location: login.php?redirect={$redirect}&auth_required=1");
         exit;
     }
 }
@@ -50,6 +61,11 @@ function renderAdminHeader($activePage = 'dashboard', $pageTitle = 'Dashboard Ov
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Prevent caching on all client browsers -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title><?= htmlspecialchars($pageTitle) ?> | NextGen Admin Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,6 +96,16 @@ function renderAdminHeader($activePage = 'dashboard', $pageTitle = 'Dashboard Ov
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
+    <script>
+        // Back-button / BFcache protection:
+        // If user logs out and hits browser 'Back', immediately force a live reload
+        // which triggers requireAdminAuth() on the server and redirects to login.php
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted || (window.performance && window.performance.getEntriesByType && window.performance.getEntriesByType("navigation")[0]?.type === "back_forward")) {
+                window.location.reload();
+            }
+        });
+    </script>
 </head>
 <body class="h-full flex bg-[#f8fafc] text-slate-800 antialiased overflow-hidden">
 
