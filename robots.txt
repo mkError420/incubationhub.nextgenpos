@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /includes/
+Disallow: /config.php
+Disallow: /schema.sql
+Disallow: /assets/data_fallback.json
+
+# Update with your live cPanel production domain
+Sitemap: https://yourdomain.com/sitemap.xml
