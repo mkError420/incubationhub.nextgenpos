@@ -75,6 +75,9 @@ renderAdminHeader('offerings', 'Core Offerings Manager', 'Offerings CMS');
             <p class="text-xs text-slate-500 mt-0.5">Manage farmland testbeds, venture studio capabilities, cold storage, and regulatory sandbox offerings.</p>
         </div>
         <div class="flex items-center space-x-2">
+            <a href="content.php?tab=offerings#matrix-cms" class="inline-flex items-center px-3.5 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-semibold border border-blue-200 transition">
+                <i class="fa-solid fa-table-list mr-1.5 text-blue-600"></i> Edit Capability Matrix
+            </a>
             <button type="button" id="toggle-form-btn" class="inline-flex items-center px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition">
                 <i class="fa-solid fa-plus mr-1.5"></i> Add New Offering
             </button>

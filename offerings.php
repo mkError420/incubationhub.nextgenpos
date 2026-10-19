@@ -210,10 +210,10 @@ $activeOfferings = getOfferings(true);
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="text-center max-w-3xl mx-auto mb-16">
-            <span class="text-xs font-bold uppercase tracking-wider text-agro-700">Tailored For Every Stage</span>
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2">Stakeholder Capability Matrix</h2>
+            <span class="text-xs font-bold uppercase tracking-wider text-agro-700"><?= htmlspecialchars(getSiteSetting('offerings_matrix_badge', 'Tailored For Every Stage')) ?></span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2"><?= htmlspecialchars(getSiteSetting('offerings_matrix_title', 'Stakeholder Capability Matrix')) ?></h2>
             <p class="mt-3 text-slate-600 text-sm sm:text-base">
-                How founders, research spin-offs, corporate partners, and institutional investors engage with NextGen Farming Hub’s core infrastructure.
+                <?= htmlspecialchars(getSiteSetting('offerings_matrix_subtitle', 'How founders, research spin-offs, corporate partners, and institutional investors engage with NextGen Farming Hub’s core infrastructure.')) ?>
             </p>
         </div>
 
@@ -221,59 +221,52 @@ $activeOfferings = getOfferings(true);
             <table class="w-full text-left border-collapse text-sm">
                 <thead>
                     <tr class="bg-slate-900 text-white">
-                        <th class="p-5 font-bold">Capabilities & Resources</th>
-                        <th class="p-5 font-bold text-emerald-400">Pre-Seed Startups</th>
-                        <th class="p-5 font-bold text-amber-300">Scaling Growth Ventures</th>
-                        <th class="p-5 font-bold text-sky-300">Academic / Science Spin-offs</th>
-                        <th class="p-5 font-bold text-slate-300">Corporate Agribusiness</th>
+                        <th class="p-5 font-bold"><?= htmlspecialchars(getSiteSetting('offerings_matrix_col0', 'Capabilities & Resources')) ?></th>
+                        <th class="p-5 font-bold text-emerald-400"><?= htmlspecialchars(getSiteSetting('offerings_matrix_col1', 'Pre-Seed Startups')) ?></th>
+                        <th class="p-5 font-bold text-amber-300"><?= htmlspecialchars(getSiteSetting('offerings_matrix_col2', 'Scaling Growth Ventures')) ?></th>
+                        <th class="p-5 font-bold text-sky-300"><?= htmlspecialchars(getSiteSetting('offerings_matrix_col3', 'Academic / Science Spin-offs')) ?></th>
+                        <th class="p-5 font-bold text-slate-300"><?= htmlspecialchars(getSiteSetting('offerings_matrix_col4', 'Corporate Agribusiness')) ?></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 bg-white">
+                    <?php 
+                    $matrixRows = getOfferingsMatrixRows();
+                    foreach ($matrixRows as $row): 
+                        $iconClass = !empty($row['icon']) ? $row['icon'] : 'fa-solid fa-cube text-agro-600';
+                        if (!str_starts_with($iconClass, 'fa-') && !str_starts_with($iconClass, 'fa ')) {
+                            $iconClass = 'fa-solid ' . $iconClass;
+                        }
+                    ?>
                     <tr class="hover:bg-agro-50/50 transition">
                         <td class="p-5 font-semibold text-slate-900 flex items-center">
-                            <i class="fa-solid fa-tractor text-agro-600 mr-2"></i> Farmland Living Labs Access
+                            <i class="<?= htmlspecialchars($iconClass) ?> mr-2"></i> <?= htmlspecialchars($row['title'] ?? '') ?>
                         </td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Up to 5 Acres</td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> 25+ Commercial Acres</td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Dedicated Trial Plots</td>
-                        <td class="p-5 text-slate-500 font-medium">Bespoke Contract Plots</td>
-                    </tr>
-                    <tr class="hover:bg-agro-50/50 transition">
-                        <td class="p-5 font-semibold text-slate-900 flex items-center">
-                            <i class="fa-solid fa-coins text-amber-600 mr-2"></i> Direct Risk Capital
+                        <td class="p-5 <?= !empty($row['col1_check']) ? 'text-agro-800 font-bold' : 'text-slate-500 font-medium' ?>">
+                            <?php if (!empty($row['col1_check'])): ?>
+                                <i class="fa-solid fa-check text-emerald-600 mr-1.5"></i>
+                            <?php endif; ?>
+                            <?= htmlspecialchars($row['col1'] ?? '') ?>
                         </td>
-                        <td class="p-5 text-agro-800 font-bold">$35k - $50k SAFE</td>
-                        <td class="p-5 text-agro-800 font-bold">Up to $250k Syndicate</td>
-                        <td class="p-5 text-agro-800 font-bold">Innovation Grants</td>
-                        <td class="p-5 text-slate-500 font-medium">Co-Investment Rights</td>
-                    </tr>
-                    <tr class="hover:bg-agro-50/50 transition">
-                        <td class="p-5 font-semibold text-slate-900 flex items-center">
-                            <i class="fa-solid fa-microchip text-purple-600 mr-2"></i> Sensor & Hardware Lab
+                        <td class="p-5 <?= !empty($row['col2_check']) ? 'text-agro-800 font-bold' : 'text-slate-500 font-medium' ?>">
+                            <?php if (!empty($row['col2_check'])): ?>
+                                <i class="fa-solid fa-check text-emerald-600 mr-1.5"></i>
+                            <?php endif; ?>
+                            <?= htmlspecialchars($row['col2'] ?? '') ?>
                         </td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Full Access</td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Full Access</td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> BAU / Wageningen Lab</td>
-                        <td class="p-5 text-slate-500 font-medium">Collaborative R&D</td>
-                    </tr>
-                    <tr class="hover:bg-agro-50/50 transition">
-                        <td class="p-5 font-semibold text-slate-900 flex items-center">
-                            <i class="fa-solid fa-handshake text-blue-600 mr-2"></i> Corporate Off-Take Linkage
+                        <td class="p-5 <?= !empty($row['col3_check']) ? 'text-agro-800 font-bold' : 'text-slate-500 font-medium' ?>">
+                            <?php if (!empty($row['col3_check'])): ?>
+                                <i class="fa-solid fa-check text-emerald-600 mr-1.5"></i>
+                            <?php endif; ?>
+                            <?= htmlspecialchars($row['col3'] ?? '') ?>
                         </td>
-                        <td class="p-5 text-slate-500 font-medium">Pilot Introductions</td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Guaranteed Off-Take</td>
-                        <td class="p-5 text-slate-500 font-medium">Commercial Licensing</td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Preferred Supplier</td>
-                    </tr>
-                    <tr class="hover:bg-agro-50/50 transition">
-                        <td class="p-5 font-semibold text-slate-900 flex items-center">
-                            <i class="fa-solid fa-stamp text-emerald-600 mr-2"></i> Regulatory Fast-Track
+                        <td class="p-5 <?= !empty($row['col4_check']) ? 'text-agro-800 font-bold' : 'text-slate-500 font-medium' ?>">
+                            <?php if (!empty($row['col4_check'])): ?>
+                                <i class="fa-solid fa-check text-emerald-600 mr-1.5"></i>
+                            <?php endif; ?>
+                            <?= htmlspecialchars($row['col4'] ?? '') ?>
                         </td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Advisory Desk</td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Expedited DAE/BARC</td>
-                        <td class="p-5 text-agro-800 font-bold"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Biosafety Protocols</td>
-                        <td class="p-5 text-slate-500 font-medium">Joint Policy Advocacy</td>
                     </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -291,26 +284,18 @@ $activeOfferings = getOfferings(true);
         </div>
 
         <div class="space-y-4">
+            <?php for ($f = 1; $f <= 3; $f++): 
+                $faqQ = getSiteSetting("offering_faq{$f}_q", "");
+                $faqA = getSiteSetting("offering_faq{$f}_a", "");
+                if (empty($faqQ)) continue;
+            ?>
             <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                <h4 class="font-extrabold text-slate-900 text-base mb-2">Who retains the Intellectual Property (IP) developed using Hub testbeds?</h4>
+                <h4 class="font-extrabold text-slate-900 text-base mb-2"><?= htmlspecialchars($faqQ) ?></h4>
                 <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    100% of the Intellectual Property belongs to the startup founder or spinning-off institution. NextGen Farming Hub takes no claim over proprietary algorithms, hardware schematics, seed genomics, or formulations.
+                    <?= nl2br(htmlspecialchars($faqA)) ?>
                 </p>
             </div>
-
-            <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                <h4 class="font-extrabold text-slate-900 text-base mb-2">How quickly can our team begin field trials on the living farmland testbeds?</h4>
-                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Upon cohort admission or technical review approval, teams can begin sensor deployment and soil baseline sampling within 10 to 14 business days across our Bogura or Rajshahi living field stations.
-                </p>
-            </div>
-
-            <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                <h4 class="font-extrabold text-slate-900 text-base mb-2">Can overseas/international AgriTech startups access NextGen Farming Hub offerings?</h4>
-                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Yes! International ventures looking to localize agronomic technologies into Bangladesh, South Asia, or frontier deltaic environments are welcomed through our Cross-Border Landing Track, which includes regulatory clearance, local pilot facilitation, and corporate introductions.
-                </p>
-            </div>
+            <?php endfor; ?>
         </div>
 
     </div>

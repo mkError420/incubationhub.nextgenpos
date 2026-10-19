@@ -169,6 +169,92 @@ function getDefaultSeedOfferings() {
 }
 
 /**
+ * Returns canonical seed rows for the Stakeholder Capability Matrix
+ * 
+ * @return array
+ */
+function getDefaultOfferingsMatrixRows() {
+    return [
+        [
+            'title'      => 'Farmland Living Labs Access',
+            'icon'       => 'fa-solid fa-tractor text-agro-600',
+            'col1'       => 'Up to 5 Acres',
+            'col1_check' => 1,
+            'col2'       => '25+ Commercial Acres',
+            'col2_check' => 1,
+            'col3'       => 'Dedicated Trial Plots',
+            'col3_check' => 1,
+            'col4'       => 'Bespoke Contract Plots',
+            'col4_check' => 0,
+        ],
+        [
+            'title'      => 'Direct Risk Capital',
+            'icon'       => 'fa-solid fa-coins text-amber-600',
+            'col1'       => '$35k - $50k SAFE',
+            'col1_check' => 0,
+            'col2'       => 'Up to $250k Syndicate',
+            'col2_check' => 0,
+            'col3'       => 'Innovation Grants',
+            'col3_check' => 0,
+            'col4'       => 'Co-Investment Rights',
+            'col4_check' => 0,
+        ],
+        [
+            'title'      => 'Sensor & Hardware Lab',
+            'icon'       => 'fa-solid fa-microchip text-purple-600',
+            'col1'       => 'Full Access',
+            'col1_check' => 1,
+            'col2'       => 'Full Access',
+            'col2_check' => 1,
+            'col3'       => 'BAU / Wageningen Lab',
+            'col3_check' => 1,
+            'col4'       => 'Collaborative R&D',
+            'col4_check' => 0,
+        ],
+        [
+            'title'      => 'Corporate Off-Take Linkage',
+            'icon'       => 'fa-solid fa-handshake text-blue-600',
+            'col1'       => 'Pilot Introductions',
+            'col1_check' => 0,
+            'col2'       => 'Guaranteed Off-Take',
+            'col2_check' => 1,
+            'col3'       => 'Commercial Licensing',
+            'col3_check' => 0,
+            'col4'       => 'Preferred Supplier',
+            'col4_check' => 1,
+        ],
+        [
+            'title'      => 'Regulatory Fast-Track',
+            'icon'       => 'fa-solid fa-stamp text-emerald-600',
+            'col1'       => 'Advisory Desk',
+            'col1_check' => 1,
+            'col2'       => 'Expedited DAE/BARC',
+            'col2_check' => 1,
+            'col3'       => 'Biosafety Protocols',
+            'col3_check' => 1,
+            'col4'       => 'Joint Policy Advocacy',
+            'col4_check' => 0,
+        ],
+    ];
+}
+
+/**
+ * Returns dynamic or seed rows for Stakeholder Capability Matrix
+ * 
+ * @return array
+ */
+function getOfferingsMatrixRows() {
+    $json = getSiteSetting('offerings_matrix_json', '');
+    if (!empty($json)) {
+        $decoded = json_decode($json, true);
+        if (is_array($decoded) && !empty($decoded)) {
+            return $decoded;
+        }
+    }
+    return getDefaultOfferingsMatrixRows();
+}
+
+/**
  * Returns canonical seed data for ecosystem directory partners
  * 
  * @return array
@@ -816,6 +902,25 @@ function getDefaultSiteSettings() {
         'offering_stat4_num'     => '14-Day Regulatory Sandbox',
         'offering_stat4_desc'    => 'Streamlined DAE, seed certification, and bio-input clearance.',
 
+        // Core Offerings - Stakeholder Capability Matrix Section
+        'offerings_matrix_badge'    => 'Tailored For Every Stage',
+        'offerings_matrix_title'    => 'Stakeholder Capability Matrix',
+        'offerings_matrix_subtitle' => 'How founders, research spin-offs, corporate partners, and institutional investors engage with NextGen Farming Hub’s core infrastructure.',
+        'offerings_matrix_col0'     => 'Capabilities & Resources',
+        'offerings_matrix_col1'     => 'Pre-Seed Startups',
+        'offerings_matrix_col2'     => 'Scaling Growth Ventures',
+        'offerings_matrix_col3'     => 'Academic / Science Spin-offs',
+        'offerings_matrix_col4'     => 'Corporate Agribusiness',
+        'offerings_matrix_json'     => '',
+
+        // Core Offerings - FAQ Section
+        'offering_faq1_q'           => 'Who retains the Intellectual Property (IP) developed using Hub testbeds?',
+        'offering_faq1_a'           => '100% of the Intellectual Property belongs to the startup founder or spinning-off institution. NextGen Farming Hub takes no claim over proprietary algorithms, hardware schematics, seed genomics, or formulations.',
+        'offering_faq2_q'           => 'How quickly can our team begin field trials on the living farmland testbeds?',
+        'offering_faq2_a'           => 'Upon cohort admission or technical review approval, teams can begin sensor deployment and soil baseline sampling within 10 to 14 business days across our Bogura or Rajshahi living field stations.',
+        'offering_faq3_q'           => 'Can overseas/international AgriTech startups access NextGen Farming Hub offerings?',
+        'offering_faq3_a'           => 'Yes! International ventures looking to localize agronomic technologies into Bangladesh, South Asia, or frontier deltaic environments are welcomed through our Cross-Border Landing Track, which includes regulatory clearance, local pilot facilitation, and corporate introductions.',
+
         // Networking Page Dynamic Content
         'networking_badge'       => 'Connecting Entrepreneur Ecosystem Builders',
         'networking_title_main'  => 'A Connected Web of',
@@ -833,6 +938,77 @@ function getDefaultSiteSettings() {
         'network_stat4_num'      => '18',
         'network_stat4_label'    => 'Global Corridors',
         'network_stat4_desc'     => 'South Asia, Netherlands & Africa',
+
+        // About Us Page Dynamic Content
+        'about_hero_badge'           => 'Our Mission & Purpose',
+        'about_hero_title_main'      => 'Catalyzing Frontier AgriTech Across',
+        'about_hero_title_highlight' => 'Bangladesh & Emerging Markets',
+        'about_hero_desc'            => 'NextGen Farming Incubation Hub was founded to transform fragmented agricultural value chains into resilient, high-productivity, and venture-fundable economic engines.',
+
+        'about_context_badge'        => 'The Problem & The Deltaic Promise',
+        'about_context_title'        => 'Why Bangladesh is the World’s Most Vital Agricultural Sandbox',
+        'about_context_p1'           => 'With over 16.5 million smallholder farming families cultivating fertile yet climate-vulnerable alluvial soil, Bangladesh represents both an acute epicenter of climate risk and the ultimate proving ground for scalable AgriTech.',
+        'about_context_p2'           => 'Technologies proven in the saline coastal zones of Khulna, the drought-prone barind tracts of Rajshahi, and the vegetable hubs of Bogura possess the immediate resilience needed across South Asia, Southeast Asia, and Sub-Saharan Africa.',
+
+        'about_bottle1_title'        => 'Post-Harvest Loss',
+        'about_bottle1_desc'         => 'Mitigating 30-35% perishable crop decay through modular solar micro-cold rooms.',
+        'about_bottle1_icon'         => 'fa-temperature-arrow-down',
+        'about_bottle2_title'        => 'Digital Supply Chains',
+        'about_bottle2_desc'         => 'Disintermediating 5-tier middleman cartels via transparent mobile auction platforms.',
+        'about_bottle2_icon'         => 'fa-mobile-screen',
+        'about_bottle3_title'        => 'Precision Agronomy',
+        'about_bottle3_desc'         => 'Affordable IoT sensors & satellite NDVI imagery for targeted nitrogen and water delivery.',
+        'about_bottle3_icon'         => 'fa-satellite-dish',
+        'about_bottle4_title'        => 'Agri-Fintech & Credit',
+        'about_bottle4_desc'         => 'Alternative algorithmic credit scoring unlocking working capital for unbanked tenant farmers.',
+        'about_bottle4_icon'         => 'fa-credit-card',
+
+        'about_flywheel_badge'       => 'Our Operating Architecture',
+        'about_flywheel_title'       => 'The NextGen Incubation Flywheel',
+        'about_flywheel1_title'      => 'Grassroots Scouting & Problem Discovery',
+        'about_flywheel1_desc'       => 'We work with agricultural universities and rural extension officers to identify pain-points directly from farm gates.',
+        'about_flywheel2_title'      => 'Living Farmland Validation',
+        'about_flywheel2_desc'       => 'Startups test prototypes on our 150+ hectares of living testbeds before scaling commercially.',
+        'about_flywheel3_title'      => 'Blended Capital Syndication',
+        'about_flywheel3_desc'       => 'We pair philanthropic grant de-risking with commercial equity from angel syndicates and venture funds.',
+        'about_flywheel4_title'      => 'Cross-Border Market Expansion',
+        'about_flywheel4_desc'       => 'Validated ventures receive commercial bridge advisory to expand across India, Nepal, Kenya, and Vietnam.',
+
+        'about_pillars_badge'        => 'Core Foundations',
+        'about_pillars_title'        => 'Our Four Strategic Pillars',
+        'about_pillars_subtitle'     => 'How we engineer lasting agricultural transformation through discipline and science.',
+        'about_pillar1_title'        => 'Deep-Tech & Agronomy Fusion',
+        'about_pillar1_desc'         => 'Fusing computational modeling, soil chemistry, and drone-based multispectral sensing with traditional agronomic practices.',
+        'about_pillar1_icon'         => 'fa-dna',
+        'about_pillar2_title'        => 'Catalytic Blended Finance',
+        'about_pillar2_desc'         => 'Structuring non-dilutive innovation grants alongside equity venture capital to de-risk high-capex hardware and biotech ventures.',
+        'about_pillar2_icon'         => 'fa-sack-dollar',
+        'about_pillar3_title'        => 'Empirical Farmland Testbeds',
+        'about_pillar3_desc'         => 'Real-world trials conducted side-by-side with commercial farmer cooperatives across diverse climatic micro-zones.',
+        'about_pillar3_icon'         => 'fa-wheat-awn-circle-exclamation',
+        'about_pillar4_title'        => 'South-South Knowledge Exchange',
+        'about_pillar4_desc'         => 'Facilitating technology and policy linkages between South Asia, the Mekong Delta, and East African agricultural corridors.',
+        'about_pillar4_icon'         => 'fa-globe',
+
+        'about_team_badge'           => 'Governance & Operators',
+        'about_team_title'           => 'Leadership & Advisory Board',
+        'about_team_subtitle'        => 'Combining decades of venture capital, ag-science, and rural market scaling.',
+        'about_leader1_name'         => 'Dr. Rafiqul Alam',
+        'about_leader1_role'         => 'Executive Director & Co-Founder',
+        'about_leader1_initials'     => 'RA',
+        'about_leader1_bio'          => 'Former Senior Advisor, FAO & Bangladesh Agricultural Research Council (BARC).',
+        'about_leader2_name'         => 'Syeda Zarin Tasnim',
+        'about_leader2_role'         => 'Head of Venture Acceleration',
+        'about_leader2_initials'     => 'SZ',
+        'about_leader2_bio'          => 'Ex-Venture Partner at regional Seed VC; led 20+ emerging market startup investments.',
+        'about_leader3_name'         => 'Mahmudul Karim, PhD',
+        'about_leader3_role'         => 'Chief Agronomy Scientist',
+        'about_leader3_initials'     => 'MK',
+        'about_leader3_bio'          => 'Professor of Soil Genomics, BAU Mymensingh; specialist in saline-tolerant cultivars.',
+        'about_leader4_name'         => 'Annelies de Lange',
+        'about_leader4_role'         => 'Global Alliances & ESG Advisor',
+        'about_leader4_initials'     => 'AL',
+        'about_leader4_bio'          => 'Wageningen Agri-Advisory; leading Dutch-Bangladesh sustainable greenhouse initiatives.',
     ];
 }
 

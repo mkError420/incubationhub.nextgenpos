@@ -34,6 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'offering_stat2_num', 'offering_stat2_desc',
         'offering_stat3_num', 'offering_stat3_desc',
         'offering_stat4_num', 'offering_stat4_desc',
+        'offerings_matrix_badge', 'offerings_matrix_title', 'offerings_matrix_subtitle',
+        'offerings_matrix_col0', 'offerings_matrix_col1', 'offerings_matrix_col2', 'offerings_matrix_col3', 'offerings_matrix_col4',
+        'offering_faq1_q', 'offering_faq1_a',
+        'offering_faq2_q', 'offering_faq2_a',
+        'offering_faq3_q', 'offering_faq3_a',
 
         // Networking Page Content
         'networking_badge', 'networking_title_main', 'networking_title_highlight', 'networking_desc',
@@ -41,6 +46,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'network_stat2_num', 'network_stat2_label', 'network_stat2_desc',
         'network_stat3_num', 'network_stat3_label', 'network_stat3_desc',
         'network_stat4_num', 'network_stat4_label', 'network_stat4_desc',
+
+        // About Us Page Content
+        'about_hero_badge', 'about_hero_title_main', 'about_hero_title_highlight', 'about_hero_desc',
+        'about_context_badge', 'about_context_title', 'about_context_p1', 'about_context_p2',
+        'about_bottle1_title', 'about_bottle1_desc', 'about_bottle1_icon',
+        'about_bottle2_title', 'about_bottle2_desc', 'about_bottle2_icon',
+        'about_bottle3_title', 'about_bottle3_desc', 'about_bottle3_icon',
+        'about_bottle4_title', 'about_bottle4_desc', 'about_bottle4_icon',
+        'about_flywheel_badge', 'about_flywheel_title',
+        'about_flywheel1_title', 'about_flywheel1_desc',
+        'about_flywheel2_title', 'about_flywheel2_desc',
+        'about_flywheel3_title', 'about_flywheel3_desc',
+        'about_flywheel4_title', 'about_flywheel4_desc',
+        'about_pillars_badge', 'about_pillars_title', 'about_pillars_subtitle',
+        'about_pillar1_title', 'about_pillar1_desc', 'about_pillar1_icon',
+        'about_pillar2_title', 'about_pillar2_desc', 'about_pillar2_icon',
+        'about_pillar3_title', 'about_pillar3_desc', 'about_pillar3_icon',
+        'about_pillar4_title', 'about_pillar4_desc', 'about_pillar4_icon',
+        'about_team_badge', 'about_team_title', 'about_team_subtitle',
+        'about_leader1_name', 'about_leader1_role', 'about_leader1_initials', 'about_leader1_bio',
+        'about_leader2_name', 'about_leader2_role', 'about_leader2_initials', 'about_leader2_bio',
+        'about_leader3_name', 'about_leader3_role', 'about_leader3_initials', 'about_leader3_bio',
+        'about_leader4_name', 'about_leader4_role', 'about_leader4_initials', 'about_leader4_bio',
     ];
 
     $updates = [];
@@ -48,6 +76,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if (isset($_POST[$f])) {
             $updates[$f] = trim($_POST[$f]);
         }
+    }
+
+    // Process dynamic Stakeholder Capability Matrix rows
+    if (isset($_POST['matrix_rows']) && is_array($_POST['matrix_rows'])) {
+        $cleanMatrixRows = [];
+        foreach ($_POST['matrix_rows'] as $r) {
+            $title = trim($r['title'] ?? '');
+            if ($title === '') continue;
+            $cleanMatrixRows[] = [
+                'title'      => $title,
+                'icon'       => trim($r['icon'] ?? 'fa-solid fa-cube text-agro-600'),
+                'col1'       => trim($r['col1'] ?? ''),
+                'col1_check' => !empty($r['col1_check']) ? 1 : 0,
+                'col2'       => trim($r['col2'] ?? ''),
+                'col2_check' => !empty($r['col2_check']) ? 1 : 0,
+                'col3'       => trim($r['col3'] ?? ''),
+                'col3_check' => !empty($r['col3_check']) ? 1 : 0,
+                'col4'       => trim($r['col4'] ?? ''),
+                'col4_check' => !empty($r['col4_check']) ? 1 : 0,
+            ];
+        }
+        $updates['offerings_matrix_json'] = json_encode($cleanMatrixRows, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     if (updateSiteSettings($updates)) {
@@ -72,6 +122,9 @@ renderAdminHeader('content', 'Website Content CMS', 'Content CMS');
             <p class="text-xs text-slate-500 mt-0.5">Edit live hero banners, curriculum schedules, FAQs, and capability statistics across all public pages.</p>
         </div>
         <div class="flex items-center space-x-2">
+            <a href="../about.php" target="_blank" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition">
+                About Us
+            </a>
             <a href="../programs.php" target="_blank" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition">
                 Programs
             </a>
@@ -113,6 +166,9 @@ renderAdminHeader('content', 'Website Content CMS', 'Content CMS');
     <div class="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-200 pb-3 text-xs">
         <button type="button" data-tab-target="tab-home" class="cms-tab-btn px-4 py-2 rounded-lg font-bold border transition <?= $activeTab === 'home' ? 'bg-emerald-700 text-white border-emerald-700 shadow-sm' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' ?>">
             <i class="fa-solid fa-house mr-1.5"></i> Homepage & Contact
+        </button>
+        <button type="button" data-tab-target="tab-about" class="cms-tab-btn px-4 py-2 rounded-lg font-bold border transition <?= $activeTab === 'about' ? 'bg-emerald-700 text-white border-emerald-700 shadow-sm' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' ?>">
+            <i class="fa-solid fa-compass mr-1.5"></i> About Us Page
         </button>
         <button type="button" data-tab-target="tab-programs" class="cms-tab-btn px-4 py-2 rounded-lg font-bold border transition <?= $activeTab === 'programs' ? 'bg-emerald-700 text-white border-emerald-700 shadow-sm' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' ?>">
             <i class="fa-solid fa-rocket mr-1.5"></i> Programs Page (Curriculum & FAQs)
@@ -464,6 +520,169 @@ renderAdminHeader('content', 'Website Content CMS', 'Content CMS');
                 </div>
             </div>
 
+            <!-- 3. Stakeholder Capability Matrix Section -->
+            <div id="matrix-cms" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-table-list"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Stakeholder Capability Matrix</h2>
+                            <p class="text-[11px] text-slate-500">Maintain the cross-stage resource matrix table displayed on offerings.php.</p>
+                        </div>
+                    </div>
+                    <a href="../offerings.php#matrix" target="_blank" class="inline-flex items-center text-xs font-semibold text-emerald-700 hover:text-emerald-900">
+                        <i class="fa-solid fa-arrow-up-right-from-square mr-1 text-[11px]"></i> Preview Matrix on Live Page
+                    </a>
+                </div>
+
+                <!-- Section Header Settings -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Section Badge Tag</label>
+                        <input type="text" name="offerings_matrix_badge" value="<?= htmlspecialchars($settings['offerings_matrix_badge'] ?? 'Tailored For Every Stage') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Section Main Headline</label>
+                        <input type="text" name="offerings_matrix_title" value="<?= htmlspecialchars($settings['offerings_matrix_title'] ?? 'Stakeholder Capability Matrix') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Subtitle Description</label>
+                        <input type="text" name="offerings_matrix_subtitle" value="<?= htmlspecialchars($settings['offerings_matrix_subtitle'] ?? 'How founders, research spin-offs, corporate partners, and institutional investors engage with NextGen Farming Hub’s core infrastructure.') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700">
+                    </div>
+                </div>
+
+                <!-- Column Headers Configuration -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider">Matrix Column Headers</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                        <div>
+                            <span class="block text-[11px] font-semibold text-slate-500 mb-1">Column 1 (Capabilities)</span>
+                            <input type="text" name="offerings_matrix_col0" value="<?= htmlspecialchars($settings['offerings_matrix_col0'] ?? 'Capabilities & Resources') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-slate-900">
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-semibold text-emerald-600 mb-1">Column 2 (Pre-Seed)</span>
+                            <input type="text" name="offerings_matrix_col1" value="<?= htmlspecialchars($settings['offerings_matrix_col1'] ?? 'Pre-Seed Startups') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-slate-900">
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-semibold text-amber-600 mb-1">Column 3 (Growth)</span>
+                            <input type="text" name="offerings_matrix_col2" value="<?= htmlspecialchars($settings['offerings_matrix_col2'] ?? 'Scaling Growth Ventures') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-slate-900">
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-semibold text-sky-600 mb-1">Column 4 (Academic)</span>
+                            <input type="text" name="offerings_matrix_col3" value="<?= htmlspecialchars($settings['offerings_matrix_col3'] ?? 'Academic / Science Spin-offs') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-slate-900">
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-semibold text-slate-600 mb-1">Column 5 (Corporate)</span>
+                            <input type="text" name="offerings_matrix_col4" value="<?= htmlspecialchars($settings['offerings_matrix_col4'] ?? 'Corporate Agribusiness') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-slate-900">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Matrix Rows Container -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider">Matrix Rows & Capability Allocations</label>
+                        <button type="button" id="add-matrix-row-btn" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300 transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Matrix Row
+                        </button>
+                    </div>
+
+                    <div id="matrix-rows-list" class="space-y-4">
+                        <?php 
+                        $curMatrixRows = getOfferingsMatrixRows();
+                        foreach ($curMatrixRows as $idx => $mRow): 
+                        ?>
+                        <div class="matrix-row-item p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                                <span class="text-xs font-bold text-slate-800 flex items-center">
+                                    <i class="fa-solid fa-grip-lines text-slate-400 mr-2 cursor-grab"></i>
+                                    Row #<span class="matrix-row-num"><?= $idx + 1 ?></span>
+                                </span>
+                                <button type="button" class="remove-matrix-row-btn text-xs text-red-600 hover:text-red-800 font-semibold flex items-center">
+                                    <i class="fa-solid fa-trash-can mr-1"></i> Remove
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="sm:col-span-2">
+                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Capability / Resource Title</label>
+                                    <input type="text" name="matrix_rows[<?= $idx ?>][title]" value="<?= htmlspecialchars($mRow['title'] ?? '') ?>" placeholder="e.g. Farmland Living Labs Access" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">FontAwesome Icon Class</label>
+                                    <input type="text" name="matrix_rows[<?= $idx ?>][icon]" value="<?= htmlspecialchars($mRow['icon'] ?? 'fa-solid fa-cube text-agro-600') ?>" placeholder="fa-solid fa-tractor text-agro-600" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-mono text-slate-700">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
+                                <div class="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                                    <label class="block text-[11px] font-semibold text-emerald-700">Col 1 Value (Pre-Seed)</label>
+                                    <input type="text" name="matrix_rows[<?= $idx ?>][col1]" value="<?= htmlspecialchars($mRow['col1'] ?? '') ?>" placeholder="Up to 5 Acres" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                                    <label class="inline-flex items-center text-[10px] text-slate-600 font-medium cursor-pointer">
+                                        <input type="checkbox" name="matrix_rows[<?= $idx ?>][col1_check]" value="1" <?= !empty($mRow['col1_check']) ? 'checked' : '' ?> class="mr-1.5 rounded text-emerald-600 focus:ring-0">
+                                        Green Check & Bold
+                                    </label>
+                                </div>
+
+                                <div class="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                                    <label class="block text-[11px] font-semibold text-amber-700">Col 2 Value (Scaling)</label>
+                                    <input type="text" name="matrix_rows[<?= $idx ?>][col2]" value="<?= htmlspecialchars($mRow['col2'] ?? '') ?>" placeholder="25+ Commercial Acres" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                                    <label class="inline-flex items-center text-[10px] text-slate-600 font-medium cursor-pointer">
+                                        <input type="checkbox" name="matrix_rows[<?= $idx ?>][col2_check]" value="1" <?= !empty($mRow['col2_check']) ? 'checked' : '' ?> class="mr-1.5 rounded text-emerald-600 focus:ring-0">
+                                        Green Check & Bold
+                                    </label>
+                                </div>
+
+                                <div class="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                                    <label class="block text-[11px] font-semibold text-sky-700">Col 3 Value (Academic)</label>
+                                    <input type="text" name="matrix_rows[<?= $idx ?>][col3]" value="<?= htmlspecialchars($mRow['col3'] ?? '') ?>" placeholder="Dedicated Trial Plots" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                                    <label class="inline-flex items-center text-[10px] text-slate-600 font-medium cursor-pointer">
+                                        <input type="checkbox" name="matrix_rows[<?= $idx ?>][col3_check]" value="1" <?= !empty($mRow['col3_check']) ? 'checked' : '' ?> class="mr-1.5 rounded text-emerald-600 focus:ring-0">
+                                        Green Check & Bold
+                                    </label>
+                                </div>
+
+                                <div class="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                                    <label class="block text-[11px] font-semibold text-slate-700">Col 4 Value (Corporate)</label>
+                                    <input type="text" name="matrix_rows[<?= $idx ?>][col4]" value="<?= htmlspecialchars($mRow['col4'] ?? '') ?>" placeholder="Bespoke Contract Plots" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                                    <label class="inline-flex items-center text-[10px] text-slate-600 font-medium cursor-pointer">
+                                        <input type="checkbox" name="matrix_rows[<?= $idx ?>][col4_check]" value="1" <?= !empty($mRow['col4_check']) ? 'checked' : '' ?> class="mr-1.5 rounded text-emerald-600 focus:ring-0">
+                                        Green Check & Bold
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Offerings & Infrastructure FAQs -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
+                    <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-circle-question"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Offerings & Infrastructure FAQs</h2>
+                        <p class="text-[11px] text-slate-500">Displayed in the FAQ section at the bottom of offerings.php.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <?php for ($f = 1; $f <= 3; $f++): ?>
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                            <span class="text-xs font-bold text-slate-800">Offerings FAQ #<?= $f ?></span>
+                            <input type="text" name="offering_faq<?= $f ?>_q" value="<?= htmlspecialchars($settings["offering_faq{$f}_q"] ?? '') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                            <label class="block text-[11px] font-semibold text-slate-600">Answer Explanation</label>
+                            <textarea name="offering_faq<?= $f ?>_a" rows="3" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700 leading-relaxed"><?= htmlspecialchars($settings["offering_faq{$f}_a"] ?? '') ?></textarea>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            </div>
+
         </div>
 
         <!-- ======================================================== -->
@@ -552,6 +771,244 @@ renderAdminHeader('content', 'Website Content CMS', 'Content CMS');
 
         </div>
 
+        <!-- ======================================================== -->
+        <!-- TAB 5: ABOUT US PAGE -->
+        <!-- ======================================================== -->
+        <div id="tab-about" class="cms-tab-pane <?= $activeTab === 'about' ? '' : 'hidden' ?> space-y-6">
+            
+            <!-- 1. Hero Banner -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">About Us Page Hero Banner</h2>
+                        <p class="text-[11px] text-slate-500">Banner displayed at the top of about.php.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Badge Tag</label>
+                        <input type="text" name="about_hero_badge" value="<?= htmlspecialchars($settings['about_hero_badge'] ?? 'Our Mission & Purpose') ?>" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-emerald-600">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Main Headline Part 1</label>
+                            <input type="text" name="about_hero_title_main" value="<?= htmlspecialchars($settings['about_hero_title_main'] ?? 'Catalyzing Frontier AgriTech Across') ?>" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-emerald-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Headline Part 2 (Gradient Highlight)</label>
+                            <input type="text" name="about_hero_title_highlight" value="<?= htmlspecialchars($settings['about_hero_title_highlight'] ?? 'Bangladesh & Emerging Markets') ?>" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-emerald-600">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Hero Subtext Description</label>
+                        <textarea name="about_hero_desc" rows="3" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-emerald-600 leading-relaxed"><?= htmlspecialchars($settings['about_hero_desc'] ?? '') ?></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. The Emerging Market Context Section -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
+                    <div class="w-8 h-8 rounded-lg bg-agro-50 text-agro-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-earth-asia"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Market Context & Agricultural Sandbox</h2>
+                        <p class="text-[11px] text-slate-500">The deltaic promise description and core agricultural bottlenecks we solve.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Context Badge</label>
+                            <input type="text" name="about_context_badge" value="<?= htmlspecialchars($settings['about_context_badge'] ?? 'The Problem & The Deltaic Promise') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Main Heading</label>
+                            <input type="text" name="about_context_title" value="<?= htmlspecialchars($settings['about_context_title'] ?? 'Why Bangladesh is the World’s Most Vital Agricultural Sandbox') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Narrative Paragraph 1</label>
+                        <textarea name="about_context_p1" rows="2" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700"><?= htmlspecialchars($settings['about_context_p1'] ?? '') ?></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Narrative Paragraph 2</label>
+                        <textarea name="about_context_p2" rows="2" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700"><?= htmlspecialchars($settings['about_context_p2'] ?? '') ?></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">4 Key Bottlenecks We Solve</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <?php for ($b = 1; $b <= 4; $b++): ?>
+                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                                <span class="text-[11px] font-bold text-slate-800">Bottleneck #<?= $b ?></span>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="col-span-2">
+                                        <input type="text" name="about_bottle<?= $b ?>_title" value="<?= htmlspecialchars($settings["about_bottle{$b}_title"] ?? '') ?>" placeholder="Title" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                                    </div>
+                                    <div>
+                                        <input type="text" name="about_bottle<?= $b ?>_icon" value="<?= htmlspecialchars($settings["about_bottle{$b}_icon"] ?? 'fa-circle') ?>" placeholder="FontAwesome" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-700">
+                                    </div>
+                                </div>
+                                <textarea name="about_bottle<?= $b ?>_desc" rows="2" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-[11px] text-slate-700"><?= htmlspecialchars($settings["about_bottle{$b}_desc"] ?? '') ?></textarea>
+                            </div>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. The NextGen Incubation Flywheel -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-arrows-spin"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">The NextGen Incubation Flywheel</h2>
+                        <p class="text-[11px] text-slate-500">The 4-stage operating architecture card on about.php.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Flywheel Badge</label>
+                            <input type="text" name="about_flywheel_badge" value="<?= htmlspecialchars($settings['about_flywheel_badge'] ?? 'Our Operating Architecture') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Flywheel Title</label>
+                            <input type="text" name="about_flywheel_title" value="<?= htmlspecialchars($settings['about_flywheel_title'] ?? 'The NextGen Incubation Flywheel') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <?php for ($fw = 1; $fw <= 4; $fw++): ?>
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                            <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded inline-block">Flywheel Stage <?= $fw ?></span>
+                            <input type="text" name="about_flywheel<?= $fw ?>_title" value="<?= htmlspecialchars($settings["about_flywheel{$fw}_title"] ?? '') ?>" placeholder="Stage Title" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                            <textarea name="about_flywheel<?= $fw ?>_desc" rows="2" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700"><?= htmlspecialchars($settings["about_flywheel{$fw}_desc"] ?? '') ?></textarea>
+                        </div>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Four Strategic Pillars -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
+                    <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-shapes"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Four Strategic Pillars</h2>
+                        <p class="text-[11px] text-slate-500">Core foundations that engineer agricultural transformation.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Pillars Badge</label>
+                            <input type="text" name="about_pillars_badge" value="<?= htmlspecialchars($settings['about_pillars_badge'] ?? 'Core Foundations') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Headline</label>
+                            <input type="text" name="about_pillars_title" value="<?= htmlspecialchars($settings['about_pillars_title'] ?? 'Our Four Strategic Pillars') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Subtitle</label>
+                            <input type="text" name="about_pillars_subtitle" value="<?= htmlspecialchars($settings['about_pillars_subtitle'] ?? 'How we engineer lasting agricultural transformation through discipline and science.') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <?php for ($p = 1; $p <= 4; $p++): ?>
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                            <span class="text-xs font-bold text-slate-800">Pillar #<?= $p ?></span>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="col-span-2">
+                                    <input type="text" name="about_pillar<?= $p ?>_title" value="<?= htmlspecialchars($settings["about_pillar{$p}_title"] ?? '') ?>" placeholder="Title" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                                </div>
+                                <div>
+                                    <input type="text" name="about_pillar<?= $p ?>_icon" value="<?= htmlspecialchars($settings["about_pillar{$p}_icon"] ?? 'fa-cube') ?>" placeholder="FontAwesome Icon" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-mono text-slate-700">
+                                </div>
+                            </div>
+                            <textarea name="about_pillar<?= $p ?>_desc" rows="2" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700"><?= htmlspecialchars($settings["about_pillar{$p}_desc"] ?? '') ?></textarea>
+                        </div>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Leadership & Advisory Board -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
+                    <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Leadership & Advisory Board</h2>
+                        <p class="text-[11px] text-slate-500">Governance, executive directors, scientists, and advisors on about.php.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Section Badge</label>
+                            <input type="text" name="about_team_badge" value="<?= htmlspecialchars($settings['about_team_badge'] ?? 'Governance & Operators') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Section Headline</label>
+                            <input type="text" name="about_team_title" value="<?= htmlspecialchars($settings['about_team_title'] ?? 'Leadership & Advisory Board') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Subtitle</label>
+                            <input type="text" name="about_team_subtitle" value="<?= htmlspecialchars($settings['about_team_subtitle'] ?? 'Combining decades of venture capital, ag-science, and rural market scaling.') ?>" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <?php for ($l = 1; $l <= 4; $l++): ?>
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                            <span class="text-xs font-bold text-slate-800">Leader / Advisor #<?= $l ?></span>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="col-span-2">
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Full Name</label>
+                                    <input type="text" name="about_leader<?= $l ?>_name" value="<?= htmlspecialchars($settings["about_leader{$l}_name"] ?? '') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Initials</label>
+                                    <input type="text" name="about_leader<?= $l ?>_initials" value="<?= htmlspecialchars($settings["about_leader{$l}_initials"] ?? '') ?>" placeholder="RA" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-center text-slate-900">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Role / Designation</label>
+                                <input type="text" name="about_leader<?= $l ?>_role" value="<?= htmlspecialchars($settings["about_leader{$l}_role"] ?? '') ?>" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-semibold text-agro-700">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Bio / Track Record</label>
+                                <textarea name="about_leader<?= $l ?>_bio" rows="2" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700"><?= htmlspecialchars($settings["about_leader{$l}_bio"] ?? '') ?></textarea>
+                            </div>
+                        </div>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
         <!-- Sticky Submit Button Bar -->
         <div class="sticky bottom-4 z-20 bg-white/95 backdrop-blur-md p-4 rounded-xl border border-slate-300 shadow-lg flex items-center justify-between">
             <span class="text-xs text-slate-500">
@@ -607,6 +1064,91 @@ document.addEventListener('DOMContentLoaded', function() {
             if (box) box.style.display = 'none';
         });
     });
+
+    // Dynamic Matrix Rows Add & Remove
+    const matrixList = document.getElementById('matrix-rows-list');
+    const addMatrixRowBtn = document.getElementById('add-matrix-row-btn');
+
+    if (addMatrixRowBtn && matrixList) {
+        addMatrixRowBtn.addEventListener('click', function() {
+            const rowCount = matrixList.querySelectorAll('.matrix-row-item').length;
+            const newIndex = Date.now();
+            const newRowNum = rowCount + 1;
+
+            const div = document.createElement('div');
+            div.className = 'matrix-row-item p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3';
+            div.innerHTML = `
+                <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                    <span class="text-xs font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-grip-lines text-slate-400 mr-2 cursor-grab"></i>
+                        Row #<span class="matrix-row-num">${newRowNum}</span>
+                    </span>
+                    <button type="button" class="remove-matrix-row-btn text-xs text-red-600 hover:text-red-800 font-semibold flex items-center">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Remove
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Capability / Resource Title</label>
+                        <input type="text" name="matrix_rows[${newIndex}][title]" value="" placeholder="e.g. Cold Chain Storage" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-bold text-slate-900">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">FontAwesome Icon Class</label>
+                        <input type="text" name="matrix_rows[${newIndex}][icon]" value="fa-solid fa-cube text-agro-600" placeholder="fa-solid fa-tractor text-agro-600" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs font-mono text-slate-700">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
+                    <div class="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                        <label class="block text-[11px] font-semibold text-emerald-700">Col 1 Value (Pre-Seed)</label>
+                        <input type="text" name="matrix_rows[${newIndex}][col1]" value="" placeholder="Feature details" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                        <label class="inline-flex items-center text-[10px] text-slate-600 font-medium cursor-pointer">
+                            <input type="checkbox" name="matrix_rows[${newIndex}][col1_check]" value="1" class="mr-1.5 rounded text-emerald-600 focus:ring-0">
+                            Green Check & Bold
+                        </label>
+                    </div>
+                    <div class="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                        <label class="block text-[11px] font-semibold text-amber-700">Col 2 Value (Scaling)</label>
+                        <input type="text" name="matrix_rows[${newIndex}][col2]" value="" placeholder="Feature details" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                        <label class="inline-flex items-center text-[10px] text-slate-600 font-medium cursor-pointer">
+                            <input type="checkbox" name="matrix_rows[${newIndex}][col2_check]" value="1" class="mr-1.5 rounded text-emerald-600 focus:ring-0">
+                            Green Check & Bold
+                        </label>
+                    </div>
+                    <div class="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                        <label class="block text-[11px] font-semibold text-sky-700">Col 3 Value (Academic)</label>
+                        <input type="text" name="matrix_rows[${newIndex}][col3]" value="" placeholder="Feature details" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                        <label class="inline-flex items-center text-[10px] text-slate-600 font-medium cursor-pointer">
+                            <input type="checkbox" name="matrix_rows[${newIndex}][col3_check]" value="1" class="mr-1.5 rounded text-emerald-600 focus:ring-0">
+                            Green Check & Bold
+                        </label>
+                    </div>
+                    <div class="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                        <label class="block text-[11px] font-semibold text-slate-700">Col 4 Value (Corporate)</label>
+                        <input type="text" name="matrix_rows[${newIndex}][col4]" value="" placeholder="Feature details" class="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-900">
+                        <label class="inline-flex items-center text-[10px] text-slate-600 font-medium cursor-pointer">
+                            <input type="checkbox" name="matrix_rows[${newIndex}][col4_check]" value="1" class="mr-1.5 rounded text-emerald-600 focus:ring-0">
+                            Green Check & Bold
+                        </label>
+                    </div>
+                </div>
+            `;
+            matrixList.appendChild(div);
+        });
+
+        matrixList.addEventListener('click', function(e) {
+            const btn = e.target.closest('.remove-matrix-row-btn');
+            if (btn) {
+                const item = btn.closest('.matrix-row-item');
+                if (item && confirm('Are you sure you want to remove this capability row from the matrix?')) {
+                    item.remove();
+                    matrixList.querySelectorAll('.matrix-row-item').forEach((row, i) => {
+                        const numSpan = row.querySelector('.matrix-row-num');
+                        if (numSpan) numSpan.textContent = i + 1;
+                    });
+                }
+            }
+        });
+    }
 });
 </script>
 
