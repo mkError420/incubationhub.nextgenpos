@@ -76,7 +76,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $errorMsg = $res['message'];
         }
     }
+    // 4. Update Site & Login Page Brand Logos
+    elseif ($_POST['action'] === 'update_logos') {
+        $currentSiteLogo  = getSiteSetting('site_logo', '');
+        $currentLoginLogo = getSiteSetting('login_logo', '');
+
+        $siteLogoVal  = $currentSiteLogo;
+        $loginLogoVal = $currentLoginLogo;
+
+        // --- Site Logo Processing ---
+        if (!empty($_POST['remove_site_logo'])) {
+            deleteOldLogoFile($currentSiteLogo);
+            $siteLogoVal = '';
+        } else {
+            if (isset($_FILES['site_logo_file']) && $_FILES['site_logo_file']['error'] === UPLOAD_ERR_OK) {
+                $uploadRes = processLogoUpload('site_logo_file', 'site_logo');
+                if ($uploadRes['success']) {
+                    deleteOldLogoFile($currentSiteLogo);
+                    $siteLogoVal = $uploadRes['path'];
+                } else {
+                    $errorMsg = 'Site logo upload error: ' . $uploadRes['error'];
+                }
+            } elseif (isset($_POST['site_logo_url']) && trim($_POST['site_logo_url']) !== '') {
+                $siteLogoVal = trim($_POST['site_logo_url']);
+            }
+        }
+
+        // --- Login Logo Processing ---
+        if (!empty($_POST['remove_login_logo'])) {
+            deleteOldLogoFile($currentLoginLogo);
+            $loginLogoVal = '';
+        } else {
+            if (!empty($_POST['sync_login_logo'])) {
+                if ($currentLoginLogo !== $currentSiteLogo && !empty($currentLoginLogo)) {
+                    deleteOldLogoFile($currentLoginLogo);
+                }
+                $loginLogoVal = $siteLogoVal;
+            } elseif (isset($_FILES['login_logo_file']) && $_FILES['login_logo_file']['error'] === UPLOAD_ERR_OK) {
+                $uploadRes = processLogoUpload('login_logo_file', 'login_logo');
+                if ($uploadRes['success']) {
+                    deleteOldLogoFile($currentLoginLogo);
+                    $loginLogoVal = $uploadRes['path'];
+                } else {
+                    $errorMsg = ($errorMsg ? $errorMsg . ' | ' : '') . 'Login logo upload error: ' . $uploadRes['error'];
+                }
+            } elseif (isset($_POST['login_logo_url']) && trim($_POST['login_logo_url']) !== '') {
+                $loginLogoVal = trim($_POST['login_logo_url']);
+            }
+        }
+
+        if (empty($errorMsg)) {
+            $ok1 = updateSiteSetting('site_logo', $siteLogoVal, 'branding');
+            $ok2 = updateSiteSetting('login_logo', $loginLogoVal, 'branding');
+            if ($ok1 && $ok2) {
+                $successMsg = 'Website logo and login page logo updated successfully!';
+            } else {
+                $errorMsg = 'Could not save logo settings. Please verify server permissions.';
+            }
+        }
+    }
 }
+
+// Fetch current logos
+$siteLogo = getSiteSetting('site_logo', '');
+$loginLogo = getSiteSetting('login_logo', '');
+$siteLogoUrl = !empty($siteLogo) ? getLogoUrl($siteLogo, true) : '';
+$loginLogoUrl = !empty($loginLogo) ? getLogoUrl($loginLogo, true) : '';
+$isSynced = (!empty($loginLogo) && $loginLogo === $siteLogo);
 
 // Fetch all registered admin users
 $allAdmins = getAllAdminUsers();
@@ -129,6 +195,197 @@ renderAdminHeader('settings', 'Admin Profile & System Settings', 'Settings & DB'
             <button type="button" class="alert-close-btn text-red-700 hover:text-red-950"><i class="fa-solid fa-xmark"></i></button>
         </div>
     <?php endif; ?>
+
+    <!-- 0. Dynamic Website & Login Page Brand Logos -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-base font-bold shadow-sm shrink-0">
+                    <i class="fa-solid fa-palette"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Dynamic Brand Logos Management</h2>
+                    <p class="text-[11px] text-slate-500">Maintain both public website logo (header navbar & footer) and the admin login console logo.</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold <?= !empty($siteLogo) ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600' ?>">
+                    <i class="fa-solid fa-circle-check mr-1.5 <?= !empty($siteLogo) ? 'text-emerald-500' : 'text-slate-400' ?>"></i>
+                    <?= !empty($siteLogo) ? 'Custom Site Logo Active' : 'Default Brand Mark Active' ?>
+                </span>
+            </div>
+        </div>
+
+        <form method="POST" action="settings.php" enctype="multipart/form-data" class="space-y-6">
+            <input type="hidden" name="action" value="update_logos">
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- CARD 1: Public Website Logo -->
+                <div class="border border-slate-200 rounded-xl p-5 bg-slate-50/50 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center">
+                                <i class="fa-solid fa-globe text-emerald-700 mr-1.5"></i>
+                                Main Website Logo
+                            </label>
+                            <span class="text-[10px] text-slate-400 font-medium">Header Navbar, Footer & Sidebar</span>
+                        </div>
+
+                        <!-- Preview Container with Light/Dark Mode Switch -->
+                        <div class="mb-3">
+                            <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1.5">
+                                <span class="font-semibold">Live Preview Box:</span>
+                                <div class="inline-flex rounded-md shadow-xs bg-slate-200 p-0.5" role="group">
+                                    <button type="button" id="site-logo-bg-light" class="px-2 py-0.5 text-[10px] font-bold rounded bg-white text-slate-800 shadow-xs transition">Navbar (Light)</button>
+                                    <button type="button" id="site-logo-bg-dark" class="px-2 py-0.5 text-[10px] font-bold rounded text-slate-600 hover:text-slate-900 transition">Footer (Dark)</button>
+                                </div>
+                            </div>
+
+                            <div id="site-logo-preview-box" class="h-28 rounded-lg border border-slate-200 bg-white flex flex-col items-center justify-center p-4 transition-colors duration-200 relative overflow-hidden group">
+                                <div id="site-logo-preview-wrap" class="max-h-full max-w-full flex items-center justify-center">
+                                    <?php if (!empty($siteLogoUrl)): ?>
+                                        <img id="site-logo-preview-img" src="<?= htmlspecialchars($siteLogoUrl) ?>" alt="Site Logo Preview" class="max-h-20 max-w-[240px] w-auto object-contain">
+                                        <div id="site-logo-fallback-brand" style="display: none;" class="items-center space-x-2">
+                                            <div class="w-10 h-10 rounded-lg bg-emerald-700 text-white flex items-center justify-center shadow-sm"><i class="fa-solid fa-leaf text-lg text-emerald-200"></i></div>
+                                            <div class="text-left">
+                                                <div class="font-extrabold text-sm text-slate-900 leading-tight brand-preview-text">NextGen <span class="text-emerald-700">Farming</span></div>
+                                                <span class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold block">Incubation Hub</span>
+                                            </div>
+                                        </div>
+                                    <?php else: ?>
+                                        <img id="site-logo-preview-img" src="" alt="Site Logo Preview" class="max-h-20 max-w-[240px] w-auto object-contain hidden">
+                                        <div id="site-logo-fallback-brand" class="flex items-center space-x-2">
+                                            <div class="w-10 h-10 rounded-lg bg-emerald-700 text-white flex items-center justify-center shadow-sm"><i class="fa-solid fa-leaf text-lg text-emerald-200"></i></div>
+                                            <div class="text-left">
+                                                <div class="font-extrabold text-sm text-slate-900 leading-tight brand-preview-text">NextGen <span class="text-emerald-700">Farming</span></div>
+                                                <span class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold block">Incubation Hub</span>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <span id="site-logo-state-badge" class="absolute bottom-1.5 right-2 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded <?= !empty($siteLogo) ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500' ?>">
+                                    <?= !empty($siteLogo) ? 'Active: ' . htmlspecialchars(basename($siteLogo)) : 'System Default Icon' ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Upload File Input -->
+                        <div class="space-y-1.5 text-xs">
+                            <label class="block font-semibold text-slate-700">Upload Logo Image File</label>
+                            <input type="file" name="site_logo_file" id="site_logo_file" accept=".png,.jpg,.jpeg,.webp,.svg,.gif" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 file:cursor-pointer border border-slate-300 rounded-lg bg-white cursor-pointer focus:outline-none">
+                            <span class="text-[10px] text-slate-400 block">Accepted: PNG, JPG, WEBP, SVG, GIF (Max 5MB). Transparent background recommended.</span>
+                        </div>
+
+                        <!-- Direct URL Input -->
+                        <div class="mt-3 text-xs">
+                            <label class="block font-semibold text-slate-700 mb-1">Or Logo Image URL / CDN Link</label>
+                            <input type="text" name="site_logo_url" id="site_logo_url" value="<?= htmlspecialchars($siteLogo) ?>" placeholder="e.g. assets/uploads/logos/brand.png or https://..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-xs focus:outline-none focus:border-emerald-600">
+                        </div>
+                    </div>
+
+                    <?php if (!empty($siteLogo)): ?>
+                        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+                            <label class="inline-flex items-center text-xs text-red-600 font-semibold cursor-pointer">
+                                <input type="checkbox" name="remove_site_logo" value="1" class="rounded border-red-300 text-red-600 focus:ring-red-500 mr-1.5">
+                                Remove Logo & Reset to Default
+                            </label>
+                            <a href="../<?= htmlspecialchars(ltrim($siteLogo, '/')) ?>" target="_blank" class="text-[11px] text-slate-500 hover:text-emerald-700 underline flex items-center">
+                                View File <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[9px]"></i>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- CARD 2: Admin Login Console Logo -->
+                <div class="border border-slate-700/80 rounded-xl p-5 bg-slate-900 text-white flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center">
+                                <i class="fa-solid fa-lock text-emerald-400 mr-1.5"></i>
+                                Admin Login Console Logo
+                            </label>
+                            <span class="text-[10px] text-slate-400 font-medium">admin/login.php</span>
+                        </div>
+
+                        <!-- Preview Container styled exactly like Login Card header -->
+                        <div class="mb-3">
+                            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1.5">
+                                <span class="font-semibold">Login Console Preview:</span>
+                                <span class="text-[10px] font-mono text-slate-400">Dark Console Theme</span>
+                            </div>
+
+                            <div id="login-logo-preview-box" class="h-28 rounded-lg border border-slate-700/80 bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+                                <div id="login-logo-preview-wrap" class="max-h-full max-w-full flex items-center justify-center">
+                                    <?php if (!empty($loginLogoUrl)): ?>
+                                        <img id="login-logo-preview-img" src="<?= htmlspecialchars($loginLogoUrl) ?>" alt="Login Logo Preview" class="max-h-20 max-w-[240px] w-auto object-contain">
+                                        <div id="login-logo-fallback-brand" style="display: none;" class="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md">
+                                            <i class="fa-solid fa-leaf text-xl text-emerald-100"></i>
+                                        </div>
+                                    <?php else: ?>
+                                        <img id="login-logo-preview-img" src="" alt="Login Logo Preview" class="max-h-20 max-w-[240px] w-auto object-contain hidden">
+                                        <div id="login-logo-fallback-brand" class="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md">
+                                            <i class="fa-solid fa-leaf text-xl text-emerald-100"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <span id="login-logo-state-badge" class="absolute bottom-1.5 right-2 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded <?= !empty($loginLogo) ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-slate-800 text-slate-400' ?>">
+                                    <?= !empty($loginLogo) ? ($isSynced ? 'Synced with Site Logo' : 'Active: ' . htmlspecialchars(basename($loginLogo))) : 'Default Emerald Icon' ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Sync Toggle Checkbox -->
+                        <div class="mb-3 p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60">
+                            <label class="flex items-center text-xs font-semibold text-slate-200 cursor-pointer">
+                                <input type="checkbox" name="sync_login_logo" id="sync_login_logo" value="1" <?= $isSynced ? 'checked' : '' ?> class="rounded border-slate-600 text-emerald-500 focus:ring-emerald-400 mr-2">
+                                <span>Use Main Site Logo for Login Page (Synchronize)</span>
+                            </label>
+                            <p class="text-[10px] text-slate-400 mt-1 pl-5">Automatically copies your main website logo to the login screen so you don't have to upload twice.</p>
+                        </div>
+
+                        <div id="login-logo-custom-inputs" class="space-y-3 <?= $isSynced ? 'opacity-50 pointer-events-none' : '' ?>">
+                            <!-- Upload File Input -->
+                            <div class="space-y-1.5 text-xs">
+                                <label class="block font-semibold text-slate-300">Upload Distinct Login Logo</label>
+                                <input type="file" name="login_logo_file" id="login_logo_file" accept=".png,.jpg,.jpeg,.webp,.svg,.gif" class="block w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-emerald-300 hover:file:bg-slate-700 file:cursor-pointer border border-slate-700 rounded-lg bg-slate-800/50 cursor-pointer focus:outline-none">
+                            </div>
+
+                            <!-- Direct URL Input -->
+                            <div class="text-xs">
+                                <label class="block font-semibold text-slate-300 mb-1">Or Login Logo URL / Path</label>
+                                <input type="text" name="login_logo_url" id="login_logo_url" value="<?= htmlspecialchars($loginLogo) ?>" placeholder="e.g. assets/uploads/logos/login_brand.png" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php if (!empty($loginLogo)): ?>
+                        <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+                            <label class="inline-flex items-center text-xs text-red-400 font-semibold cursor-pointer">
+                                <input type="checkbox" name="remove_login_logo" value="1" class="rounded border-red-500 text-red-500 focus:ring-red-400 mr-1.5">
+                                Reset Login Logo to Default
+                            </label>
+                            <a href="login.php" target="_blank" class="text-[11px] text-emerald-400 hover:text-emerald-300 underline flex items-center">
+                                Preview Login Page <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[9px]"></i>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+            </div>
+
+            <!-- Bottom Action Footer -->
+            <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="text-[11px] text-slate-500 flex items-center">
+                    <i class="fa-solid fa-circle-info text-emerald-600 mr-2 text-sm"></i>
+                    <span>Logos are saved with dual-persistence (MySQL Database + Fallback Cache) and update across all public pages immediately.</span>
+                </div>
+                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-emerald-700 to-agro-800 hover:from-emerald-800 hover:to-agro-900 text-white font-bold text-xs rounded-lg shadow-md hover:shadow-lg transition flex items-center justify-center">
+                    <i class="fa-solid fa-floppy-disk mr-2"></i> Save & Apply Brand Logos
+                </button>
+            </div>
+        </form>
+    </div>
 
     <!-- 1. Administrator Profile & Security Form (Self) -->
     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
@@ -477,6 +734,161 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // -------------------------------------------------------------
+    // Dynamic Brand Logos Live Preview & Interactions
+    // -------------------------------------------------------------
+    const siteFileInput     = document.getElementById('site_logo_file');
+    const sitePreviewImg    = document.getElementById('site-logo-preview-img');
+    const siteFallbackBrand = document.getElementById('site-logo-fallback-brand');
+    const siteStateBadge    = document.getElementById('site-logo-state-badge');
+    const siteUrlInput      = document.getElementById('site_logo_url');
+
+    if (siteFileInput) {
+        siteFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    if (sitePreviewImg) {
+                        sitePreviewImg.src = evt.target.result;
+                        sitePreviewImg.classList.remove('hidden');
+                        sitePreviewImg.style.display = 'block';
+                    }
+                    if (siteFallbackBrand) siteFallbackBrand.style.display = 'none';
+                    if (siteStateBadge) {
+                        siteStateBadge.textContent = 'Selected: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+                        siteStateBadge.className = 'absolute bottom-1.5 right-2 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300';
+                    }
+                    // If login logo is synced, also mirror to login preview
+                    const syncCheckbox = document.getElementById('sync_login_logo');
+                    const loginPreviewImg = document.getElementById('login-logo-preview-img');
+                    const loginFallbackBrand = document.getElementById('login-logo-fallback-brand');
+                    if (syncCheckbox && syncCheckbox.checked && loginPreviewImg) {
+                        loginPreviewImg.src = evt.target.result;
+                        loginPreviewImg.classList.remove('hidden');
+                        loginPreviewImg.style.display = 'block';
+                        if (loginFallbackBrand) loginFallbackBrand.style.display = 'none';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (siteUrlInput) {
+        siteUrlInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val && sitePreviewImg) {
+                sitePreviewImg.src = val;
+                sitePreviewImg.classList.remove('hidden');
+                sitePreviewImg.style.display = 'block';
+                if (siteFallbackBrand) siteFallbackBrand.style.display = 'none';
+                if (siteStateBadge) {
+                    siteStateBadge.textContent = 'URL Specified';
+                    siteStateBadge.className = 'absolute bottom-1.5 right-2 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-300';
+                }
+            }
+        });
+    }
+
+    // Light / Dark mode switcher for Site Logo Preview
+    const btnLight   = document.getElementById('site-logo-bg-light');
+    const btnDark    = document.getElementById('site-logo-bg-dark');
+    const previewBox = document.getElementById('site-logo-preview-box');
+
+    if (btnLight && btnDark && previewBox) {
+        btnLight.addEventListener('click', function() {
+            previewBox.classList.remove('bg-slate-900', 'border-slate-800');
+            previewBox.classList.add('bg-white', 'border-slate-200');
+            btnLight.classList.add('bg-white', 'text-slate-800', 'shadow-xs');
+            btnLight.classList.remove('text-slate-600');
+            btnDark.classList.remove('bg-slate-800', 'text-white', 'shadow-xs');
+            btnDark.classList.add('text-slate-600');
+            const brandTexts = previewBox.querySelectorAll('.brand-preview-text');
+            brandTexts.forEach(el => el.classList.remove('text-white'));
+        });
+        btnDark.addEventListener('click', function() {
+            previewBox.classList.remove('bg-white', 'border-slate-200');
+            previewBox.classList.add('bg-slate-900', 'border-slate-800');
+            btnDark.classList.add('bg-slate-800', 'text-white', 'shadow-xs');
+            btnDark.classList.remove('text-slate-600');
+            btnLight.classList.remove('bg-white', 'text-slate-800', 'shadow-xs');
+            btnLight.classList.add('text-slate-600');
+            const brandTexts = previewBox.querySelectorAll('.brand-preview-text');
+            brandTexts.forEach(el => el.classList.add('text-white'));
+        });
+    }
+
+    // Login Logo Sync toggle and file upload preview
+    const syncCheckbox      = document.getElementById('sync_login_logo');
+    const customLoginInputs = document.getElementById('login-logo-custom-inputs');
+    const loginPreviewImg   = document.getElementById('login-logo-preview-img');
+    const loginFallbackBrand= document.getElementById('login-logo-fallback-brand');
+    const loginStateBadge   = document.getElementById('login-logo-state-badge');
+    const loginFileInput    = document.getElementById('login_logo_file');
+    const loginUrlInput     = document.getElementById('login_logo_url');
+
+    if (syncCheckbox && customLoginInputs) {
+        syncCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                customLoginInputs.classList.add('opacity-50', 'pointer-events-none');
+                if (sitePreviewImg && sitePreviewImg.src && !sitePreviewImg.classList.contains('hidden') && sitePreviewImg.style.display !== 'none') {
+                    loginPreviewImg.src = sitePreviewImg.src;
+                    loginPreviewImg.classList.remove('hidden');
+                    loginPreviewImg.style.display = 'block';
+                    if (loginFallbackBrand) loginFallbackBrand.style.display = 'none';
+                }
+                if (loginStateBadge) {
+                    loginStateBadge.textContent = 'Synced with Site Logo';
+                    loginStateBadge.className = 'absolute bottom-1.5 right-2 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800';
+                }
+            } else {
+                customLoginInputs.classList.remove('opacity-50', 'pointer-events-none');
+                if (loginStateBadge) {
+                    loginStateBadge.textContent = 'Custom Login Logo Active';
+                }
+            }
+        });
+    }
+
+    if (loginFileInput) {
+        loginFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    if (loginPreviewImg) {
+                        loginPreviewImg.src = evt.target.result;
+                        loginPreviewImg.classList.remove('hidden');
+                        loginPreviewImg.style.display = 'block';
+                    }
+                    if (loginFallbackBrand) loginFallbackBrand.style.display = 'none';
+                    if (loginStateBadge) {
+                        loginStateBadge.textContent = 'Selected: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+                        loginStateBadge.className = 'absolute bottom-1.5 right-2 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (loginUrlInput) {
+        loginUrlInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val && loginPreviewImg) {
+                loginPreviewImg.src = val;
+                loginPreviewImg.classList.remove('hidden');
+                loginPreviewImg.style.display = 'block';
+                if (loginFallbackBrand) loginFallbackBrand.style.display = 'none';
+                if (loginStateBadge) {
+                    loginStateBadge.textContent = 'URL Specified';
+                    loginStateBadge.className = 'absolute bottom-1.5 right-2 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800';
+                }
+            }
+        });
+    }
 });
 </script>
 

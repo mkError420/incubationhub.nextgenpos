@@ -158,6 +158,8 @@ ON DUPLICATE KEY UPDATE `username` = `username`;
 -- Dynamic Content Settings
 INSERT INTO `site_settings` (`setting_key`, `setting_value`, `setting_group`, `label`, `field_type`) VALUES
 ('site_name', 'NextGen Farming Incubation Hub', 'general', 'Website Title', 'text'),
+('site_logo', '', 'branding', 'Website & Navbar Logo', 'text'),
+('login_logo', '', 'branding', 'Admin Login Console Logo', 'text'),
 ('hero_tagline', 'AgriTech Innovation & Venture Studio', 'hero', 'Hero Tagline Badge', 'text'),
 ('hero_title_main', 'NextGen Farming', 'hero', 'Hero Title Line 1', 'text'),
 ('hero_title_highlight', 'Incubation Hub', 'hero', 'Hero Title Highlighted', 'text'),

@@ -1072,16 +1072,22 @@ function getDefaultSiteSettings() {
         'about_leader4_initials'     => 'AL',
         'about_leader4_bio'          => 'Wageningen Agri-Advisory; leading Dutch-Bangladesh sustainable greenhouse initiatives.',
         'about_advisors_json'        => '',
+        'site_logo'                  => '',
+        'login_logo'                 => '',
     ];
 }
 
 /**
  * Fetch all site settings as associative array [key => value]
  * 
+ * @param bool $forceRefresh
  * @return array
  */
-function getAllSiteSettings() {
+function getAllSiteSettings($forceRefresh = false) {
     static $cachedSettings = null;
+    if ($forceRefresh) {
+        $cachedSettings = null;
+    }
     if ($cachedSettings !== null) {
         return $cachedSettings;
     }
@@ -1136,6 +1142,120 @@ function getSiteSetting($key, $default = null) {
 }
 
 /**
+ * Resolve a logo or media path to a correct relative or absolute URL
+ *
+ * @param string|null $path
+ * @param bool $fromAdmin Whether the caller is located inside /admin/
+ * @return string
+ */
+function getLogoUrl($path = null, $fromAdmin = false) {
+    if (empty($path)) {
+        return '';
+    }
+    $path = trim($path);
+    // If external URL or data URI, return as-is
+    if (preg_match('#^(https?:)?//#i', $path) || str_starts_with($path, 'data:')) {
+        return $path;
+    }
+    // Clean leading slashes
+    $cleanPath = ltrim($path, '/\\');
+    
+    // If called from admin area (e.g. admin/login.php, admin/settings.php)
+    if ($fromAdmin) {
+        if (str_starts_with($cleanPath, '../')) {
+            return $cleanPath;
+        }
+        return '../' . $cleanPath;
+    } else {
+        // Called from root (e.g. index.php, includes/header.php)
+        if (str_starts_with($cleanPath, '../')) {
+            return preg_replace('#^\.\./#', '', $cleanPath);
+        }
+        return $cleanPath;
+    }
+}
+
+/**
+ * Safely delete an uploaded logo file from assets/uploads/logos/
+ *
+ * @param string|null $path
+ * @return bool
+ */
+function deleteOldLogoFile($path) {
+    if (empty($path)) {
+        return false;
+    }
+    $clean = ltrim($path, '/\\');
+    $clean = preg_replace('#^\.\./#', '', $clean);
+    if (strpos($clean, 'assets/uploads/logos/') === 0 && !str_contains($clean, '..')) {
+        $fullPath = __DIR__ . '/../' . $clean;
+        if (file_exists($fullPath) && is_file($fullPath) && basename($fullPath) !== 'index.html') {
+            return @unlink($fullPath);
+        }
+    }
+    return false;
+}
+
+/**
+ * Handle image logo upload securely
+ *
+ * @param string $fileKey Key in $_FILES
+ * @param string $prefix Filename prefix ('site_logo' or 'login_logo')
+ * @return array ['success' => bool, 'path' => string, 'error' => string]
+ */
+function processLogoUpload($fileKey, $prefix = 'logo') {
+    if (!isset($_FILES[$fileKey]) || !is_array($_FILES[$fileKey])) {
+        return ['success' => false, 'path' => '', 'error' => 'No file received'];
+    }
+
+    $file = $_FILES[$fileKey];
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        $errorMap = [
+            UPLOAD_ERR_INI_SIZE   => 'Uploaded file exceeds server upload_max_filesize limit.',
+            UPLOAD_ERR_FORM_SIZE  => 'Uploaded file exceeds form MAX_FILE_SIZE limit.',
+            UPLOAD_ERR_PARTIAL    => 'File was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE    => 'No file was selected.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder on server.',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+            UPLOAD_ERR_EXTENSION  => 'A PHP extension stopped the file upload.',
+        ];
+        return ['success' => false, 'path' => '', 'error' => $errorMap[$file['error']] ?? ('Upload error code: ' . $file['error'])];
+    }
+
+    $allowedExts = ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif'];
+    $origName = $file['name'];
+    $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+
+    if (!in_array($ext, $allowedExts)) {
+        return ['success' => false, 'path' => '', 'error' => 'Invalid file format (.' . htmlspecialchars($ext) . '). Allowed: PNG, JPG, JPEG, WEBP, SVG, GIF.'];
+    }
+
+    // Limit size to 5MB
+    $maxBytes = 5 * 1024 * 1024;
+    if ($file['size'] > $maxBytes) {
+        return ['success' => false, 'path' => '', 'error' => 'File size exceeds 5MB limit. Please upload an optimized image.'];
+    }
+
+    $targetDir = __DIR__ . '/../assets/uploads/logos/';
+    if (!is_dir($targetDir)) {
+        @mkdir($targetDir, 0777, true);
+    }
+
+    $safeName = $prefix . '_' . time() . '_' . substr(md5(uniqid(mt_rand(), true)), 0, 8) . '.' . $ext;
+    $targetPath = $targetDir . $safeName;
+
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        return ['success' => false, 'path' => '', 'error' => 'Could not move uploaded file into destination directory.'];
+    }
+
+    return [
+        'success' => true,
+        'path'    => 'assets/uploads/logos/' . $safeName,
+        'error'   => ''
+    ];
+}
+
+/**
  * Update single site setting (Dual-Persistence: MySQL + Fallback JSON)
  * 
  * @param string $key
@@ -1175,6 +1295,9 @@ function updateSiteSetting($key, $value, $group = 'general') {
     }
     $current[$key] = (string)$value;
     $fileSaved = @file_put_contents($settingsFile, json_encode($current, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) !== false;
+
+    // Reset runtime cache
+    getAllSiteSettings(true);
 
     return ($dbSaved || $fileSaved);
 }

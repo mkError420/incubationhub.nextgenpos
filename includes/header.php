@@ -111,17 +111,38 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
             <div class="flex items-center justify-between">
                 
                 <!-- Logo & Brand Identity -->
+                <?php
+                $dynSiteLogo = getSiteSetting('site_logo', '');
+                $dynSiteLogoUrl = !empty($dynSiteLogo) ? getLogoUrl($dynSiteLogo, false) : '';
+                $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
+                ?>
                 <a href="index.php" class="flex items-center space-x-3 group">
-                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-agro-700 to-agro-900 flex items-center justify-center text-white shadow-md shadow-agro-800/20 group-hover:scale-105 transition duration-200">
-                        <i class="fa-solid fa-leaf text-xl text-emerald-300 group-hover:rotate-12 transition duration-300"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-1.5">
-                            <span class="text-xl font-extrabold tracking-tight text-agro-900">NextGen</span>
-                            <span class="text-xl font-bold tracking-tight text-agro-600">Farming</span>
+                    <?php if (!empty($dynSiteLogoUrl)): ?>
+                        <img src="<?= htmlspecialchars($dynSiteLogoUrl) ?>" alt="<?= htmlspecialchars($dynSiteName) ?>" class="h-10 sm:h-11 w-auto max-w-[220px] object-contain transition duration-200 group-hover:scale-[1.02]" onerror="this.style.display='none'; document.getElementById('default-nav-brand').style.display='flex';">
+                        <div id="default-nav-brand" style="display: none;" class="items-center space-x-3">
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-agro-700 to-agro-900 flex items-center justify-center text-white shadow-md shadow-agro-800/20 group-hover:scale-105 transition duration-200">
+                                <i class="fa-solid fa-leaf text-xl text-emerald-300 group-hover:rotate-12 transition duration-300"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center space-x-1.5">
+                                    <span class="text-xl font-extrabold tracking-tight text-agro-900">NextGen</span>
+                                    <span class="text-xl font-bold tracking-tight text-agro-600">Farming</span>
+                                </div>
+                                <span class="block text-[11px] font-semibold text-slate-500 uppercase tracking-widest -mt-1">Incubation Hub</span>
+                            </div>
                         </div>
-                        <span class="block text-[11px] font-semibold text-slate-500 uppercase tracking-widest -mt-1">Incubation Hub</span>
-                    </div>
+                    <?php else: ?>
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-agro-700 to-agro-900 flex items-center justify-center text-white shadow-md shadow-agro-800/20 group-hover:scale-105 transition duration-200">
+                            <i class="fa-solid fa-leaf text-xl text-emerald-300 group-hover:rotate-12 transition duration-300"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-1.5">
+                                <span class="text-xl font-extrabold tracking-tight text-agro-900">NextGen</span>
+                                <span class="text-xl font-bold tracking-tight text-agro-600">Farming</span>
+                            </div>
+                            <span class="block text-[11px] font-semibold text-slate-500 uppercase tracking-widest -mt-1">Incubation Hub</span>
+                        </div>
+                    <?php endif; ?>
                 </a>
 
                 <!-- Desktop Navigation Links -->

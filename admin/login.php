@@ -77,10 +77,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <!-- Brand Header -->
         <div class="text-center mb-6">
-            <div class="w-12 h-12 mx-auto rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md mb-3">
-                <i class="fa-solid fa-leaf text-xl text-emerald-100"></i>
-            </div>
-            <h1 class="text-xl font-bold text-white tracking-tight">NextGen Farming Incubation Hub</h1>
+            <?php
+            $dynLoginLogo = getSiteSetting('login_logo', '');
+            if (empty($dynLoginLogo)) {
+                $dynLoginLogo = getSiteSetting('site_logo', '');
+            }
+            $dynLoginLogoUrl = !empty($dynLoginLogo) ? getLogoUrl($dynLoginLogo, true) : '';
+            $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
+            ?>
+            <?php if (!empty($dynLoginLogoUrl)): ?>
+                <div class="mb-4 flex justify-center">
+                    <img src="<?= htmlspecialchars($dynLoginLogoUrl) ?>" alt="<?= htmlspecialchars($dynSiteName) ?>" class="max-h-16 max-w-[260px] w-auto object-contain rounded-xl p-2 bg-slate-800/80 border border-slate-700/60 shadow-lg" onerror="this.parentElement.style.display='none'; document.getElementById('default-login-brand').style.display='flex';">
+                </div>
+                <div id="default-login-brand" style="display: none;" class="w-12 h-12 mx-auto rounded-xl bg-emerald-600 items-center justify-center text-white shadow-md mb-3">
+                    <i class="fa-solid fa-leaf text-xl text-emerald-100"></i>
+                </div>
+            <?php else: ?>
+                <div class="w-12 h-12 mx-auto rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md mb-3">
+                    <i class="fa-solid fa-leaf text-xl text-emerald-100"></i>
+                </div>
+            <?php endif; ?>
+            <h1 class="text-xl font-bold text-white tracking-tight"><?= htmlspecialchars($dynSiteName) ?></h1>
             <p class="text-xs text-slate-400 mt-0.5 uppercase tracking-wider font-semibold">Admin Authentication Console</p>
         </div>
 

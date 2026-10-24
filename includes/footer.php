@@ -35,15 +35,35 @@
                 
                 <!-- Col 1: Brand & Mission (2 cols on lg) -->
                 <div class="lg:col-span-2 space-y-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-agro-600 to-agro-800 flex items-center justify-center text-white shadow-md">
-                            <i class="fa-solid fa-leaf text-lg text-emerald-300"></i>
+                    <?php
+                    $dynFooterLogo = getSiteSetting('site_logo', '');
+                    $dynFooterLogoUrl = !empty($dynFooterLogo) ? getLogoUrl($dynFooterLogo, false) : '';
+                    $dynFooterSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
+                    ?>
+                    <?php if (!empty($dynFooterLogoUrl)): ?>
+                        <a href="index.php" class="inline-block group">
+                            <img src="<?= htmlspecialchars($dynFooterLogoUrl) ?>" alt="<?= htmlspecialchars($dynFooterSiteName) ?>" class="h-10 sm:h-11 w-auto max-w-[200px] object-contain rounded p-1 bg-white/10 backdrop-blur-sm group-hover:opacity-90 transition" onerror="this.style.display='none'; document.getElementById('default-footer-brand').style.display='flex';">
+                            <div id="default-footer-brand" style="display: none;" class="items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-agro-600 to-agro-800 flex items-center justify-center text-white shadow-md">
+                                    <i class="fa-solid fa-leaf text-lg text-emerald-300"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xl font-bold tracking-tight text-white">NextGen <span class="text-emerald-400">Farming</span></span>
+                                    <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest -mt-1">Incubation Hub</span>
+                                </div>
+                            </div>
+                        </a>
+                    <?php else: ?>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-agro-600 to-agro-800 flex items-center justify-center text-white shadow-md">
+                                <i class="fa-solid fa-leaf text-lg text-emerald-300"></i>
+                            </div>
+                            <div>
+                                <span class="text-xl font-bold tracking-tight text-white">NextGen <span class="text-emerald-400">Farming</span></span>
+                                <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest -mt-1">Incubation Hub</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xl font-bold tracking-tight text-white">NextGen <span class="text-emerald-400">Farming</span></span>
-                            <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest -mt-1">Incubation Hub</span>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                     <p class="text-sm text-slate-400 leading-relaxed max-w-sm">
                         Connecting Entrepreneur Ecosystem builders in Bangladesh and Emerging Markets. Scaling AgriTech innovation, smart cold-chain infrastructure, and rural climate resilience.
                     </p>

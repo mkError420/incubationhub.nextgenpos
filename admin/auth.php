@@ -135,14 +135,31 @@ function renderAdminHeader($activePage = 'dashboard', $pageTitle = 'Dashboard Ov
                 
                 <!-- Brand Header -->
                 <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800 bg-slate-950/80">
-                    <a href="index.php" class="flex items-center space-x-3">
-                        <div class="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow">
-                            <i class="fa-solid fa-leaf text-base"></i>
-                        </div>
-                        <div>
-                            <span class="text-base font-extrabold text-white tracking-tight leading-none block">NextGen <span class="text-emerald-400">Hub</span></span>
-                            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block mt-0.5">Admin Dashboard</span>
-                        </div>
+                    <?php
+                    $dynAdminSidebarLogo = getSiteSetting('site_logo', '');
+                    $dynAdminSidebarLogoUrl = !empty($dynAdminSidebarLogo) ? getLogoUrl($dynAdminSidebarLogo, true) : '';
+                    ?>
+                    <a href="index.php" class="flex items-center space-x-3 overflow-hidden">
+                        <?php if (!empty($dynAdminSidebarLogoUrl)): ?>
+                            <img src="<?= htmlspecialchars($dynAdminSidebarLogoUrl) ?>" alt="NextGen Hub" class="max-h-9 max-w-[170px] w-auto object-contain rounded" onerror="this.style.display='none'; document.getElementById('default-admin-sidebar-brand').style.display='flex';">
+                            <div id="default-admin-sidebar-brand" style="display: none;" class="items-center space-x-3">
+                                <div class="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow shrink-0">
+                                    <i class="fa-solid fa-leaf text-base"></i>
+                                </div>
+                                <div class="truncate">
+                                    <span class="text-base font-extrabold text-white tracking-tight leading-none block">NextGen <span class="text-emerald-400">Hub</span></span>
+                                    <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block mt-0.5">Admin Dashboard</span>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow shrink-0">
+                                <i class="fa-solid fa-leaf text-base"></i>
+                            </div>
+                            <div class="truncate">
+                                <span class="text-base font-extrabold text-white tracking-tight leading-none block">NextGen <span class="text-emerald-400">Hub</span></span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block mt-0.5">Admin Dashboard</span>
+                            </div>
+                        <?php endif; ?>
                     </a>
                     <button id="sidebar-close-btn" class="md:hidden text-slate-400 hover:text-white p-1">
                         <i class="fa-solid fa-xmark text-lg"></i>

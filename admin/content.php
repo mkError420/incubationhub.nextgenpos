@@ -12,6 +12,8 @@ $errorMsg = '';
 // Handle form submission to update settings
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save_content') {
     $allowedFields = [
+        // Brand & Identity
+        'site_name', 'site_logo', 'login_logo',
         // Home & Announcement
         'hero_tagline', 'hero_title_main', 'hero_title_highlight', 'hero_subtitle', 'hero_description',
         'hero_banner_text', 'hero_banner_badge', 'hero_banner_link',
@@ -274,6 +276,29 @@ renderAdminHeader('content', 'Website Content CMS', 'Content CMS');
         <!-- ======================================================== -->
         <div id="tab-home" class="cms-tab-pane <?= $activeTab === 'home' ? '' : 'hidden' ?> space-y-6">
             
+            <!-- Brand & Logos Quick Management Banner -->
+            <div class="bg-gradient-to-r from-emerald-950 via-agro-900 to-slate-900 p-4 sm:p-5 rounded-xl border border-emerald-800/80 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid fa-palette"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-300">Brand Logos & Identity Management</h3>
+                            <span class="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-900/80 text-emerald-200 border border-emerald-700/60">
+                                <?= !empty($settings['site_logo']) ? 'Custom Logo Live' : 'Default Brand' ?>
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-300 mt-0.5">Customize the dynamic logo displayed on the website header navbar, footer, admin sidebar, and login page.</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                    <a href="settings.php" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition flex items-center">
+                        <i class="fa-solid fa-gear mr-1.5"></i> Manage Logos in Settings &rarr;
+                    </a>
+                </div>
+            </div>
+
             <!-- 1. Top Announcement Strip -->
             <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
                 <div class="flex items-center space-x-2.5 pb-3 border-b border-slate-200">
