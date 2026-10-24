@@ -2846,6 +2846,7 @@ function ensureVisitorIdeasTable() {
                 $pdo->exec("ALTER TABLE `visitor_ideas` ADD COLUMN `category` VARCHAR(50) NOT NULL DEFAULT 'Entrepreneurs' AFTER `full_name`");
                 $pdo->exec("ALTER TABLE `visitor_ideas` ADD INDEX `idx_category` (`category`)");
             }
+            $pdo->exec("UPDATE `visitor_ideas` SET `category` = 'Entrepreneurs' WHERE `category` IS NULL OR `category` = ''");
         } catch (PDOException $eCol) {
             // Silently ignore if already exists
         }
@@ -2927,13 +2928,15 @@ function requireVisitorAccess() {
 function saveVisitorIdea(array $data, ?array $videoFile = null) {
     $fullName     = trim($data['full_name'] ?? '');
     $rawCategory  = trim($data['category'] ?? '');
-    $validCats    = ['Entrepreneurs', 'Investors', 'Mentors', 'Organizers'];
-    if ($rawCategory === 'Entrepreneur') $category = 'Entrepreneurs';
-    elseif ($rawCategory === 'Investor') $category = 'Investors';
-    elseif ($rawCategory === 'Mentor') $category = 'Mentors';
-    elseif ($rawCategory === 'Organizer' || $rawCategory === 'Support Organisation') $category = 'Organizers';
-    elseif (in_array($rawCategory, $validCats)) $category = $rawCategory;
-    else $category = 'Entrepreneurs';
+    if (strcasecmp($rawCategory, 'Investor') === 0 || strcasecmp($rawCategory, 'Investors') === 0) {
+        $category = 'Investors';
+    } elseif (strcasecmp($rawCategory, 'Mentor') === 0 || strcasecmp($rawCategory, 'Mentors') === 0) {
+        $category = 'Mentors';
+    } elseif (strcasecmp($rawCategory, 'Organizer') === 0 || strcasecmp($rawCategory, 'Organizers') === 0 || stripos($rawCategory, 'organis') !== false || stripos($rawCategory, 'organiz') !== false) {
+        $category = 'Organizers';
+    } else {
+        $category = 'Entrepreneurs';
+    }
 
     $email        = trim($data['email'] ?? '');
     $phone        = trim($data['phone'] ?? '');
@@ -3149,12 +3152,15 @@ function getVisitorIdeaCountsByCategory() {
             if ($stmt) {
                 while ($row = $stmt->fetch()) {
                     $cat = trim($row['category'] ?? '');
-                    if ($cat === 'Entrepreneur') $cat = 'Entrepreneurs';
-                    elseif ($cat === 'Investor') $cat = 'Investors';
-                    elseif ($cat === 'Mentor') $cat = 'Mentors';
-                    elseif ($cat === 'Organizer' || $cat === 'Support Organisation') $cat = 'Organizers';
-                    if (isset($counts[$cat])) {
-                        $counts[$cat] += (int)$row['cnt'];
+                    $cnt = (int)($row['cnt'] ?? 0);
+                    if (strcasecmp($cat, 'Investor') === 0 || strcasecmp($cat, 'Investors') === 0) {
+                        $counts['Investors'] += $cnt;
+                    } elseif (strcasecmp($cat, 'Mentor') === 0 || strcasecmp($cat, 'Mentors') === 0) {
+                        $counts['Mentors'] += $cnt;
+                    } elseif (strcasecmp($cat, 'Organizer') === 0 || strcasecmp($cat, 'Organizers') === 0 || stripos($cat, 'organis') !== false || stripos($cat, 'organiz') !== false) {
+                        $counts['Organizers'] += $cnt;
+                    } else {
+                        $counts['Entrepreneurs'] += $cnt;
                     }
                 }
                 return $counts;
@@ -3168,13 +3174,15 @@ function getVisitorIdeaCountsByCategory() {
     if (file_exists($fallbackFile)) {
         $ideas = json_decode(@file_get_contents($fallbackFile), true) ?: [];
         foreach ($ideas as $item) {
-            $cat = trim($item['category'] ?? 'Entrepreneurs');
-            if ($cat === 'Entrepreneur') $cat = 'Entrepreneurs';
-            elseif ($cat === 'Investor') $cat = 'Investors';
-            elseif ($cat === 'Mentor') $cat = 'Mentors';
-            elseif ($cat === 'Organizer' || $cat === 'Support Organisation') $cat = 'Organizers';
-            if (isset($counts[$cat])) {
-                $counts[$cat]++;
+            $cat = trim($item['category'] ?? '');
+            if (strcasecmp($cat, 'Investor') === 0 || strcasecmp($cat, 'Investors') === 0) {
+                $counts['Investors']++;
+            } elseif (strcasecmp($cat, 'Mentor') === 0 || strcasecmp($cat, 'Mentors') === 0) {
+                $counts['Mentors']++;
+            } elseif (strcasecmp($cat, 'Organizer') === 0 || strcasecmp($cat, 'Organizers') === 0 || stripos($cat, 'organis') !== false || stripos($cat, 'organiz') !== false) {
+                $counts['Organizers']++;
+            } else {
+                $counts['Entrepreneurs']++;
             }
         }
     }

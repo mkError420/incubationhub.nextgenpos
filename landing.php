@@ -338,17 +338,34 @@ $counterStats = getVisitorIdeaCountsByCategory();
                 </div>
 
                 <!-- Success Unlock Modal (Celebration state) -->
-                <div id="form-success-box" class="hidden text-center py-10 px-4">
-                    <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 flex items-center justify-center mx-auto mb-6 text-3xl animate-bounce">
+                <div id="form-success-box" class="hidden text-center py-8 px-4">
+                    <div class="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 flex items-center justify-center mx-auto mb-4 text-2xl animate-bounce">
                         <i class="fa-solid fa-check"></i>
                     </div>
                     <h3 class="text-2xl sm:text-3xl font-black text-white">Submission Successful!</h3>
                     <p class="text-slate-300 mt-2 max-w-md mx-auto text-sm">
                         Thank you! Your idea has been sent directly to the NextGen Farming Incubation Committee. Full website access is now unlocked.
                     </p>
+
+                    <!-- Dynamic Track Counter Update Notification Box -->
+                    <div class="mt-5 p-3.5 rounded-xl bg-slate-950 border border-emerald-500/50 text-left max-w-md mx-auto flex items-center justify-between shadow-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-base shrink-0">
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Live Impact Counter</span>
+                                <span class="text-xs sm:text-sm font-extrabold text-white" id="success-category-feedback">Dynamic Counter Updated (+1)</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-black text-emerald-400 bg-emerald-950 border border-emerald-800 px-2.5 py-1 rounded-md animate-pulse shrink-0">
+                            +1 Added
+                        </span>
+                    </div>
+
                     <div class="mt-6 flex flex-col items-center justify-center space-y-3">
                         <div class="inline-flex items-center text-xs text-emerald-400 font-semibold bg-emerald-950/60 px-4 py-2 rounded-full border border-emerald-800">
-                            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Redirecting to main website in <span id="countdown-sec" class="font-bold ml-1">2</span>s...
+                            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Redirecting to main website in <span id="countdown-sec" class="font-bold ml-1">3</span>s...
                         </div>
                         <a href="index.php?unlocked=1" class="text-xs text-slate-400 hover:text-white underline">
                             Click here if you are not redirected automatically
@@ -937,6 +954,17 @@ $counterStats = getVisitorIdeaCountsByCategory();
                 });
             });
 
+            // Make clicking on category pill card activate the radio and update styling
+            categoryCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const radio = this.querySelector('.category-radio');
+                    if (radio) {
+                        radio.checked = true;
+                        highlightCategoryTrack(radio.value);
+                    }
+                });
+            });
+
             // Trust / Impact Counter cards click to auto-select matching category & scroll to form
             counterCards.forEach(card => {
                 card.addEventListener('click', function () {
@@ -1003,28 +1031,50 @@ $counterStats = getVisitorIdeaCountsByCategory();
                     }
 
                     if (xhr.status >= 200 && xhr.status < 300 && response.status === 'success') {
+                        const submittedCat = response.category || response.submitted_category || 'Entrepreneurs';
+
                         // Dynamically update Trust / Impact Counter numbers in real time
                         if (response.updated_counts) {
                             ['entrepreneurs', 'investors', 'mentors', 'organizers'].forEach(k => {
                                 const capKey = k.charAt(0).toUpperCase() + k.slice(1);
                                 const valEl = document.getElementById('counter-val-' + k);
                                 if (valEl && response.updated_counts[capKey] !== undefined) {
-                                    valEl.textContent = response.updated_counts[capKey];
+                                    const oldVal = parseInt(valEl.textContent.trim(), 10) || 0;
+                                    const newVal = parseInt(response.updated_counts[capKey], 10);
+                                    valEl.textContent = newVal;
+                                    if (newVal > oldVal) {
+                                        valEl.parentElement.classList.add('scale-125', 'transition-transform', 'duration-300');
+                                        setTimeout(() => valEl.parentElement.classList.remove('scale-125'), 600);
+                                    }
                                 }
                             });
 
-                            const subCat = (response.submitted_category || 'Entrepreneurs').toLowerCase();
-                            const activeCounterCard = document.getElementById('counter-card-' + subCat);
+                            const subCatKey = submittedCat.toLowerCase();
+                            const activeCounterCard = document.getElementById('counter-card-' + subCatKey);
                             if (activeCounterCard) {
-                                activeCounterCard.classList.add('ring-4', 'ring-emerald-400', 'scale-105', 'transition-transform');
+                                activeCounterCard.classList.add('ring-4', 'ring-emerald-400', 'scale-105', 'bg-emerald-950/80', 'transition-all');
                             }
+                        }
+
+                        // Update dynamic feedback in success box
+                        const successFeedback = document.getElementById('success-category-feedback');
+                        if (successFeedback && response.updated_counts && response.updated_counts[submittedCat] !== undefined) {
+                            successFeedback.textContent = submittedCat + ' Track: ' + response.updated_counts[submittedCat] + '+ Impact Count';
+                        } else if (successFeedback) {
+                            successFeedback.textContent = submittedCat + ' Track: Verified & Dynamic Count Incremented';
                         }
 
                         // Success! Hide form and show celebration
                         form.classList.add('hidden');
                         successBox.classList.remove('hidden');
 
-                        let sec = 2;
+                        // Scroll smoothly to see the updated counters and success message
+                        const countersEl = document.getElementById('impact-counters-container');
+                        if (countersEl) {
+                            countersEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+
+                        let sec = 3;
                         const countdownEl = document.getElementById('countdown-sec');
                         const timer = setInterval(function () {
                             sec--;

@@ -2,6 +2,7 @@
     {
         "id": 1,
         "full_name": "Mohammad Rafiqul Islam",
+        "category": "Entrepreneurs",
         "email": "rafiqul.agri@gmail.com",
         "phone": "+880 1712-889900",
         "local_address": "Sherpur Upazila, Bogura District, Rajshahi Division",
@@ -20,6 +21,7 @@
     {
         "id": 2,
         "full_name": "Nusrat Jahan Mim",
+        "category": "Entrepreneurs",
         "email": "nusrat.bio@outlook.com",
         "phone": "+880 1819-334455",
         "local_address": "Doulatpur, Khulna District",
@@ -38,6 +40,7 @@
     {
         "id": 3,
         "full_name": "Kamal Hossain",
+        "category": "Entrepreneurs",
         "email": "",
         "phone": "+880 1911-556677",
         "local_address": "Trishal, Mymensingh",

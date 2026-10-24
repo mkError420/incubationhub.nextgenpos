@@ -52,14 +52,16 @@ $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTT
 
 if ($result['success']) {
     $updatedCounts = function_exists('getVisitorIdeaCountsByCategory') ? getVisitorIdeaCountsByCategory() : [];
+    $subCat = $result['category'] ?? ($ideaData['category'] ?? 'Entrepreneurs');
     http_response_code(200);
     echo json_encode([
-        'status'         => 'success',
-        'message'        => $result['message'],
-        'id'             => $result['id'] ?? null,
-        'category'       => $result['category'] ?? ($ideaData['category']),
-        'updated_counts' => $updatedCounts,
-        'redirect'       => 'index.php?unlocked=1'
+        'status'             => 'success',
+        'message'            => $result['message'],
+        'id'                 => $result['id'] ?? null,
+        'category'           => $subCat,
+        'submitted_category' => $subCat,
+        'updated_counts'     => $updatedCounts,
+        'redirect'           => 'index.php?unlocked=1'
     ]);
 } else {
     http_response_code(400);
