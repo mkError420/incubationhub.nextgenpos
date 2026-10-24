@@ -127,7 +127,7 @@
 
             <!-- Bottom Copyright & Socials -->
             <div class="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-                <p>&copy; <?= date('Y') ?> NextGen Farming Incubation Hub. All rights reserved. Connecting Entrepreneur Ecosystem Builders.</p>
+                <p>&copy; <?= date('Y') ?> NextGen Farming Incubation Hub. All rights reserved. Developed By <a href="https://codexaa.xo.je/" style="color: #22C55E; font-weight: bold; ">Codexaa-Solutions</a></p> 
                 <div class="flex items-center space-x-4">
                     <a href="https://linkedin.com" target="_blank" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-emerald-400 hover:border-emerald-500 transition">
                         <i class="fa-brands fa-linkedin-in"></i>
