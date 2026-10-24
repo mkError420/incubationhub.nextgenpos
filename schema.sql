@@ -145,6 +145,32 @@ CREATE TABLE IF NOT EXISTS `network_partners` (
     INDEX `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ------------------------------------------------------------
+-- 8. Table: visitor_ideas
+-- Captures gate landing page submissions & video pitches from visitors
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `visitor_ideas` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `full_name` VARCHAR(150) NOT NULL,
+    `email` VARCHAR(150) DEFAULT NULL,
+    `phone` VARCHAR(50) NOT NULL,
+    `local_address` TEXT NOT NULL,
+    `education` VARCHAR(255) NOT NULL,
+    `idea_description` TEXT NOT NULL,
+    `video_path` VARCHAR(255) DEFAULT NULL,
+    `video_filename` VARCHAR(255) DEFAULT NULL,
+    `video_duration` INT UNSIGNED DEFAULT NULL,
+    `video_size` INT UNSIGNED DEFAULT NULL,
+    `status` ENUM('New', 'Reviewed', 'Shortlisted', 'Contacted', 'Archived') DEFAULT 'New',
+    `admin_notes` TEXT DEFAULT NULL,
+    `ip_address` VARCHAR(45) DEFAULT NULL,
+    `user_agent` VARCHAR(255) DEFAULT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_status` (`status`),
+    INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================================
 -- SEED DATA: Dynamic Site Settings, Programs, and Admin User
 -- ============================================================
@@ -158,6 +184,7 @@ ON DUPLICATE KEY UPDATE `username` = `username`;
 -- Dynamic Content Settings
 INSERT INTO `site_settings` (`setting_key`, `setting_value`, `setting_group`, `label`, `field_type`) VALUES
 ('site_name', 'NextGen Farming Incubation Hub', 'general', 'Website Title', 'text'),
+('landing_gate_enabled', '1', 'general', 'Landing Page Gate Enabled (Require idea submission before viewing website)', 'text'),
 ('site_logo', '', 'branding', 'Website & Navbar Logo', 'text'),
 ('login_logo', '', 'branding', 'Admin Login Console Logo', 'text'),
 ('hero_tagline', 'AgriTech Innovation & Venture Studio', 'hero', 'Hero Tagline Badge', 'text'),

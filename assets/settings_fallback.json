@@ -24,5 +24,6 @@
     "admissions_email": "accelerate@nextgenfarminghub.bd",
     "investors_email": "investors@nextgenfarminghub.bd",
     "site_logo": "",
-    "login_logo": ""
+    "login_logo": "",
+    "landing_gate_enabled": "1"
 }

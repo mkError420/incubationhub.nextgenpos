@@ -2,9 +2,21 @@
 /**
  * NextGen Farming Incubation Hub - Shared Header Component
  */
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
+require_once __DIR__ . '/db.php';
+
 if (!isset($currentPage)) {
     $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 }
+
+// Gate Enforcement: If visitor has not submitted the landing page idea form,
+// redirect to landing.php first
+if ($currentPage !== 'landing') {
+    requireVisitorAccess();
+}
+
 if (!isset($pageTitle)) {
     $pageTitle = 'NextGen Farming Incubation Hub | Ecosystem Builders in Bangladesh & Emerging Markets';
 }
@@ -74,8 +86,27 @@ if (!isset($pageDescription)) {
 </head>
 <body class="bg-[#fbfdfc] text-slate-800 antialiased flex flex-col min-h-screen">
 
+<?php if (isset($_GET['unlocked'])): ?>
+    <!-- Welcome Unlock Toast Notification -->
+    <div id="unlock-toast" class="bg-gradient-to-r from-emerald-800 via-agro-800 to-emerald-900 text-white px-4 py-3 shadow-lg border-b border-emerald-500/40 relative z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3 text-xs sm:text-sm">
+                <span class="w-8 h-8 rounded-full bg-emerald-500 text-agro-950 flex items-center justify-center font-bold shrink-0">
+                    <i class="fa-solid fa-circle-check text-base"></i>
+                </span>
+                <div>
+                    <span class="font-extrabold text-amber-300">Welcome to NextGen Farming Incubation Hub!</span>
+                    <span class="block text-emerald-100 text-[11px] sm:text-xs">Your idea and profile have been securely received. Full website access is now active, and our incubation committee will contact you on WhatsApp.</span>
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('unlock-toast').remove()" class="text-emerald-200 hover:text-white p-1 ml-4 text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+<?php endif; ?>
+
 <?php
-require_once __DIR__ . '/db.php';
 $dynBannerBadge = getSiteSetting('hero_banner_badge', 'New Call');
 $dynBannerText  = getSiteSetting('hero_banner_text', 'Applications Open for AgriTech Ignite Accelerator');
 $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entrepreneur');
@@ -94,9 +125,9 @@ $dynBannerLink  = getSiteSetting('hero_banner_link', 'contact.php?category=Entre
                 <a href="<?= htmlspecialchars($dynBannerLink) ?>" class="underline font-semibold hover:text-amber-400 transition ml-2">Apply Now &rarr;</a>
             </div>
             <div class="hidden lg:flex items-center space-x-4 text-xs">
- <!--                <a href="submissions.php" class="text-emerald-300 hover:text-white transition flex items-center">
-                    <i class="fa-solid fa-database mr-1"></i> Submissions
-                </a> -->
+                <a href="landing.php" class="text-emerald-300 hover:text-white transition flex items-center">
+                    <i class="fa-solid fa-lightbulb mr-1 text-amber-400"></i> Pitch an Idea
+                </a>
                 <span class="text-slate-600">|</span>
                 <a href="admin/index.php" class="text-amber-400 hover:text-amber-300 font-bold transition flex items-center">
                     <i class="fa-solid fa-gauge-high mr-1"></i> Admin Portal

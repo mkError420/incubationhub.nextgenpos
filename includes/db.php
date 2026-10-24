@@ -2189,7 +2189,10 @@ function getAdminDashboardStats() {
         'subscribers'    => 0,
         'total_programs' => 0,
         'total_offerings'=> 0,
-        'total_partners' => 0
+        'total_partners' => 0,
+        'total_ideas'    => 0,
+        'new_ideas'      => 0,
+        'ideas_with_video'=> 0
     ];
 
     $pdo = getDbConnection();
@@ -2227,6 +2230,23 @@ function getAdminDashboardStats() {
             $partStmt = $pdo->query("SELECT COUNT(*) FROM network_partners");
             $stats['total_partners'] = (int)$partStmt->fetchColumn();
 
+            // Count visitor landing page ideas
+            if (function_exists('ensureVisitorIdeasTable')) {
+                ensureVisitorIdeasTable();
+            }
+            $ideaStmt = $pdo->query("SELECT status, video_path FROM visitor_ideas");
+            if ($ideaStmt) {
+                while ($iRow = $ideaStmt->fetch()) {
+                    $stats['total_ideas']++;
+                    if (($iRow['status'] ?? 'New') === 'New') {
+                        $stats['new_ideas']++;
+                    }
+                    if (!empty($iRow['video_path'])) {
+                        $stats['ideas_with_video']++;
+                    }
+                }
+            }
+
             return $stats;
         } catch (PDOException $e) {
             error_log("Failed to get admin stats from MySQL: " . $e->getMessage());
@@ -2238,11 +2258,13 @@ function getAdminDashboardStats() {
     $programsFile = __DIR__ . '/../assets/programs_fallback.json';
     $offeringsFile= __DIR__ . '/../assets/offerings_fallback.json';
     $partnersFile = __DIR__ . '/../assets/network_fallback.json';
+    $ideasFile    = __DIR__ . '/../assets/ideas_fallback.json';
 
     $submissions = file_exists($fallbackFile) ? (json_decode(@file_get_contents($fallbackFile), true) ?: []) : [];
     $programs = file_exists($programsFile) ? (json_decode(@file_get_contents($programsFile), true) ?: []) : [];
     $offerings = file_exists($offeringsFile) ? (json_decode(@file_get_contents($offeringsFile), true) ?: []) : [];
     $partners = file_exists($partnersFile) ? (json_decode(@file_get_contents($partnersFile), true) ?: []) : [];
+    $ideas    = file_exists($ideasFile) ? (json_decode(@file_get_contents($ideasFile), true) ?: []) : [];
 
     foreach ($submissions as $row) {
         $stats['total']++;
@@ -2261,6 +2283,17 @@ function getAdminDashboardStats() {
     $stats['total_offerings'] = count($offerings) ?: 6;
     $stats['total_partners'] = count($partners) ?: 6;
     $stats['subscribers'] = 148;
+
+    $stats['total_ideas'] = count($ideas);
+    foreach ($ideas as $iItem) {
+        if (($iItem['status'] ?? 'New') === 'New') {
+            $stats['new_ideas']++;
+        }
+        if (!empty($iItem['video_path']) || !empty($iItem['video_duration'])) {
+            $stats['ideas_with_video']++;
+        }
+    }
+
     return $stats;
 }
 
@@ -2736,6 +2769,391 @@ function syncAdminsToFallbackFile() {
     } catch (PDOException $e) {
         // Silently ignore
     }
+}
+
+/**
+ * ============================================================
+ * Visitor Landing Page Idea Submissions & Gate Access Layer
+ * ============================================================
+ */
+
+function getVisitorIdeasFallbackFilePath() {
+    return __DIR__ . '/../assets/ideas_fallback.json';
+}
+
+function ensureVisitorIdeasTable() {
+    $pdo = getDbConnection();
+    if ($pdo === null) return false;
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `visitor_ideas` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `full_name` VARCHAR(150) NOT NULL,
+            `email` VARCHAR(150) DEFAULT NULL,
+            `phone` VARCHAR(50) NOT NULL,
+            `local_address` TEXT NOT NULL,
+            `education` VARCHAR(255) NOT NULL,
+            `idea_description` TEXT NOT NULL,
+            `video_path` VARCHAR(255) DEFAULT NULL,
+            `video_filename` VARCHAR(255) DEFAULT NULL,
+            `video_duration` INT UNSIGNED DEFAULT NULL,
+            `video_size` INT UNSIGNED DEFAULT NULL,
+            `status` ENUM('New', 'Reviewed', 'Shortlisted', 'Contacted', 'Archived') DEFAULT 'New',
+            `admin_notes` TEXT DEFAULT NULL,
+            `ip_address` VARCHAR(45) DEFAULT NULL,
+            `user_agent` VARCHAR(255) DEFAULT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX `idx_status` (`status`),
+            INDEX `idx_created_at` (`created_at`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        return true;
+    } catch (PDOException $e) {
+        error_log("Failed to ensure visitor_ideas table: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Check if the current visitor has full access to the website
+ */
+function isVisitorUnlocked() {
+    if (session_status() === PHP_SESSION_NONE) {
+        @session_start();
+    }
+
+    // If gate is disabled in settings, allow everyone
+    $gateEnabled = getSiteSetting('landing_gate_enabled', '1');
+    if ($gateEnabled === '0' || $gateEnabled === 'false') {
+        return true;
+    }
+
+    // Administrator bypass: Logged-in admin can always view the live website
+    if (!empty($_SESSION['admin_user'])) {
+        return true;
+    }
+
+    // Session unlock flag
+    if (!empty($_SESSION['nextgen_visitor_unlocked'])) {
+        return true;
+    }
+
+    // Cookie persistent unlock check (valid for 365 days)
+    if (!empty($_COOKIE['nextgen_visitor_pass'])) {
+        $_SESSION['nextgen_visitor_unlocked'] = true;
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Force visitor to landing page unless unlocked
+ */
+function requireVisitorAccess() {
+    if (isVisitorUnlocked()) {
+        return;
+    }
+
+    $currentScript = basename($_SERVER['PHP_SELF'] ?? '', '.php');
+    if ($currentScript === 'landing') {
+        return;
+    }
+
+    // Do not gate admin or api scripts
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    if (strpos($uri, '/admin/') !== false || strpos($uri, '/api/') !== false) {
+        return;
+    }
+
+    header('Location: landing.php');
+    exit;
+}
+
+/**
+ * Save visitor idea submission and grant website unlock access
+ */
+function saveVisitorIdea(array $data, ?array $videoFile = null) {
+    $fullName     = trim($data['full_name'] ?? '');
+    $email        = trim($data['email'] ?? '');
+    $phone        = trim($data['phone'] ?? '');
+    $localAddress = trim($data['local_address'] ?? '');
+    $education    = trim($data['education'] ?? '');
+    $ideaDesc     = trim($data['idea_description'] ?? '');
+    $videoDuration= !empty($data['video_duration']) ? (int)$data['video_duration'] : null;
+    $ipAddress    = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    $userAgent    = substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255);
+
+    // Validation
+    if (empty($fullName)) {
+        return ['success' => false, 'message' => 'Please provide your Full Name.'];
+    }
+    if (empty($phone)) {
+        return ['success' => false, 'message' => 'Please provide your WhatsApp Phone number.'];
+    }
+    if (empty($localAddress)) {
+        return ['success' => false, 'message' => 'Please provide your Local Address.'];
+    }
+    if (empty($education)) {
+        return ['success' => false, 'message' => 'Please provide your Education / Academic background.'];
+    }
+    if (empty($ideaDesc)) {
+        return ['success' => false, 'message' => 'Please tell us a little bit about your idea.'];
+    }
+    if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'message' => 'Please enter a valid email address or leave it blank.'];
+    }
+
+    // Video Upload Processing (Optional, max 5 minutes)
+    $videoPath = null;
+    $videoOriginalName = null;
+    $videoSize = null;
+
+    if ($videoFile && isset($videoFile['error']) && $videoFile['error'] === UPLOAD_ERR_OK) {
+        $allowedExts = ['mp4', 'webm', 'mov', 'avi', 'm4v', 'mkv', '3gp'];
+        $originalExt = strtolower(pathinfo($videoFile['name'], PATHINFO_EXTENSION));
+
+        if (!in_array($originalExt, $allowedExts)) {
+            return ['success' => false, 'message' => 'Unsupported video format. Please upload MP4, WebM, MOV, or AVI.'];
+        }
+
+        // Max file size 100MB
+        if ($videoFile['size'] > 104857600) {
+            return ['success' => false, 'message' => 'Video size exceeds 100MB. Please compress or shorten your 5-minute pitch video.'];
+        }
+
+        $uploadDir = __DIR__ . '/../assets/uploads/pitch_videos/';
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
+        $newFileName = 'pitch_' . date('Ymd_His') . '_' . bin2hex(random_bytes(5)) . '.' . $originalExt;
+        $destPath = $uploadDir . $newFileName;
+
+        if (move_uploaded_file($videoFile['tmp_name'], $destPath)) {
+            $videoPath = 'assets/uploads/pitch_videos/' . $newFileName;
+            $videoOriginalName = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', basename($videoFile['name']));
+            $videoSize = (int)$videoFile['size'];
+        } else {
+            error_log("Failed to move uploaded pitch video to: " . $destPath);
+        }
+    } elseif ($videoFile && isset($videoFile['error']) && $videoFile['error'] !== UPLOAD_ERR_NO_FILE) {
+        if ($videoFile['error'] === UPLOAD_ERR_INI_SIZE || $videoFile['error'] === UPLOAD_ERR_FORM_SIZE) {
+            return ['success' => false, 'message' => 'Uploaded video exceeds server upload limits. Please choose a smaller video file.'];
+        }
+    }
+
+    $newId = null;
+    $pdo = getDbConnection();
+
+    if ($pdo !== null) {
+        ensureVisitorIdeasTable();
+        try {
+            $sql = "INSERT INTO visitor_ideas 
+                    (full_name, email, phone, local_address, education, idea_description, video_path, video_filename, video_duration, video_size, status, ip_address, user_agent, created_at)
+                    VALUES (:full_name, :email, :phone, :local_address, :education, :idea_description, :video_path, :video_filename, :video_duration, :video_size, 'New', :ip_address, :user_agent, NOW())";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':full_name'        => $fullName,
+                ':email'            => !empty($email) ? $email : null,
+                ':phone'            => $phone,
+                ':local_address'    => $localAddress,
+                ':education'        => $education,
+                ':idea_description' => $ideaDesc,
+                ':video_path'       => $videoPath,
+                ':video_filename'   => $videoOriginalName,
+                ':video_duration'   => $videoDuration,
+                ':video_size'       => $videoSize,
+                ':ip_address'       => $ipAddress,
+                ':user_agent'       => $userAgent,
+            ]);
+            $newId = (int)$pdo->lastInsertId();
+        } catch (PDOException $e) {
+            error_log("Failed to insert visitor idea into MySQL: " . $e->getMessage());
+        }
+    }
+
+    // Always mirror to fallback file
+    $fallbackFile = getVisitorIdeasFallbackFilePath();
+    $ideas = file_exists($fallbackFile) ? (json_decode(@file_get_contents($fallbackFile), true) ?: []) : [];
+    if (!$newId) {
+        $newId = count($ideas) + 1;
+    }
+
+    $newRecord = [
+        'id'               => $newId,
+        'full_name'        => htmlspecialchars($fullName),
+        'email'            => htmlspecialchars($email),
+        'phone'            => htmlspecialchars($phone),
+        'local_address'    => htmlspecialchars($localAddress),
+        'education'        => htmlspecialchars($education),
+        'idea_description' => htmlspecialchars($ideaDesc),
+        'video_path'       => $videoPath,
+        'video_filename'   => $videoOriginalName,
+        'video_duration'   => $videoDuration,
+        'video_size'       => $videoSize,
+        'status'           => 'New',
+        'admin_notes'      => null,
+        'ip_address'       => $ipAddress,
+        'user_agent'       => $userAgent,
+        'created_at'       => date('Y-m-d H:i:s')
+    ];
+
+    array_unshift($ideas, $newRecord);
+    @file_put_contents($fallbackFile, json_encode($ideas, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+    // Unlock visitor session and set persistent cookie
+    if (session_status() === PHP_SESSION_NONE) {
+        @session_start();
+    }
+    $_SESSION['nextgen_visitor_unlocked'] = true;
+    $_SESSION['visitor_name'] = $fullName;
+
+    // Cookie valid for 365 days
+    @setcookie('nextgen_visitor_pass', 'unlocked_' . md5($fullName . $phone), time() + (86400 * 365), '/');
+
+    return [
+        'success' => true,
+        'id'      => $newId,
+        'message' => 'Thank you, ' . htmlspecialchars($fullName) . '! Your idea has been sent to our incubation management board. Full website access is now unlocked.'
+    ];
+}
+
+function getVisitorIdeas($limit = 100, $status = null, $search = null) {
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        ensureVisitorIdeasTable();
+        try {
+            $sql = "SELECT * FROM visitor_ideas WHERE 1=1";
+            $params = [];
+            if (!empty($status)) {
+                $sql .= " AND status = :status";
+                $params[':status'] = $status;
+            }
+            if (!empty($search)) {
+                $sql .= " AND (full_name LIKE :s OR phone LIKE :s OR email LIKE :s OR local_address LIKE :s OR education LIKE :s OR idea_description LIKE :s)";
+                $params[':s'] = '%' . $search . '%';
+            }
+            $sql .= " ORDER BY created_at DESC LIMIT " . (int)$limit;
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Failed to query visitor_ideas: " . $e->getMessage());
+        }
+    }
+
+    $fallbackFile = getVisitorIdeasFallbackFilePath();
+    $ideas = file_exists($fallbackFile) ? (json_decode(@file_get_contents($fallbackFile), true) ?: []) : [];
+
+    if (!empty($status)) {
+        $ideas = array_values(array_filter($ideas, function($i) use ($status) {
+            return ($i['status'] ?? '') === $status;
+        }));
+    }
+    if (!empty($search)) {
+        $searchLower = strtolower($search);
+        $ideas = array_values(array_filter($ideas, function($i) use ($searchLower) {
+            $txt = strtolower(($i['full_name'] ?? '') . ' ' . ($i['phone'] ?? '') . ' ' . ($i['email'] ?? '') . ' ' . ($i['local_address'] ?? '') . ' ' . ($i['education'] ?? '') . ' ' . ($i['idea_description'] ?? ''));
+            return strpos($txt, $searchLower) !== false;
+        }));
+    }
+    return array_slice($ideas, 0, $limit);
+}
+
+function getVisitorIdeaById($id) {
+    $id = (int)$id;
+    if ($id <= 0) return null;
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM visitor_ideas WHERE id = :id LIMIT 1");
+            $stmt->execute([':id' => $id]);
+            $res = $stmt->fetch();
+            if ($res) return $res;
+        } catch (PDOException $e) {
+            error_log("Failed to get visitor idea by ID: " . $e->getMessage());
+        }
+    }
+
+    $fallbackFile = getVisitorIdeasFallbackFilePath();
+    $ideas = file_exists($fallbackFile) ? (json_decode(@file_get_contents($fallbackFile), true) ?: []) : [];
+    foreach ($ideas as $item) {
+        if ((int)($item['id'] ?? 0) === $id) return $item;
+    }
+    return null;
+}
+
+function updateVisitorIdeaStatus($id, $status, $adminNotes = null) {
+    $id = (int)$id;
+    if ($id <= 0) return false;
+    $allowedStatuses = ['New', 'Reviewed', 'Shortlisted', 'Contacted', 'Archived'];
+    if (!in_array($status, $allowedStatuses)) return false;
+
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $sql = "UPDATE visitor_ideas SET status = :status";
+            $params = [':status' => $status, ':id' => $id];
+            if ($adminNotes !== null) {
+                $sql .= ", admin_notes = :notes";
+                $params[':notes'] = $adminNotes;
+            }
+            $sql .= " WHERE id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+        } catch (PDOException $e) {
+            error_log("Failed to update visitor idea status in MySQL: " . $e->getMessage());
+        }
+    }
+
+    $fallbackFile = getVisitorIdeasFallbackFilePath();
+    if (file_exists($fallbackFile)) {
+        $ideas = json_decode(@file_get_contents($fallbackFile), true) ?: [];
+        foreach ($ideas as &$item) {
+            if ((int)($item['id'] ?? 0) === $id) {
+                $item['status'] = $status;
+                if ($adminNotes !== null) {
+                    $item['admin_notes'] = $adminNotes;
+                }
+                break;
+            }
+        }
+        @file_put_contents($fallbackFile, json_encode($ideas, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+    return true;
+}
+
+function deleteVisitorIdea($id) {
+    $id = (int)$id;
+    if ($id <= 0) return false;
+
+    $existing = getVisitorIdeaById($id);
+    if (!empty($existing['video_path'])) {
+        $fullPath = __DIR__ . '/../' . ltrim($existing['video_path'], '/');
+        if (file_exists($fullPath)) {
+            @unlink($fullPath);
+        }
+    }
+
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            $stmt = $pdo->prepare("DELETE FROM visitor_ideas WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+        } catch (PDOException $e) {
+            error_log("Failed to delete visitor idea in MySQL: " . $e->getMessage());
+        }
+    }
+
+    $fallbackFile = getVisitorIdeasFallbackFilePath();
+    if (file_exists($fallbackFile)) {
+        $ideas = json_decode(@file_get_contents($fallbackFile), true) ?: [];
+        $ideas = array_values(array_filter($ideas, function($item) use ($id) {
+            return (int)($item['id'] ?? 0) !== $id;
+        }));
+        @file_put_contents($fallbackFile, json_encode($ideas, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+    return true;
 }
 
 

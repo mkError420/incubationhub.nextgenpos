@@ -197,6 +197,16 @@ function renderAdminHeader($activePage = 'dashboard', $pageTitle = 'Dashboard Ov
                         <?php endif; ?>
                     </a>
 
+                    <a href="ideas.php" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition <?= $activePage === 'ideas' ? 'bg-emerald-700 text-white font-bold shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/80' ?>">
+                        <i class="fa-solid fa-lightbulb w-5 text-center text-sm"></i>
+                        <span>Visitor Idea Pitches</span>
+                        <?php if (($stats['new_ideas'] ?? 0) > 0): ?>
+                            <span class="ml-auto text-[10px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded-full"><?= $stats['new_ideas'] ?> New</span>
+                        <?php else: ?>
+                            <span class="ml-auto text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-mono"><?= $stats['total_ideas'] ?? 0 ?></span>
+                        <?php endif; ?>
+                    </a>
+
                     <div class="px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                         Content & Programs
                     </div>

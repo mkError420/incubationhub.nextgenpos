@@ -8,6 +8,7 @@ requireAdminAuth();
 
 $stats = getAdminDashboardStats();
 $recentSubmissions = getHubSubmissions(15);
+$recentIdeas = getVisitorIdeas(6);
 $dbConnected = isDbConnected();
 
 // Handle quick inline status update from POST
@@ -46,6 +47,9 @@ renderAdminHeader('dashboard', 'Dashboard Overview', 'Dashboard Overview');
         <p class="text-xs text-slate-500 mt-0.5">Welcome back, <?= htmlspecialchars(getCurrentAdmin()['full_name']) ?> • System operational</p>
     </div>
     <div class="flex flex-wrap gap-2 text-xs">
+        <a href="ideas.php" class="inline-flex items-center px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg shadow-sm transition">
+            <i class="fa-solid fa-lightbulb mr-1.5"></i> Visitor Ideas (<?= $stats['new_ideas'] ?? 0 ?> New)
+        </a>
         <a href="content.php" class="inline-flex items-center px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-lg shadow-sm transition">
             <i class="fa-solid fa-pen-to-square mr-1.5"></i> Edit Site Content
         </a>
@@ -137,19 +141,19 @@ renderAdminHeader('dashboard', 'Dashboard Overview', 'Dashboard Overview');
         </div>
     </a>
 
-    <!-- KPI 6: Subscribers -->
-    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <!-- KPI 6: Visitor Ideas (Gate Intakes) -->
+    <a href="ideas.php" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-amber-400 transition flex items-center justify-between group">
         <div>
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Subscribers</span>
-            <span class="text-2xl font-extrabold text-slate-900 mt-1 block"><?= $stats['subscribers'] ?></span>
-            <span class="text-[11px] text-slate-500 font-semibold mt-0.5 block flex items-center">
-                <i class="fa-solid fa-envelope mr-1"></i> Newsletter
+            <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider block">Visitor Ideas</span>
+            <span class="text-2xl font-extrabold text-slate-900 mt-1 block"><?= $stats['total_ideas'] ?? 0 ?></span>
+            <span class="text-[11px] text-amber-600 font-semibold mt-0.5 block flex items-center">
+                <i class="fa-solid fa-lightbulb mr-1"></i> <?= $stats['new_ideas'] ?? 0 ?> New Pitches
             </span>
         </div>
-        <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-base shrink-0">
-            <i class="fa-solid fa-envelope-open-text"></i>
+        <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition">
+            <i class="fa-solid fa-lightbulb"></i>
         </div>
-    </div>
+    </a>
 
 </div>
 
@@ -194,6 +198,112 @@ renderAdminHeader('dashboard', 'Dashboard Overview', 'Dashboard Overview');
             <span class="text-sm font-bold text-slate-900"><?= $stats['mentors'] ?> Submissions</span>
         </div>
     </a>
+</div>
+
+<!-- Recent Visitor Idea Pitches (Gate Submissions) Section -->
+<div class="bg-white rounded-xl border border-amber-200/80 shadow-sm overflow-hidden mb-8">
+    <div class="px-5 py-4 bg-gradient-to-r from-amber-50/70 via-white to-emerald-50/50 border-b border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-base shadow-sm">
+                <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Visitor Idea Pitches (Landing Gate Intakes)</h2>
+                    <span class="text-[10px] bg-amber-500 text-slate-950 font-black px-2 py-0.5 rounded-full uppercase tracking-wide">Live Intake</span>
+                </div>
+                <p class="text-[11px] text-slate-500">Applications and 5-minute video pitches captured before visitors enter the website.</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <a href="ideas.php" class="text-xs font-bold text-amber-700 hover:text-amber-900 flex items-center px-3 py-1.5 rounded-lg bg-amber-100/60 hover:bg-amber-100 transition">
+                <span>Open Ideas Console (<?= $stats['total_ideas'] ?? 0 ?>)</span>
+                <i class="fa-solid fa-arrow-right ml-1.5 text-xs"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] tracking-wider border-b border-slate-200">
+                <tr>
+                    <th class="px-4 py-3">Applicant & Background</th>
+                    <th class="px-4 py-3">WhatsApp Phone</th>
+                    <th class="px-4 py-3">Local Address</th>
+                    <th class="px-4 py-3">Idea Concept</th>
+                    <th class="px-4 py-3">Pitch Video</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 bg-white">
+                <?php if (empty($recentIdeas)): ?>
+                    <tr>
+                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">
+                            No visitor ideas submitted yet. Visit <a href="../landing.php" target="_blank" class="text-emerald-600 underline font-semibold">landing.php</a> to test the intake form.
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($recentIdeas as $idea): 
+                        $rawPhone = $idea['phone'] ?? '';
+                        $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
+                        $waLink = !empty($cleanPhone) ? 'https://wa.me/' . $cleanPhone : null;
+                        $hasVid = !empty($idea['video_path']);
+                        $status = $idea['status'] ?? 'New';
+                        $statusBadge = match ($status) {
+                            'New' => 'bg-amber-100 text-amber-800 border-amber-300',
+                            'Reviewed' => 'bg-blue-100 text-blue-800 border-blue-300',
+                            'Shortlisted' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                            'Contacted' => 'bg-purple-100 text-purple-800 border-purple-300',
+                            default => 'bg-slate-100 text-slate-600 border-slate-300',
+                        };
+                    ?>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-4 py-3 font-semibold text-slate-900">
+                                <span class="block text-slate-900 font-bold"><?= htmlspecialchars($idea['full_name']) ?></span>
+                                <span class="text-[10px] text-emerald-700 block"><?= htmlspecialchars($idea['education'] ?? '') ?></span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <?php if ($waLink): ?>
+                                    <a href="<?= htmlspecialchars($waLink) ?>" target="_blank" class="inline-flex items-center text-emerald-700 hover:text-emerald-900 font-bold text-xs">
+                                        <i class="fa-brands fa-whatsapp mr-1 text-sm text-emerald-600"></i>
+                                        <?= htmlspecialchars($rawPhone) ?>
+                                    </a>
+                                <?php else: ?>
+                                    <span class="text-slate-600"><?= htmlspecialchars($rawPhone) ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-4 py-3 text-slate-600 truncate max-w-[150px]">
+                                <?= htmlspecialchars($idea['local_address'] ?? '') ?>
+                            </td>
+                            <td class="px-4 py-3 text-slate-700 truncate max-w-xs">
+                                <?= htmlspecialchars(mb_strimwidth($idea['idea_description'] ?? '', 0, 70, '...')) ?>
+                            </td>
+                            <td class="px-4 py-3">
+                                <?php if ($hasVid): ?>
+                                    <a href="ideas.php" class="inline-flex items-center text-[11px] font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800 border border-purple-200 hover:bg-purple-200 transition">
+                                        <i class="fa-solid fa-play mr-1 text-[9px]"></i> Watch Video
+                                    </a>
+                                <?php else: ?>
+                                    <span class="text-[10px] text-slate-400">Text Only</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold border <?= $statusBadge ?>">
+                                    <?= htmlspecialchars($status) ?>
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <a href="ideas.php" class="text-xs font-bold text-slate-700 hover:text-amber-700">
+                                    Review &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Classic Recent Inquiries Data Table -->

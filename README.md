@@ -116,14 +116,31 @@ Copy or symlink the folder into `htdocs` or `www` directory:
 - Dynamic contextual fields: adjusts sub-interest dropdown, URL labels (Pitch deck vs. Portfolio vs. Profile), and custom placeholder prompts based on selected category.
 - Seamless AJAX submission via jQuery to `api/submit.php` with real-time feedback toast notifications and submission ID generation.
 
-### 5. Live Pipeline Portal (`submissions.php`)
-- Administrative verification table listing leads captured into `hub_submissions`.
-- Category filtering tabs and database connection health badge.
+### 5. Gate Landing Page & Idea Intake (`landing.php`)
+- **Gate System**: New visitors must submit their idea and profile on `landing.php` before gaining full access to the website.
+- **Fields**:
+  - Full Name (Required)
+  - Email Address (Optional)
+  - Phone Number with WhatsApp (Required, click-to-WhatsApp enabled)
+  - Local Address (Required, Upazila/District)
+  - Education & Background (Required, suggestions datalist)
+  - Tell us little-bit about your idea (Text Box, Required)
+  - Upload Pitch Video (Optional, max 5 minutes duration, client-side metadata length validator + live HTML5 video preview player)
+- **Automatic Access Unlock**: Instant session and persistent 365-day cookie authentication redirects user to `index.php?unlocked=1` with celebration toast.
+- **Admin Control**: Toggle gate on/off anytime from `admin/settings.php`.
+
+### 6. Admin Visitor Ideas Console (`admin/ideas.php`)
+- View and evaluate incoming visitor idea submissions and pitch videos.
+- Embedded video player modal to stream 5-minute pitch videos directly inside the admin console.
+- One-click WhatsApp link (`https://wa.me/...`) to chat directly with applicants.
+- Inline status pipeline (New, Reviewed, Shortlisted, Contacted, Archived) and admin notes.
+- CSV export for investor syndicate review.
 
 ---
 
 ## 🔒 Security & Code Standards
 - Strict PDO prepared statements preventing SQL injection attacks.
 - Input sanitization and honeypot field to block automated spam bots.
+- Client-side & server-side validation for video duration (max 5 minutes) and MIME types.
 - Responsive design tailored for mobile phones, tablets, and high-resolution displays.
 - Semantic HTML5 structure with OpenGraph social metadata.

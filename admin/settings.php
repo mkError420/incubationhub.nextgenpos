@@ -135,14 +135,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
     }
+    // 5. Update Landing Page Gate Setting
+    elseif ($_POST['action'] === 'update_landing_gate') {
+        $gateVal = isset($_POST['landing_gate_enabled']) && $_POST['landing_gate_enabled'] === '1' ? '1' : '0';
+        if (updateSiteSetting('landing_gate_enabled', $gateVal, 'general')) {
+            $successMsg = 'Landing Page Gate configuration updated successfully! ' . ($gateVal === '1' ? '(Gate is ENABLED: Visitors must submit idea before viewing website)' : '(Gate is DISABLED: Website is publicly accessible without gate)');
+        } else {
+            $errorMsg = 'Could not update Landing Page Gate configuration.';
+        }
+    }
 }
 
-// Fetch current logos
+// Fetch current logos & gate setting
 $siteLogo = getSiteSetting('site_logo', '');
 $loginLogo = getSiteSetting('login_logo', '');
 $siteLogoUrl = !empty($siteLogo) ? getLogoUrl($siteLogo, true) : '';
 $loginLogoUrl = !empty($loginLogo) ? getLogoUrl($loginLogo, true) : '';
 $isSynced = (!empty($loginLogo) && $loginLogo === $siteLogo);
+$landingGateEnabled = getSiteSetting('landing_gate_enabled', '1');
 
 // Fetch all registered admin users
 $allAdmins = getAllAdminUsers();
@@ -195,6 +205,58 @@ renderAdminHeader('settings', 'Admin Profile & System Settings', 'Settings & DB'
             <button type="button" class="alert-close-btn text-red-700 hover:text-red-950"><i class="fa-solid fa-xmark"></i></button>
         </div>
     <?php endif; ?>
+
+    <!-- Landing Page Gate & Idea Intake Control -->
+    <div class="bg-white p-6 rounded-xl border border-amber-200/90 shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-base font-bold shadow-sm shrink-0">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Landing Page Gate & Idea Intake Control</h2>
+                        <span class="text-[10px] <?= $landingGateEnabled === '1' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-300' ?> font-black px-2 py-0.5 rounded-full border uppercase">
+                            <?= $landingGateEnabled === '1' ? 'Gate Active' : 'Gate Disabled' ?>
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Controls whether visitors are required to fill out the idea & video intake form before browsing the website.</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <a href="../landing.php" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition">
+                    <i class="fa-solid fa-arrow-up-right-from-square mr-1 text-slate-400"></i> View Landing Page
+                </a>
+                <a href="ideas.php" class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200 transition">
+                    <i class="fa-solid fa-lightbulb mr-1 text-amber-600"></i> View Received Ideas
+                </a>
+            </div>
+        </div>
+
+        <form method="POST" action="settings.php" class="space-y-4">
+            <input type="hidden" name="action" value="update_landing_gate">
+
+            <div class="p-4 rounded-xl <?= $landingGateEnabled === '1' ? 'bg-amber-50/70 border border-amber-200' : 'bg-slate-50 border border-slate-200' ?>">
+                <label class="flex items-start space-x-3 cursor-pointer">
+                    <input type="checkbox" name="landing_gate_enabled" value="1" <?= $landingGateEnabled === '1' ? 'checked' : '' ?> class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                    <div>
+                        <span class="text-xs font-bold text-slate-900 block">
+                            Enforce Landing Page Intake Gate (Open landing page first for new visitors)
+                        </span>
+                        <span class="text-[11px] text-slate-600 block mt-0.5 leading-relaxed">
+                            When checked, every visitor opening the website (index, about, programs, offerings, contact, etc.) will be automatically redirected to <code class="bg-white px-1.5 py-0.5 rounded text-[10px] font-mono border border-slate-200 text-emerald-800">landing.php</code>. Only after submitting their profile, idea description, and optional 5-minute video pitch will full website access be unlocked.
+                        </span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-lg shadow-sm transition">
+                    <i class="fa-solid fa-floppy-disk mr-1.5"></i> Save Gate Setting
+                </button>
+            </div>
+        </form>
+    </div>
 
     <!-- 0. Dynamic Website & Login Page Brand Logos -->
     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
