@@ -155,7 +155,7 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
             </div>
 
             <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight sm:leading-none">
-                Transform Your Agricultural Vision into <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">Commercial Scale</span>
+                Transform Your Idea to a <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">Scale Base Agri Business</span>
             </h1> 
 
             <p class="mt-5 text-sm sm:text-base lg:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
@@ -165,20 +165,20 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
             <!-- Trust / Impact Counters -->
             <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto text-left">
                 <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 sm:p-4 rounded-xl backdrop-blur">
-                    <span class="text-xl sm:text-2xl font-black text-emerald-400 block">5,200+</span>
-                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Ecosystem Innovators</span>
+                    <span class="text-xl sm:text-2xl font-black text-emerald-400 block">100+</span>
+                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Entrepreneurs</span>
                 </div>
                 <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 sm:p-4 rounded-xl backdrop-blur">
-                    <span class="text-xl sm:text-2xl font-black text-amber-300 block">500+ Acres</span>
-                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Living Farmland Testbeds</span>
+                    <span class="text-xl sm:text-2xl font-black text-amber-300 block">20+</span>
+                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Investors</span>
                 </div>
                 <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 sm:p-4 rounded-xl backdrop-blur">
-                    <span class="text-xl sm:text-2xl font-black text-emerald-400 block">$28.5M+</span>
-                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Catalyzed Risk Capital</span>
+                    <span class="text-xl sm:text-2xl font-black text-emerald-400 block">15+</span>
+                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Mentors</span>
                 </div>
                 <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 sm:p-4 rounded-xl backdrop-blur">
-                    <span class="text-xl sm:text-2xl font-black text-teal-300 block">48+ Partners</span>
-                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Universities & Off-Takers</span>
+                    <span class="text-xl sm:text-2xl font-black text-teal-300 block">24+</span>
+                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Organizers</span>
                 </div>
             </div>
 
