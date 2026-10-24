@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "title": "Scale Your AgriTech Innovation to National Impact",
+        "subtitle": "Access 500+ acres of living farmland testbeds, IoT sensor laboratories, and direct commercial off-take partnerships across Bangladesh.",
+        "badge": "Flagship Accelerator 2026",
+        "image_path": "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1600&q=80",
+        "link_text": "Submit Your Idea & Unlock Access",
+        "link_url": "#intake-form-section",
+        "status": "Active",
+        "sort_order": 1
+    },
+    {
+        "id": 2,
+        "title": "Pre-Seed & Catalytic Risk Capital for Agripreneurs",
+        "subtitle": "$35,000 \u2013 $50,000 SAFE agreements, syndicate investor matchmaking, and institutional grant advisory to build resilient ventures.",
+        "badge": "Catalytic Venture Funding",
+        "image_path": "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1600&q=80",
+        "link_text": "Pitch to Investment Committee",
+        "link_url": "#intake-form-section",
+        "status": "Active",
+        "sort_order": 2
+    },
+    {
+        "id": 3,
+        "title": "Bridging Research, Farmers & Venture Studio Ecosystems",
+        "subtitle": "Collaborate with DAE agronomists, university research labs, and supply chain aggregators to engineer climate-smart agriculture.",
+        "badge": "Ecosystem Alliances",
+        "image_path": "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1600&q=80",
+        "link_text": "Join NextGen Cohort",
+        "link_url": "#intake-form-section",
+        "status": "Active",
+        "sort_order": 3
+    }
+]

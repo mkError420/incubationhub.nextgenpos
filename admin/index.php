@@ -47,6 +47,9 @@ renderAdminHeader('dashboard', 'Dashboard Overview', 'Dashboard Overview');
         <p class="text-xs text-slate-500 mt-0.5">Welcome back, <?= htmlspecialchars(getCurrentAdmin()['full_name']) ?> • System operational</p>
     </div>
     <div class="flex flex-wrap gap-2 text-xs">
+        <a href="landing.php" class="inline-flex items-center px-3.5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-semibold rounded-lg shadow-sm transition">
+            <i class="fa-solid fa-pager mr-1.5"></i> Landing Page
+        </a>
         <a href="ideas.php" class="inline-flex items-center px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg shadow-sm transition">
             <i class="fa-solid fa-lightbulb mr-1.5"></i> Visitor Ideas (<?= $stats['new_ideas'] ?? 0 ?> New)
         </a>

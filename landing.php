@@ -23,6 +23,11 @@ $alreadyUnlocked = isVisitorUnlocked();
 $dynSiteLogo = getSiteSetting('site_logo', '');
 $dynSiteLogoUrl = !empty($dynSiteLogo) ? getLogoUrl($dynSiteLogo, false) : '';
 $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
+$landingSiteName = getSiteSetting('landing_site_name', 'NextGen IncubationHub');
+$landingSubtitle = getSiteSetting('landing_subtitle', 'Empowering visionary innovators, farmers, and entrepreneurs with living farmland testbeds, venture capital, and commercial scale.');
+$carouselEnabled = getSiteSetting('landing_carousel_enabled', '1');
+$carouselAutoplay = (int)getSiteSetting('landing_carousel_autoplay', '5000');
+$landingBanners = getLandingBanners(true); // Active banners only
 ?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -94,14 +99,14 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
             <!-- Logo / Brand Identity -->
             <a href="landing.php" class="flex items-center space-x-3 group">
                 <?php if (!empty($dynSiteLogoUrl)): ?>
-                    <img src="<?= htmlspecialchars($dynSiteLogoUrl) ?>" alt="<?= htmlspecialchars($dynSiteName) ?>" class="h-9 sm:h-10 w-auto max-w-[200px] object-contain transition group-hover:scale-105" onerror="this.style.display='none'; document.getElementById('default-landing-brand').style.display='flex';">
+                    <img src="<?= htmlspecialchars($dynSiteLogoUrl) ?>" alt="<?= htmlspecialchars($landingSiteName) ?>" class="h-9 sm:h-10 w-auto max-w-[200px] object-contain transition group-hover:scale-105" onerror="this.style.display='none'; document.getElementById('default-landing-brand').style.display='flex';">
                     <div id="default-landing-brand" style="display: none;" class="items-center space-x-3">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-agro-800 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
                             <i class="fa-solid fa-leaf text-lg text-emerald-200"></i>
                         </div>
                         <div>
-                            <span class="text-lg font-extrabold text-white tracking-tight">NextGen <span class="text-emerald-400">Farming</span></span>
-                            <span class="block text-[10px] font-bold text-emerald-300 uppercase tracking-widest -mt-1">Incubation Hub</span>
+                            <span class="text-lg font-extrabold text-white tracking-tight">NextGen <span class="text-emerald-400">IncubationHub</span></span>
+                            <span class="block text-[10px] font-bold text-emerald-300 uppercase tracking-widest -mt-1">Agri Innovation Platform</span>
                         </div>
                     </div>
                 <?php else: ?>
@@ -109,8 +114,8 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
                         <i class="fa-solid fa-leaf text-lg text-emerald-200"></i>
                     </div>
                     <div>
-                        <span class="text-lg font-extrabold text-white tracking-tight">NextGen <span class="text-emerald-400">Farming</span></span>
-                        <span class="block text-[10px] font-bold text-emerald-300 uppercase tracking-widest -mt-1">Incubation Hub</span>
+                        <span class="text-lg font-extrabold text-white tracking-tight">NextGen <span class="text-emerald-400">IncubationHub</span></span>
+                        <span class="block text-[10px] font-bold text-emerald-300 uppercase tracking-widest -mt-1">Agri Innovation Platform</span>
                     </div>
                 <?php endif; ?>
             </a>
@@ -147,18 +152,112 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
         <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
         <div class="absolute bottom-10 right-10 w-[400px] h-[300px] bg-amber-500/5 blur-[100px] rounded-full pointer-events-none"></div>
 
-        <!-- Hero Intro Section -->
-        <section class="pt-12 sm:pt-16 pb-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center relative z-10">
+        <!-- TOP BRAND TITLE & DYNAMIC BANNER CAROUSEL SECTION -->
+        <section class="pt-8 sm:pt-12 pb-6 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto relative z-10">
             
-            <div class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-900/40 text-emerald-300 border border-emerald-500/30 mb-6 backdrop-blur">
+            <!-- Site Name at Landing Page on TOP -->
+            <div class="text-center mb-8 sm:mb-10">
+                <div class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 mb-4 backdrop-blur shadow-sm">
+                    <i class="fa-solid fa-leaf mr-2 text-emerald-400"></i> Agricultural Innovation & Venture Studio
+                </div>
+                <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight sm:leading-none">
+                    <?= htmlspecialchars($landingSiteName) ?>
+                </h1>
+                <?php if (!empty($landingSubtitle)): ?>
+                    <p class="mt-4 text-sm sm:text-base lg:text-lg text-slate-300 max-w-3xl mx-auto font-medium leading-relaxed">
+                        <?= htmlspecialchars($landingSubtitle) ?>
+                    </p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Banner Carousel Under That Name -->
+            <?php if ($carouselEnabled === '1' && !empty($landingBanners)): ?>
+                <div id="landing-banner-carousel" class="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-emerald-600/30 bg-slate-900/90 shadow-2xl shadow-emerald-950/60 group" data-autoplay="<?= (int)$carouselAutoplay ?>" data-total-slides="<?= count($landingBanners) ?>">
+                    
+                    <!-- Carousel Slides Track -->
+                    <div class="carousel-track relative w-full h-[360px] sm:h-[440px] md:h-[480px]">
+                        <?php foreach ($landingBanners as $idx => $banner): 
+                            $bImg = getBannerImageUrl($banner['image_path'] ?? '');
+                            $isFirst = ($idx === 0);
+                        ?>
+                            <div class="carousel-slide absolute inset-0 transition-all duration-700 ease-in-out <?= $isFirst ? 'opacity-100 z-20 scale-100' : 'opacity-0 z-10 scale-95 pointer-events-none' ?>" data-slide-index="<?= $idx ?>">
+                                <!-- Slide Image with Dark Aesthetic Gradient Scrim -->
+                                <img src="<?= htmlspecialchars($bImg) ?>" alt="<?= htmlspecialchars($banner['title']) ?>" class="absolute inset-0 w-full h-full object-cover object-center transform transition duration-1000 group-hover:scale-105" loading="<?= $isFirst ? 'eager' : 'lazy' ?>" onerror="this.src='https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1600&q=80'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/65 to-transparent"></div>
+                                <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/60 to-transparent"></div>
+                                
+                                <!-- Content Container -->
+                                <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-10 md:p-12 z-30 max-w-3xl">
+                                    <?php if (!empty($banner['badge'])): ?>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 uppercase tracking-wider mb-3 backdrop-blur-md shadow-sm">
+                                            <i class="fa-solid fa-sparkles mr-1.5 text-amber-300"></i>
+                                            <?= htmlspecialchars($banner['badge']) ?>
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <h2 class="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                        <?= htmlspecialchars($banner['title']) ?>
+                                    </h2>
+
+                                    <?php if (!empty($banner['subtitle'])): ?>
+                                        <p class="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base text-slate-200 leading-relaxed max-w-2xl line-clamp-2 sm:line-clamp-none drop-shadow">
+                                            <?= htmlspecialchars($banner['subtitle']) ?>
+                                        </p>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($banner['link_text'])): ?>
+                                        <div class="mt-5 sm:mt-6 flex flex-wrap items-center gap-3">
+                                            <a href="<?= htmlspecialchars($banner['link_url'] ?: '#intake-form-section') ?>" class="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/30 transition transform hover:-translate-y-0.5">
+                                                <span><?= htmlspecialchars($banner['link_text']) ?></span>
+                                                <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                                            </a>
+                                            <a href="#intake-form-section" class="inline-flex items-center px-4 py-2.5 sm:py-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-white font-semibold text-xs border border-slate-700/80 backdrop-blur transition">
+                                                <i class="fa-solid fa-lightbulb mr-2 text-amber-400"></i> Submit Your Idea Below
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Previous & Next Arrow Buttons -->
+                    <button type="button" id="carousel-btn-prev" class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/75 hover:bg-emerald-600 border border-white/20 text-white flex items-center justify-center transition backdrop-blur shadow-xl hover:scale-110" aria-label="Previous Slide">
+                        <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i>
+                    </button>
+                    <button type="button" id="carousel-btn-next" class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/75 hover:bg-emerald-600 border border-white/20 text-white flex items-center justify-center transition backdrop-blur shadow-xl hover:scale-110" aria-label="Next Slide">
+                        <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
+                    </button>
+
+                    <!-- Slide Dots Navigation -->
+                    <div class="absolute bottom-4 sm:bottom-6 right-5 sm:right-10 z-30 flex items-center space-x-2">
+                        <?php foreach ($landingBanners as $idx => $banner): ?>
+                            <button type="button" class="carousel-dot-btn h-2.5 rounded-full transition-all duration-300 <?= $idx === 0 ? 'w-8 bg-emerald-400 shadow-md shadow-emerald-400/50' : 'w-2.5 bg-white/40 hover:bg-white/80' ?>" data-dot-index="<?= $idx ?>" aria-label="Go to slide <?= $idx + 1 ?>"></button>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Slide Progress Counter Badge -->
+                    <div class="absolute top-4 right-4 z-30 px-3 py-1 rounded-full bg-slate-950/70 border border-white/10 text-[11px] font-mono text-emerald-300 backdrop-blur">
+                        <span id="carousel-current-index">1</span> / <span><?= count($landingBanners) ?></span>
+                    </div>
+
+                </div>
+            <?php endif; ?>
+
+        </section>
+
+        <!-- Innovation Pitch Intro Section -->
+        <section class="pt-4 sm:pt-6 pb-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center relative z-10">
+            
+            <div class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-900/40 text-emerald-300 border border-emerald-500/30 mb-5 backdrop-blur">
                 <i class="fa-solid fa-seedling mr-2 text-emerald-400"></i> Agricultural Entrepreneurship Zone
             </div>
 
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight sm:leading-none">
+            <h2 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight sm:leading-none">
                 Transform Your Idea to a <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">Scale Base Agri Business</span>
-            </h1> 
+            </h2> 
 
-            <p class="mt-5 text-sm sm:text-base lg:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            <p class="mt-4 sm:mt-5 text-sm sm:text-base lg:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
                 NextGen Farming Incubation Hub unlocks pre-seed capital, 500+ acres of living farmland testbeds, and direct commercial off-take partnerships. Share your idea below to unlock full access to our platform and pitch directly to our incubation committee.
             </p>
 
@@ -788,6 +887,133 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
                 xhr.send(formData);
             });
         });
+
+        // Banner Carousel Interactive Controller
+        (function initBannerCarousel() {
+            const carousel = document.getElementById('landing-banner-carousel');
+            if (!carousel) return;
+
+            const slides = carousel.querySelectorAll('.carousel-slide');
+            const dots = carousel.querySelectorAll('.carousel-dot-btn');
+            const prevBtn = document.getElementById('carousel-btn-prev');
+            const nextBtn = document.getElementById('carousel-btn-next');
+            const currentCounter = document.getElementById('carousel-current-index');
+            const autoplaySpeed = parseInt(carousel.getAttribute('data-autoplay') || '5000', 10);
+            const totalSlides = slides.length;
+
+            if (totalSlides <= 1) {
+                if (prevBtn) prevBtn.style.display = 'none';
+                if (nextBtn) nextBtn.style.display = 'none';
+                return;
+            }
+
+            let currentIndex = 0;
+            let autoTimer = null;
+            let isHovered = false;
+
+            function goToSlide(index) {
+                if (index < 0) {
+                    index = totalSlides - 1;
+                } else if (index >= totalSlides) {
+                    index = 0;
+                }
+
+                slides.forEach((slide, i) => {
+                    if (i === index) {
+                        slide.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'z-10');
+                        slide.classList.add('opacity-100', 'scale-100', 'z-20');
+                    } else {
+                        slide.classList.remove('opacity-100', 'scale-100', 'z-20');
+                        slide.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'z-10');
+                    }
+                });
+
+                dots.forEach((dot, i) => {
+                    if (i === index) {
+                        dot.classList.remove('w-2.5', 'bg-white/40');
+                        dot.classList.add('w-8', 'bg-emerald-400', 'shadow-md', 'shadow-emerald-400/50');
+                    } else {
+                        dot.classList.remove('w-8', 'bg-emerald-400', 'shadow-md', 'shadow-emerald-400/50');
+                        dot.classList.add('w-2.5', 'bg-white/40');
+                    }
+                });
+
+                if (currentCounter) {
+                    currentCounter.textContent = (index + 1);
+                }
+
+                currentIndex = index;
+            }
+
+            function startAutoplay() {
+                if (autoplaySpeed > 0 && !autoTimer) {
+                    autoTimer = setInterval(function () {
+                        if (!isHovered) {
+                            goToSlide(currentIndex + 1);
+                        }
+                    }, autoplaySpeed);
+                }
+            }
+
+            function stopAutoplay() {
+                if (autoTimer) {
+                    clearInterval(autoTimer);
+                    autoTimer = null;
+                }
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function () {
+                    stopAutoplay();
+                    goToSlide(currentIndex + 1);
+                    startAutoplay();
+                });
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function () {
+                    stopAutoplay();
+                    goToSlide(currentIndex - 1);
+                    startAutoplay();
+                });
+            }
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', function () {
+                    const targetIdx = parseInt(this.getAttribute('data-dot-index'), 10);
+                    stopAutoplay();
+                    goToSlide(targetIdx);
+                    startAutoplay();
+                });
+            });
+
+            // Pause on hover
+            carousel.addEventListener('mouseenter', function () {
+                isHovered = true;
+            });
+            carousel.addEventListener('mouseleave', function () {
+                isHovered = false;
+            });
+
+            // Touch Swipe support for Mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            carousel.addEventListener('touchstart', function (e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            carousel.addEventListener('touchend', function (e) {
+                touchEndX = e.changedTouches[0].screenX;
+                if (touchStartX - touchEndX > 45) {
+                    goToSlide(currentIndex + 1); // Swipe left -> Next
+                } else if (touchEndX - touchStartX > 45) {
+                    goToSlide(currentIndex - 1); // Swipe right -> Prev
+                }
+            }, { passive: true });
+
+            startAutoplay();
+        })();
     </script>
 
 </body>

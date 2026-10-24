@@ -1075,6 +1075,10 @@ function getDefaultSiteSettings() {
         'site_logo'                  => '',
         'login_logo'                 => '',
         'landing_gate_enabled'       => '1',
+        'landing_site_name'          => 'NextGen IncubationHub',
+        'landing_subtitle'           => 'Empowering visionary innovators, farmers, and entrepreneurs with living farmland testbeds, venture capital, and commercial scale.',
+        'landing_carousel_enabled'   => '1',
+        'landing_carousel_autoplay'  => '5000',
     ];
 }
 
@@ -2193,7 +2197,9 @@ function getAdminDashboardStats() {
         'total_partners' => 0,
         'total_ideas'    => 0,
         'new_ideas'      => 0,
-        'ideas_with_video'=> 0
+        'ideas_with_video'=> 0,
+        'total_banners'  => 0,
+        'active_banners' => 0
     ];
 
     $pdo = getDbConnection();
@@ -2248,6 +2254,20 @@ function getAdminDashboardStats() {
                 }
             }
 
+            // Count landing banners
+            if (function_exists('ensureLandingBannersTable')) {
+                ensureLandingBannersTable();
+            }
+            $bannerStmt = $pdo->query("SELECT status FROM landing_banners");
+            if ($bannerStmt) {
+                while ($bRow = $bannerStmt->fetch()) {
+                    $stats['total_banners']++;
+                    if (($bRow['status'] ?? 'Active') === 'Active') {
+                        $stats['active_banners']++;
+                    }
+                }
+            }
+
             return $stats;
         } catch (PDOException $e) {
             error_log("Failed to get admin stats from MySQL: " . $e->getMessage());
@@ -2260,12 +2280,14 @@ function getAdminDashboardStats() {
     $offeringsFile= __DIR__ . '/../assets/offerings_fallback.json';
     $partnersFile = __DIR__ . '/../assets/network_fallback.json';
     $ideasFile    = __DIR__ . '/../assets/ideas_fallback.json';
+    $bannersFile  = __DIR__ . '/../assets/banners_fallback.json';
 
     $submissions = file_exists($fallbackFile) ? (json_decode(@file_get_contents($fallbackFile), true) ?: []) : [];
     $programs = file_exists($programsFile) ? (json_decode(@file_get_contents($programsFile), true) ?: []) : [];
     $offerings = file_exists($offeringsFile) ? (json_decode(@file_get_contents($offeringsFile), true) ?: []) : [];
     $partners = file_exists($partnersFile) ? (json_decode(@file_get_contents($partnersFile), true) ?: []) : [];
     $ideas    = file_exists($ideasFile) ? (json_decode(@file_get_contents($ideasFile), true) ?: []) : [];
+    $banners  = file_exists($bannersFile) ? (json_decode(@file_get_contents($bannersFile), true) ?: []) : (function_exists('getDefaultLandingBanners') ? getDefaultLandingBanners() : []);
 
     foreach ($submissions as $row) {
         $stats['total']++;
@@ -2292,6 +2314,13 @@ function getAdminDashboardStats() {
         }
         if (!empty($iItem['video_path']) || !empty($iItem['video_duration'])) {
             $stats['ideas_with_video']++;
+        }
+    }
+
+    $stats['total_banners'] = count($banners);
+    foreach ($banners as $bItem) {
+        if (($bItem['status'] ?? 'Active') === 'Active') {
+            $stats['active_banners']++;
         }
     }
 
@@ -3164,5 +3193,449 @@ function deleteVisitorIdea($id) {
     }
     return true;
 }
+
+/**
+ * ============================================================
+ * LANDING PAGE DYNAMIC BANNER CAROUSEL FUNCTIONS
+ * ============================================================
+ */
+
+function getDefaultLandingBanners() {
+    return [
+        [
+            'id' => 1,
+            'title' => 'Scale Your AgriTech Innovation to National Impact',
+            'subtitle' => 'Access 500+ acres of living farmland testbeds, IoT sensor laboratories, and direct commercial off-take partnerships across Bangladesh.',
+            'badge' => 'Flagship Accelerator 2026',
+            'image_path' => 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1600&q=80',
+            'link_text' => 'Submit Your Idea & Unlock Access',
+            'link_url' => '#intake-form-section',
+            'status' => 'Active',
+            'sort_order' => 1
+        ],
+        [
+            'id' => 2,
+            'title' => 'Pre-Seed & Catalytic Risk Capital for Agripreneurs',
+            'subtitle' => '$35,000 – $50,000 SAFE agreements, syndicate investor matchmaking, and institutional grant advisory to build resilient ventures.',
+            'badge' => 'Catalytic Venture Funding',
+            'image_path' => 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1600&q=80',
+            'link_text' => 'Pitch to Investment Committee',
+            'link_url' => '#intake-form-section',
+            'status' => 'Active',
+            'sort_order' => 2
+        ],
+        [
+            'id' => 3,
+            'title' => 'Bridging Research, Farmers & Venture Studio Ecosystems',
+            'subtitle' => 'Collaborate with DAE agronomists, university research labs, and supply chain aggregators to engineer climate-smart agriculture.',
+            'badge' => 'Ecosystem Alliances',
+            'image_path' => 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1600&q=80',
+            'link_text' => 'Join NextGen Cohort',
+            'link_url' => '#intake-form-section',
+            'status' => 'Active',
+            'sort_order' => 3
+        ]
+    ];
+}
+
+function getLandingBannersFallbackFilePath() {
+    return __DIR__ . '/../assets/banners_fallback.json';
+}
+
+function ensureLandingBannersTable() {
+    $pdo = getDbConnection();
+    if ($pdo === null) return false;
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `landing_banners` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `title` VARCHAR(255) NOT NULL,
+            `subtitle` TEXT DEFAULT NULL,
+            `badge` VARCHAR(100) DEFAULT NULL,
+            `image_path` VARCHAR(255) NOT NULL,
+            `link_text` VARCHAR(100) DEFAULT 'Explore More',
+            `link_url` VARCHAR(255) DEFAULT '#intake-form-section',
+            `sort_order` INT DEFAULT 0,
+            `status` ENUM('Active', 'Draft') DEFAULT 'Active',
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX `idx_status` (`status`),
+            INDEX `idx_sort` (`sort_order`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        // Seed if empty
+        $check = (int)$pdo->query("SELECT COUNT(*) FROM landing_banners")->fetchColumn();
+        if ($check === 0) {
+            $seeds = getDefaultLandingBanners();
+            $stmt = $pdo->prepare("INSERT INTO landing_banners (id, title, subtitle, badge, image_path, link_text, link_url, sort_order, status)
+                VALUES (:id, :title, :subtitle, :badge, :image_path, :link_text, :link_url, :sort_order, :status)");
+            foreach ($seeds as $s) {
+                $stmt->execute([
+                    ':id' => $s['id'],
+                    ':title' => $s['title'],
+                    ':subtitle' => $s['subtitle'],
+                    ':badge' => $s['badge'],
+                    ':image_path' => $s['image_path'],
+                    ':link_text' => $s['link_text'],
+                    ':link_url' => $s['link_url'],
+                    ':sort_order' => $s['sort_order'],
+                    ':status' => $s['status']
+                ]);
+            }
+        }
+        return true;
+    } catch (PDOException $e) {
+        error_log("Failed to ensure landing_banners table: " . $e->getMessage());
+        return false;
+    }
+}
+
+function getLandingBanners($activeOnly = false) {
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            ensureLandingBannersTable();
+            $sql = "SELECT * FROM landing_banners";
+            if ($activeOnly) {
+                $sql .= " WHERE status = 'Active'";
+            }
+            $sql .= " ORDER BY sort_order ASC, id ASC";
+            $stmt = $pdo->query($sql);
+            $rows = $stmt->fetchAll();
+            if (!empty($rows)) {
+                return $rows;
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to fetch landing_banners from MySQL: " . $e->getMessage());
+        }
+    }
+
+    // Fallback file handling
+    $fallbackFile = getLandingBannersFallbackFilePath();
+    if (file_exists($fallbackFile)) {
+        $banners = json_decode(@file_get_contents($fallbackFile), true) ?: [];
+    } else {
+        $banners = getDefaultLandingBanners();
+        @file_put_contents($fallbackFile, json_encode($banners, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    if ($activeOnly) {
+        $banners = array_values(array_filter($banners, function($item) {
+            return ($item['status'] ?? 'Active') === 'Active';
+        }));
+    }
+
+    usort($banners, function($a, $b) {
+        $sa = (int)($a['sort_order'] ?? 0);
+        $sb = (int)($b['sort_order'] ?? 0);
+        if ($sa === $sb) {
+            return ((int)($a['id'] ?? 0)) <=> ((int)($b['id'] ?? 0));
+        }
+        return $sa <=> $sb;
+    });
+
+    return $banners;
+}
+
+function getLandingBannerById($id) {
+    $id = (int)$id;
+    if ($id <= 0) return null;
+
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            ensureLandingBannersTable();
+            $stmt = $pdo->prepare("SELECT * FROM landing_banners WHERE id = :id LIMIT 1");
+            $stmt->execute([':id' => $id]);
+            $row = $stmt->fetch();
+            if ($row) return $row;
+        } catch (PDOException $e) {
+            error_log("Failed to fetch landing banner by id from MySQL: " . $e->getMessage());
+        }
+    }
+
+    $fallbackFile = getLandingBannersFallbackFilePath();
+    if (file_exists($fallbackFile)) {
+        $banners = json_decode(@file_get_contents($fallbackFile), true) ?: [];
+        foreach ($banners as $b) {
+            if ((int)($b['id'] ?? 0) === $id) {
+                return $b;
+            }
+        }
+    }
+    return null;
+}
+
+function saveLandingBanner(array $data) {
+    $id        = !empty($data['id']) ? (int)$data['id'] : null;
+    $title     = trim($data['title'] ?? '');
+    $subtitle  = trim($data['subtitle'] ?? '');
+    $badge     = trim($data['badge'] ?? '');
+    $imagePath = trim($data['image_path'] ?? '');
+    $linkText  = trim($data['link_text'] ?? '');
+    $linkUrl   = trim($data['link_url'] ?? '#intake-form-section');
+    $sortOrder = (int)($data['sort_order'] ?? 0);
+    $status    = in_array($data['status'] ?? '', ['Active', 'Draft']) ? $data['status'] : 'Active';
+
+    if (empty($title)) {
+        return false;
+    }
+
+    // Default image if empty
+    if (empty($imagePath)) {
+        $imagePath = 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1600&q=80';
+    }
+
+    $pdo = getDbConnection();
+    $dbSaved = false;
+
+    if ($pdo !== null) {
+        try {
+            ensureLandingBannersTable();
+            if ($id) {
+                $stmt = $pdo->prepare("UPDATE landing_banners SET 
+                    title = :title, subtitle = :subtitle, badge = :badge,
+                    image_path = :image_path, link_text = :link_text, link_url = :link_url,
+                    sort_order = :sort_order, status = :status WHERE id = :id");
+                $dbSaved = $stmt->execute([
+                    ':title'      => $title,
+                    ':subtitle'   => $subtitle,
+                    ':badge'      => $badge,
+                    ':image_path' => $imagePath,
+                    ':link_text'  => $linkText,
+                    ':link_url'   => $linkUrl,
+                    ':sort_order' => $sortOrder,
+                    ':status'     => $status,
+                    ':id'         => $id
+                ]);
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO landing_banners 
+                    (title, subtitle, badge, image_path, link_text, link_url, sort_order, status)
+                    VALUES (:title, :subtitle, :badge, :image_path, :link_text, :link_url, :sort_order, :status)");
+                $dbSaved = $stmt->execute([
+                    ':title'      => $title,
+                    ':subtitle'   => $subtitle,
+                    ':badge'      => $badge,
+                    ':image_path' => $imagePath,
+                    ':link_text'  => $linkText,
+                    ':link_url'   => $linkUrl,
+                    ':sort_order' => $sortOrder,
+                    ':status'     => $status
+                ]);
+                if ($dbSaved) {
+                    $id = (int)$pdo->lastInsertId();
+                }
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to save landing banner in MySQL: " . $e->getMessage());
+        }
+    }
+
+    // Dual-persistence fallback file
+    $fallbackFile = getLandingBannersFallbackFilePath();
+    $banners = file_exists($fallbackFile) ? (json_decode(@file_get_contents($fallbackFile), true) ?: []) : getDefaultLandingBanners();
+    
+    if (!$id) {
+        $maxId = 0;
+        foreach ($banners as $b) {
+            if ((int)($b['id'] ?? 0) > $maxId) $maxId = (int)$b['id'];
+        }
+        $id = $maxId + 1;
+    }
+
+    $updated = false;
+    foreach ($banners as &$b) {
+        if ((int)($b['id'] ?? 0) === $id) {
+            $b['title']      = $title;
+            $b['subtitle']   = $subtitle;
+            $b['badge']      = $badge;
+            $b['image_path'] = $imagePath;
+            $b['link_text']  = $linkText;
+            $b['link_url']   = $linkUrl;
+            $b['sort_order'] = $sortOrder;
+            $b['status']     = $status;
+            $updated = true;
+            break;
+        }
+    }
+    unset($b);
+
+    if (!$updated) {
+        $banners[] = [
+            'id'         => $id,
+            'title'      => $title,
+            'subtitle'   => $subtitle,
+            'badge'      => $badge,
+            'image_path' => $imagePath,
+            'link_text'  => $linkText,
+            'link_url'   => $linkUrl,
+            'sort_order' => $sortOrder,
+            'status'     => $status
+        ];
+    }
+
+    @file_put_contents($fallbackFile, json_encode($banners, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return true;
+}
+
+function deleteLandingBanner($id) {
+    $id = (int)$id;
+    if ($id <= 0) return false;
+
+    $existing = getLandingBannerById($id);
+    if (!empty($existing['image_path'])) {
+        deleteOldBannerFile($existing['image_path']);
+    }
+
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            ensureLandingBannersTable();
+            $stmt = $pdo->prepare("DELETE FROM landing_banners WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+        } catch (PDOException $e) {
+            error_log("Failed to delete landing banner from MySQL: " . $e->getMessage());
+        }
+    }
+
+    $fallbackFile = getLandingBannersFallbackFilePath();
+    if (file_exists($fallbackFile)) {
+        $banners = json_decode(@file_get_contents($fallbackFile), true) ?: [];
+        $banners = array_values(array_filter($banners, function($item) use ($id) {
+            return (int)($item['id'] ?? 0) !== $id;
+        }));
+        @file_put_contents($fallbackFile, json_encode($banners, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+    return true;
+}
+
+function toggleLandingBannerStatus($id) {
+    $existing = getLandingBannerById($id);
+    if (!$existing) return false;
+
+    $newStatus = (($existing['status'] ?? 'Active') === 'Active') ? 'Draft' : 'Active';
+    $existing['status'] = $newStatus;
+    return saveLandingBanner($existing);
+}
+
+function resetDefaultLandingBanners() {
+    $seeds = getDefaultLandingBanners();
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            ensureLandingBannersTable();
+            $pdo->exec("TRUNCATE TABLE landing_banners");
+            $stmt = $pdo->prepare("INSERT INTO landing_banners (id, title, subtitle, badge, image_path, link_text, link_url, sort_order, status)
+                VALUES (:id, :title, :subtitle, :badge, :image_path, :link_text, :link_url, :sort_order, :status)");
+            foreach ($seeds as $s) {
+                $stmt->execute([
+                    ':id' => $s['id'],
+                    ':title' => $s['title'],
+                    ':subtitle' => $s['subtitle'],
+                    ':badge' => $s['badge'],
+                    ':image_path' => $s['image_path'],
+                    ':link_text' => $s['link_text'],
+                    ':link_url' => $s['link_url'],
+                    ':sort_order' => $s['sort_order'],
+                    ':status' => $s['status']
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to reset landing banners in MySQL: " . $e->getMessage());
+        }
+    }
+
+    $fallbackFile = getLandingBannersFallbackFilePath();
+    @file_put_contents($fallbackFile, json_encode($seeds, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    return true;
+}
+
+function getBannerImageUrl($path = null, $fromAdmin = false) {
+    if (empty($path)) {
+        return 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1600&q=80';
+    }
+    $path = trim($path);
+    // If external URL or data URI, return as-is
+    if (preg_match('#^(https?:)?//#i', $path) || str_starts_with($path, 'data:')) {
+        return $path;
+    }
+    $cleanPath = ltrim($path, '/\\');
+    if ($fromAdmin) {
+        if (str_starts_with($cleanPath, '../')) {
+            return $cleanPath;
+        }
+        return '../' . $cleanPath;
+    } else {
+        if (str_starts_with($cleanPath, '../')) {
+            return preg_replace('#^\.\./#', '', $cleanPath);
+        }
+        return $cleanPath;
+    }
+}
+
+function deleteOldBannerFile($path) {
+    if (empty($path)) return false;
+    $clean = ltrim($path, '/\\');
+    $clean = preg_replace('#^\.\./#', '', $clean);
+    if (strpos($clean, 'assets/uploads/banners/') === 0 && !str_contains($clean, '..')) {
+        $fullPath = __DIR__ . '/../' . $clean;
+        if (file_exists($fullPath) && is_file($fullPath) && basename($fullPath) !== 'index.html') {
+            return @unlink($fullPath);
+        }
+    }
+    return false;
+}
+
+function processBannerUpload($fileKey, $prefix = 'banner') {
+    if (!isset($_FILES[$fileKey]) || !is_array($_FILES[$fileKey])) {
+        return ['success' => false, 'path' => '', 'error' => 'No file received'];
+    }
+
+    $file = $_FILES[$fileKey];
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        $errorMap = [
+            UPLOAD_ERR_INI_SIZE   => 'Uploaded image exceeds server upload_max_filesize limit.',
+            UPLOAD_ERR_FORM_SIZE  => 'Uploaded image exceeds form MAX_FILE_SIZE limit.',
+            UPLOAD_ERR_PARTIAL    => 'Image was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE    => 'No image was selected.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder on server.',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write image file to disk.',
+            UPLOAD_ERR_EXTENSION  => 'A PHP extension stopped the file upload.',
+        ];
+        return ['success' => false, 'path' => '', 'error' => $errorMap[$file['error']] ?? ('Upload error code: ' . $file['error'])];
+    }
+
+    $allowedExts = ['png', 'jpg', 'jpeg', 'webp', 'gif'];
+    $origName = $file['name'];
+    $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+
+    if (!in_array($ext, $allowedExts)) {
+        return ['success' => false, 'path' => '', 'error' => 'Invalid image format (.' . htmlspecialchars($ext) . '). Allowed: PNG, JPG, JPEG, WEBP, GIF.'];
+    }
+
+    // Limit size to 10MB
+    $maxBytes = 10 * 1024 * 1024;
+    if ($file['size'] > $maxBytes) {
+        return ['success' => false, 'path' => '', 'error' => 'Image size exceeds 10MB limit. Please upload an optimized banner image.'];
+    }
+
+    $targetDir = __DIR__ . '/../assets/uploads/banners/';
+    if (!is_dir($targetDir)) {
+        @mkdir($targetDir, 0777, true);
+    }
+
+    $safeName = $prefix . '_' . time() . '_' . substr(md5(uniqid(mt_rand(), true)), 0, 8) . '.' . $ext;
+    $targetPath = $targetDir . $safeName;
+
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        return ['success' => false, 'path' => '', 'error' => 'Could not move uploaded banner into assets/uploads/banners/.'];
+    }
+
+    return [
+        'success' => true,
+        'path'    => 'assets/uploads/banners/' . $safeName,
+        'error'   => ''
+    ];
+}
+
 
 

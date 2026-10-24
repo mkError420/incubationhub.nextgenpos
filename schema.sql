@@ -171,6 +171,26 @@ CREATE TABLE IF NOT EXISTS `visitor_ideas` (
     INDEX `idx_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ------------------------------------------------------------
+-- 9. Table: landing_banners
+-- Dynamic banner carousel slides on the Landing Page
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `landing_banners` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `title` VARCHAR(255) NOT NULL,
+    `subtitle` TEXT DEFAULT NULL,
+    `badge` VARCHAR(100) DEFAULT NULL,
+    `image_path` VARCHAR(255) NOT NULL,
+    `link_text` VARCHAR(100) DEFAULT 'Explore More',
+    `link_url` VARCHAR(255) DEFAULT '#intake-form-section',
+    `sort_order` INT DEFAULT 0,
+    `status` ENUM('Active', 'Draft') DEFAULT 'Active',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_status` (`status`),
+    INDEX `idx_sort` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================================
 -- SEED DATA: Dynamic Site Settings, Programs, and Admin User
 -- ============================================================
@@ -184,6 +204,10 @@ ON DUPLICATE KEY UPDATE `username` = `username`;
 -- Dynamic Content Settings
 INSERT INTO `site_settings` (`setting_key`, `setting_value`, `setting_group`, `label`, `field_type`) VALUES
 ('site_name', 'NextGen Farming Incubation Hub', 'general', 'Website Title', 'text'),
+('landing_site_name', 'NextGen IncubationHub', 'landing', 'Landing Page Top Title', 'text'),
+('landing_subtitle', 'Empowering visionary innovators, farmers, and entrepreneurs with living farmland testbeds, venture capital, and commercial scale.', 'landing', 'Landing Page Subtitle', 'textarea'),
+('landing_carousel_enabled', '1', 'landing', 'Enable Landing Page Banner Carousel', 'text'),
+('landing_carousel_autoplay', '5000', 'landing', 'Carousel Autoplay Speed (ms)', 'number'),
 ('landing_gate_enabled', '1', 'general', 'Landing Page Gate Enabled (Require idea submission before viewing website)', 'text'),
 ('site_logo', '', 'branding', 'Website & Navbar Logo', 'text'),
 ('login_logo', '', 'branding', 'Admin Login Console Logo', 'text'),
@@ -356,4 +380,14 @@ VALUES
 ('Farhana Rahman', 'f.rahman@bengalventures.vc', '+880 1819-876543', 'Bengal Delta Capital', 'Investor', 'Syndicate Deal Flow', 'https://bengalventures.vc', 'Interested in joining your angel syndicate and co-investing in Series Seed AgriTech ventures with strong rural distribution and climate resilience models.', 'Shortlisted', NOW() - INTERVAL 1 DAY),
 ('Dr. Michael Jansen', 'm.jansen@agroinnovate-nl.org', '+31 20 555 0192', 'Wageningen Agro Partners', 'Support Organisation', 'Institutional Partnership', 'https://agroinnovate-nl.org', 'We are looking to collaborate with NextGen Farming Incubation Hub to deploy Dutch greenhouse precision tech trials across Mymensingh horticulture clusters.', 'Contacted', NOW() - INTERVAL 5 HOUR),
 ('Prof. A. S. M. Kamal', 'asm.kamal@bau.edu.bd', '+880 1911-223344', 'Bangladesh Agricultural University', 'Mentor', 'Ag-Bio Mentor Residency', 'https://bau.edu.bd/faculty/kamal', 'Offering 20+ years of domain expertise in drought-resistant seed genomics and organic bio-fertilizer scaling to mentor early-stage cohort founders.', 'New', NOW() - INTERVAL 30 MINUTE);
+
+-- Dynamic Landing Page Banners
+INSERT INTO `landing_banners` 
+(`id`, `title`, `subtitle`, `badge`, `image_path`, `link_text`, `link_url`, `sort_order`, `status`)
+VALUES
+(1, 'Scale Your AgriTech Innovation to National Impact', 'Access 500+ acres of living farmland testbeds, IoT sensor laboratories, and direct commercial off-take partnerships across Bangladesh.', 'Flagship Accelerator 2026', 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1600&q=80', 'Submit Your Idea & Unlock Access', '#intake-form-section', 1, 'Active'),
+(2, 'Pre-Seed & Catalytic Risk Capital for Agripreneurs', '$35,000 – $50,000 SAFE agreements, syndicate investor matchmaking, and institutional grant advisory to build resilient ventures.', 'Catalytic Venture Funding', 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1600&q=80', 'Pitch to Investment Committee', '#intake-form-section', 2, 'Active'),
+(3, 'Bridging Research, Farmers & Venture Studio Ecosystems', 'Collaborate with DAE agronomists, university research labs, and supply chain aggregators to engineer climate-smart agriculture.', 'Ecosystem Alliances', 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1600&q=80', 'Join NextGen Cohort', '#intake-form-section', 3, 'Active')
+ON DUPLICATE KEY UPDATE `title` = VALUES(`title`);
+
 

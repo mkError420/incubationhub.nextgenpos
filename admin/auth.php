@@ -211,6 +211,12 @@ function renderAdminHeader($activePage = 'dashboard', $pageTitle = 'Dashboard Ov
                         Content & Programs
                     </div>
 
+                    <a href="landing.php" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition <?= $activePage === 'landing' ? 'bg-emerald-700 text-white font-bold shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/80' ?>">
+                        <i class="fa-solid fa-pager w-5 text-center text-sm"></i>
+                        <span>Landing Page</span>
+                        <span class="ml-auto text-[10px] bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded font-mono"><?= $stats['total_banners'] ?? 3 ?> Slides</span>
+                    </a>
+
                     <a href="content.php" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition <?= $activePage === 'content' ? 'bg-emerald-700 text-white font-bold shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/80' ?>">
                         <i class="fa-solid fa-pen-to-square w-5 text-center text-sm"></i>
                         <span>Site Content CMS</span>
