@@ -102,11 +102,16 @@ foreach ($allIdeas as $item) {
         $withVideoCount++;
     }
 
-    $cat = $item['category'] ?? 'Entrepreneurs';
-    if ($cat === 'Entrepreneurs') $entrepreneursCount++;
-    elseif ($cat === 'Investors') $investorsCount++;
-    elseif ($cat === 'Mentors') $mentorsCount++;
-    elseif ($cat === 'Organizers') $organizersCount++;
+    $cat = trim($item['category'] ?? '');
+    if (strcasecmp($cat, 'Investor') === 0 || strcasecmp($cat, 'Investors') === 0) {
+        $investorsCount++;
+    } elseif (strcasecmp($cat, 'Mentor') === 0 || strcasecmp($cat, 'Mentors') === 0) {
+        $mentorsCount++;
+    } elseif (strcasecmp($cat, 'Organizer') === 0 || strcasecmp($cat, 'Organizers') === 0 || stripos($cat, 'organis') !== false || stripos($cat, 'organiz') !== false) {
+        $organizersCount++;
+    } else {
+        $entrepreneursCount++;
+    }
 }
 
 // Apply in-memory filtering for active view

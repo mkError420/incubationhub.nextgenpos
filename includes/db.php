@@ -3138,10 +3138,10 @@ function getVisitorIdeas($limit = 100, $status = null, $search = null, $category
 
 function getVisitorIdeaCountsByCategory() {
     $counts = [
-        'Entrepreneurs' => 100,
-        'Investors'     => 20,
-        'Mentors'       => 15,
-        'Organizers'    => 24
+        'Entrepreneurs' => 0,
+        'Investors'     => 0,
+        'Mentors'       => 0,
+        'Organizers'    => 0
     ];
 
     $pdo = getDbConnection();

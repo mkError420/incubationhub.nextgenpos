@@ -267,7 +267,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                 <div id="counter-card-entrepreneurs" data-category="Entrepreneurs" class="impact-counter-card cursor-pointer bg-slate-900/80 border-2 border-emerald-500/80 ring-2 ring-emerald-500/30 p-3.5 sm:p-4 rounded-xl backdrop-blur transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg shadow-emerald-950/50" title="Click to select Entrepreneurs in form">
                     <div class="flex items-center justify-between">
                         <span class="text-xl sm:text-2xl font-black text-emerald-400 block tracking-tight">
-                            <span id="counter-val-entrepreneurs"><?= htmlspecialchars((string)($counterStats['Entrepreneurs'] ?? 100)) ?></span>+
+                            <span id="counter-val-entrepreneurs"><?= (int)($counterStats['Entrepreneurs'] ?? 0) ?></span><span id="counter-plus-entrepreneurs" class="<?= ((int)($counterStats['Entrepreneurs'] ?? 0) > 0) ? '' : 'hidden' ?>">+</span>
                         </span>
                         <i class="fa-solid fa-seedling text-emerald-400 text-xs"></i>
                     </div>
@@ -278,7 +278,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                 <div id="counter-card-investors" data-category="Investors" class="impact-counter-card cursor-pointer bg-slate-900/60 border border-slate-800/80 hover:border-amber-500/50 p-3.5 sm:p-4 rounded-xl backdrop-blur transition-all duration-300 transform hover:-translate-y-0.5" title="Click to select Investors in form">
                     <div class="flex items-center justify-between">
                         <span class="text-xl sm:text-2xl font-black text-amber-300 block tracking-tight">
-                            <span id="counter-val-investors"><?= htmlspecialchars((string)($counterStats['Investors'] ?? 20)) ?></span>+
+                            <span id="counter-val-investors"><?= (int)($counterStats['Investors'] ?? 0) ?></span><span id="counter-plus-investors" class="<?= ((int)($counterStats['Investors'] ?? 0) > 0) ? '' : 'hidden' ?>">+</span>
                         </span>
                         <i class="fa-solid fa-coins text-amber-400/50 text-xs"></i>
                     </div>
@@ -289,7 +289,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                 <div id="counter-card-mentors" data-category="Mentors" class="impact-counter-card cursor-pointer bg-slate-900/60 border border-slate-800/80 hover:border-blue-500/50 p-3.5 sm:p-4 rounded-xl backdrop-blur transition-all duration-300 transform hover:-translate-y-0.5" title="Click to select Mentors in form">
                     <div class="flex items-center justify-between">
                         <span class="text-xl sm:text-2xl font-black text-blue-400 block tracking-tight">
-                            <span id="counter-val-mentors"><?= htmlspecialchars((string)($counterStats['Mentors'] ?? 15)) ?></span>+
+                            <span id="counter-val-mentors"><?= (int)($counterStats['Mentors'] ?? 0) ?></span><span id="counter-plus-mentors" class="<?= ((int)($counterStats['Mentors'] ?? 0) > 0) ? '' : 'hidden' ?>">+</span>
                         </span>
                         <i class="fa-solid fa-chalkboard-user text-blue-400/50 text-xs"></i>
                     </div>
@@ -300,7 +300,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                 <div id="counter-card-organizers" data-category="Organizers" class="impact-counter-card cursor-pointer bg-slate-900/60 border border-slate-800/80 hover:border-teal-500/50 p-3.5 sm:p-4 rounded-xl backdrop-blur transition-all duration-300 transform hover:-translate-y-0.5" title="Click to select Organizers in form">
                     <div class="flex items-center justify-between">
                         <span class="text-xl sm:text-2xl font-black text-teal-300 block tracking-tight">
-                            <span id="counter-val-organizers"><?= htmlspecialchars((string)($counterStats['Organizers'] ?? 24)) ?></span>+
+                            <span id="counter-val-organizers"><?= (int)($counterStats['Organizers'] ?? 0) ?></span><span id="counter-plus-organizers" class="<?= ((int)($counterStats['Organizers'] ?? 0) > 0) ? '' : 'hidden' ?>">+</span>
                         </span>
                         <i class="fa-solid fa-users text-teal-400/50 text-xs"></i>
                     </div>
@@ -1038,10 +1038,18 @@ $counterStats = getVisitorIdeaCountsByCategory();
                             ['entrepreneurs', 'investors', 'mentors', 'organizers'].forEach(k => {
                                 const capKey = k.charAt(0).toUpperCase() + k.slice(1);
                                 const valEl = document.getElementById('counter-val-' + k);
+                                const plusEl = document.getElementById('counter-plus-' + k);
                                 if (valEl && response.updated_counts[capKey] !== undefined) {
                                     const oldVal = parseInt(valEl.textContent.trim(), 10) || 0;
                                     const newVal = parseInt(response.updated_counts[capKey], 10);
                                     valEl.textContent = newVal;
+                                    if (plusEl) {
+                                        if (newVal > 0) {
+                                            plusEl.classList.remove('hidden');
+                                        } else {
+                                            plusEl.classList.add('hidden');
+                                        }
+                                    }
                                     if (newVal > oldVal) {
                                         valEl.parentElement.classList.add('scale-125', 'transition-transform', 'duration-300');
                                         setTimeout(() => valEl.parentElement.classList.remove('scale-125'), 600);
@@ -1059,7 +1067,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                         // Update dynamic feedback in success box
                         const successFeedback = document.getElementById('success-category-feedback');
                         if (successFeedback && response.updated_counts && response.updated_counts[submittedCat] !== undefined) {
-                            successFeedback.textContent = submittedCat + ' Track: ' + response.updated_counts[submittedCat] + '+ Impact Count';
+                            successFeedback.textContent = submittedCat + ' Track: ' + response.updated_counts[submittedCat] + ' Total Submissions';
                         } else if (successFeedback) {
                             successFeedback.textContent = submittedCat + ' Track: Verified & Dynamic Count Incremented';
                         }
