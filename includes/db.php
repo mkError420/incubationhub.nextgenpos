@@ -2818,6 +2818,7 @@ function ensureVisitorIdeasTable() {
         $pdo->exec("CREATE TABLE IF NOT EXISTS `visitor_ideas` (
             `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             `full_name` VARCHAR(150) NOT NULL,
+            `category` VARCHAR(50) NOT NULL DEFAULT 'Entrepreneurs',
             `email` VARCHAR(150) DEFAULT NULL,
             `phone` VARCHAR(50) NOT NULL,
             `local_address` TEXT NOT NULL,
@@ -2833,9 +2834,22 @@ function ensureVisitorIdeasTable() {
             `user_agent` VARCHAR(255) DEFAULT NULL,
             `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX `idx_category` (`category`),
             INDEX `idx_status` (`status`),
             INDEX `idx_created_at` (`created_at`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        // Ensure category column exists in already created tables
+        try {
+            $colCheck = $pdo->query("SHOW COLUMNS FROM `visitor_ideas` LIKE 'category'")->fetch();
+            if (!$colCheck) {
+                $pdo->exec("ALTER TABLE `visitor_ideas` ADD COLUMN `category` VARCHAR(50) NOT NULL DEFAULT 'Entrepreneurs' AFTER `full_name`");
+                $pdo->exec("ALTER TABLE `visitor_ideas` ADD INDEX `idx_category` (`category`)");
+            }
+        } catch (PDOException $eCol) {
+            // Silently ignore if already exists
+        }
+
         return true;
     } catch (PDOException $e) {
         error_log("Failed to ensure visitor_ideas table: " . $e->getMessage());
@@ -2912,6 +2926,15 @@ function requireVisitorAccess() {
  */
 function saveVisitorIdea(array $data, ?array $videoFile = null) {
     $fullName     = trim($data['full_name'] ?? '');
+    $rawCategory  = trim($data['category'] ?? '');
+    $validCats    = ['Entrepreneurs', 'Investors', 'Mentors', 'Organizers'];
+    if ($rawCategory === 'Entrepreneur') $category = 'Entrepreneurs';
+    elseif ($rawCategory === 'Investor') $category = 'Investors';
+    elseif ($rawCategory === 'Mentor') $category = 'Mentors';
+    elseif ($rawCategory === 'Organizer' || $rawCategory === 'Support Organisation') $category = 'Organizers';
+    elseif (in_array($rawCategory, $validCats)) $category = $rawCategory;
+    else $category = 'Entrepreneurs';
+
     $email        = trim($data['email'] ?? '');
     $phone        = trim($data['phone'] ?? '');
     $localAddress = trim($data['local_address'] ?? '');
@@ -2987,11 +3010,12 @@ function saveVisitorIdea(array $data, ?array $videoFile = null) {
         ensureVisitorIdeasTable();
         try {
             $sql = "INSERT INTO visitor_ideas 
-                    (full_name, email, phone, local_address, education, idea_description, video_path, video_filename, video_duration, video_size, status, ip_address, user_agent, created_at)
-                    VALUES (:full_name, :email, :phone, :local_address, :education, :idea_description, :video_path, :video_filename, :video_duration, :video_size, 'New', :ip_address, :user_agent, NOW())";
+                    (full_name, category, email, phone, local_address, education, idea_description, video_path, video_filename, video_duration, video_size, status, ip_address, user_agent, created_at)
+                    VALUES (:full_name, :category, :email, :phone, :local_address, :education, :idea_description, :video_path, :video_filename, :video_duration, :video_size, 'New', :ip_address, :user_agent, NOW())";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':full_name'        => $fullName,
+                ':category'         => $category,
                 ':email'            => !empty($email) ? $email : null,
                 ':phone'            => $phone,
                 ':local_address'    => $localAddress,
@@ -3020,6 +3044,7 @@ function saveVisitorIdea(array $data, ?array $videoFile = null) {
     $newRecord = [
         'id'               => $newId,
         'full_name'        => htmlspecialchars($fullName),
+        'category'         => $category,
         'email'            => htmlspecialchars($email),
         'phone'            => htmlspecialchars($phone),
         'local_address'    => htmlspecialchars($localAddress),
@@ -3050,13 +3075,14 @@ function saveVisitorIdea(array $data, ?array $videoFile = null) {
     @setcookie('nextgen_visitor_pass', 'unlocked_' . md5($fullName . $phone), time() + (86400 * 365), '/');
 
     return [
-        'success' => true,
-        'id'      => $newId,
-        'message' => 'Thank you, ' . htmlspecialchars($fullName) . '! Your idea has been sent to our incubation management board. Full website access is now unlocked.'
+        'success'  => true,
+        'id'       => $newId,
+        'category' => $category,
+        'message'  => 'Thank you, ' . htmlspecialchars($fullName) . '! Your idea has been sent to our incubation management board. Full website access is now unlocked.'
     ];
 }
 
-function getVisitorIdeas($limit = 100, $status = null, $search = null) {
+function getVisitorIdeas($limit = 100, $status = null, $search = null, $category = null) {
     $pdo = getDbConnection();
     if ($pdo !== null) {
         ensureVisitorIdeasTable();
@@ -3067,8 +3093,12 @@ function getVisitorIdeas($limit = 100, $status = null, $search = null) {
                 $sql .= " AND status = :status";
                 $params[':status'] = $status;
             }
+            if (!empty($category)) {
+                $sql .= " AND category = :category";
+                $params[':category'] = $category;
+            }
             if (!empty($search)) {
-                $sql .= " AND (full_name LIKE :s OR phone LIKE :s OR email LIKE :s OR local_address LIKE :s OR education LIKE :s OR idea_description LIKE :s)";
+                $sql .= " AND (full_name LIKE :s OR category LIKE :s OR phone LIKE :s OR email LIKE :s OR local_address LIKE :s OR education LIKE :s OR idea_description LIKE :s)";
                 $params[':s'] = '%' . $search . '%';
             }
             $sql .= " ORDER BY created_at DESC LIMIT " . (int)$limit;
@@ -3088,14 +3118,68 @@ function getVisitorIdeas($limit = 100, $status = null, $search = null) {
             return ($i['status'] ?? '') === $status;
         }));
     }
+    if (!empty($category)) {
+        $ideas = array_values(array_filter($ideas, function($i) use ($category) {
+            return ($i['category'] ?? 'Entrepreneurs') === $category;
+        }));
+    }
     if (!empty($search)) {
         $searchLower = strtolower($search);
         $ideas = array_values(array_filter($ideas, function($i) use ($searchLower) {
-            $txt = strtolower(($i['full_name'] ?? '') . ' ' . ($i['phone'] ?? '') . ' ' . ($i['email'] ?? '') . ' ' . ($i['local_address'] ?? '') . ' ' . ($i['education'] ?? '') . ' ' . ($i['idea_description'] ?? ''));
+            $txt = strtolower(($i['full_name'] ?? '') . ' ' . ($i['category'] ?? '') . ' ' . ($i['phone'] ?? '') . ' ' . ($i['email'] ?? '') . ' ' . ($i['local_address'] ?? '') . ' ' . ($i['education'] ?? '') . ' ' . ($i['idea_description'] ?? ''));
             return strpos($txt, $searchLower) !== false;
         }));
     }
     return array_slice($ideas, 0, $limit);
+}
+
+function getVisitorIdeaCountsByCategory() {
+    $counts = [
+        'Entrepreneurs' => 100,
+        'Investors'     => 20,
+        'Mentors'       => 15,
+        'Organizers'    => 24
+    ];
+
+    $pdo = getDbConnection();
+    if ($pdo !== null) {
+        try {
+            ensureVisitorIdeasTable();
+            $stmt = $pdo->query("SELECT category, COUNT(*) as cnt FROM visitor_ideas GROUP BY category");
+            if ($stmt) {
+                while ($row = $stmt->fetch()) {
+                    $cat = trim($row['category'] ?? '');
+                    if ($cat === 'Entrepreneur') $cat = 'Entrepreneurs';
+                    elseif ($cat === 'Investor') $cat = 'Investors';
+                    elseif ($cat === 'Mentor') $cat = 'Mentors';
+                    elseif ($cat === 'Organizer' || $cat === 'Support Organisation') $cat = 'Organizers';
+                    if (isset($counts[$cat])) {
+                        $counts[$cat] += (int)$row['cnt'];
+                    }
+                }
+                return $counts;
+            }
+        } catch (PDOException $e) {
+            error_log("Failed to count visitor ideas by category: " . $e->getMessage());
+        }
+    }
+
+    $fallbackFile = getVisitorIdeasFallbackFilePath();
+    if (file_exists($fallbackFile)) {
+        $ideas = json_decode(@file_get_contents($fallbackFile), true) ?: [];
+        foreach ($ideas as $item) {
+            $cat = trim($item['category'] ?? 'Entrepreneurs');
+            if ($cat === 'Entrepreneur') $cat = 'Entrepreneurs';
+            elseif ($cat === 'Investor') $cat = 'Investors';
+            elseif ($cat === 'Mentor') $cat = 'Mentors';
+            elseif ($cat === 'Organizer' || $cat === 'Support Organisation') $cat = 'Organizers';
+            if (isset($counts[$cat])) {
+                $counts[$cat]++;
+            }
+        }
+    }
+
+    return $counts;
 }
 
 function getVisitorIdeaById($id) {

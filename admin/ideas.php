@@ -7,20 +7,22 @@ require_once __DIR__ . '/auth.php';
 requireAdminAuth();
 
 $statusFilter = $_GET['status'] ?? null;
+$categoryFilter = $_GET['category'] ?? null;
 $hasVideoFilter = isset($_GET['has_video']) ? (bool)$_GET['has_video'] : null;
 $search = trim($_GET['search'] ?? '');
 
 // Handle CSV Export
 if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
-    $rows = getVisitorIdeas(1000, null, $search ?: null);
+    $rows = getVisitorIdeas(1000, null, $search ?: null, $categoryFilter ?: null);
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename=nextgen_visitor_ideas_' . date('Y-m-d') . '.csv');
     
     $output = fopen('php://output', 'w');
-    fputcsv($output, ['ID', 'Full Name', 'WhatsApp Phone', 'Email', 'Education', 'Local Address', 'Idea Description', 'Video File', 'Video Duration (s)', 'Status', 'Date', 'Admin Notes', 'IP Address']);
+    fputcsv($output, ['ID', 'Category Track', 'Full Name', 'WhatsApp Phone', 'Email', 'Education', 'Local Address', 'Idea Description', 'Video File', 'Video Duration (s)', 'Status', 'Date', 'Admin Notes', 'IP Address']);
     
     foreach ($rows as $r) {
         if ($statusFilter && ($r['status'] ?? '') !== $statusFilter) continue;
+        if ($categoryFilter && ($r['category'] ?? 'Entrepreneurs') !== $categoryFilter) continue;
         if ($hasVideoFilter !== null) {
             $hasVid = !empty($r['video_path']) || !empty($r['video_duration']);
             if ($hasVideoFilter && !$hasVid) continue;
@@ -29,6 +31,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
 
         fputcsv($output, [
             $r['id'] ?? '',
+            $r['category'] ?? 'Entrepreneurs',
             $r['full_name'] ?? '',
             $r['phone'] ?? '',
             $r['email'] ?? '',
@@ -56,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         updateVisitorIdeaStatus($ideaId, $newStatus, $notes ?: null);
         $redirectUrl = "ideas.php?updated=1";
         if ($statusFilter) $redirectUrl .= "&status=" . urlencode($statusFilter);
+        if ($categoryFilter) $redirectUrl .= "&category=" . urlencode($categoryFilter);
         if ($hasVideoFilter !== null) $redirectUrl .= "&has_video=" . ($hasVideoFilter ? '1' : '0');
         if (!empty($search)) $redirectUrl .= "&search=" . urlencode($search);
         header("Location: " . $redirectUrl);
@@ -82,6 +86,11 @@ $shortlistedCount = 0;
 $contactedCount = 0;
 $withVideoCount = 0;
 
+$entrepreneursCount = 0;
+$investorsCount = 0;
+$mentorsCount = 0;
+$organizersCount = 0;
+
 foreach ($allIdeas as $item) {
     $st = $item['status'] ?? 'New';
     if ($st === 'New') $newCount++;
@@ -92,11 +101,20 @@ foreach ($allIdeas as $item) {
     if (!empty($item['video_path']) || !empty($item['video_duration'])) {
         $withVideoCount++;
     }
+
+    $cat = $item['category'] ?? 'Entrepreneurs';
+    if ($cat === 'Entrepreneurs') $entrepreneursCount++;
+    elseif ($cat === 'Investors') $investorsCount++;
+    elseif ($cat === 'Mentors') $mentorsCount++;
+    elseif ($cat === 'Organizers') $organizersCount++;
 }
 
 // Apply in-memory filtering for active view
-$ideas = array_filter($allIdeas, function ($item) use ($statusFilter, $hasVideoFilter) {
+$ideas = array_filter($allIdeas, function ($item) use ($statusFilter, $categoryFilter, $hasVideoFilter) {
     if ($statusFilter && ($item['status'] ?? 'New') !== $statusFilter) {
+        return false;
+    }
+    if ($categoryFilter && ($item['category'] ?? 'Entrepreneurs') !== $categoryFilter) {
         return false;
     }
     if ($hasVideoFilter !== null) {
@@ -154,7 +172,7 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-            <a href="ideas.php?action=export_csv<?= $statusFilter ? '&status=' . urlencode($statusFilter) : '' ?><?= $hasVideoFilter !== null ? '&has_video=' . ($hasVideoFilter ? '1' : '0') : '' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="inline-flex items-center px-3.5 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-lg shadow-sm transition">
+            <a href="ideas.php?action=export_csv<?= $statusFilter ? '&status=' . urlencode($statusFilter) : '' ?><?= $categoryFilter ? '&category=' . urlencode($categoryFilter) : '' ?><?= $hasVideoFilter !== null ? '&has_video=' . ($hasVideoFilter ? '1' : '0') : '' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="inline-flex items-center px-3.5 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-lg shadow-sm transition">
                 <i class="fa-solid fa-file-csv mr-1.5 text-emerald-400"></i> Export to CSV
             </a>
             <a href="../landing.php" target="_blank" class="inline-flex items-center px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
@@ -163,34 +181,49 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
         </div>
     </div>
 
+    <?php
+    function buildIdeaUrl($params = []) {
+        global $statusFilter, $categoryFilter, $hasVideoFilter, $search;
+        $base = [
+            'status' => $statusFilter,
+            'category' => $categoryFilter,
+            'has_video' => $hasVideoFilter !== null ? ($hasVideoFilter ? '1' : '0') : null,
+            'search' => !empty($search) ? $search : null
+        ];
+        $merged = array_merge($base, $params);
+        $filtered = array_filter($merged, function($v) { return $v !== null && $v !== ''; });
+        return 'ideas.php' . (!empty($filtered) ? '?' . http_build_query($filtered) : '');
+    }
+    ?>
+
     <!-- Metric KPI Cards -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
         
-        <a href="ideas.php" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition">
+        <a href="<?= buildIdeaUrl(['status' => null, 'has_video' => null]) ?>" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition">
             <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Total Submissions</span>
             <span class="text-2xl font-extrabold text-slate-900 mt-1 block"><?= $totalIdeasCount ?></span>
             <span class="text-[11px] text-slate-500 font-semibold mt-0.5 block">All Gate Intakes</span>
         </a>
 
-        <a href="ideas.php?status=New" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-amber-400 transition">
+        <a href="<?= buildIdeaUrl(['status' => 'New', 'has_video' => null]) ?>" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-amber-400 transition">
             <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">New / Pending</span>
             <span class="text-2xl font-extrabold text-amber-600 mt-1 block"><?= $newCount ?></span>
             <span class="text-[11px] text-amber-700 font-semibold mt-0.5 block">Awaiting evaluation</span>
         </a>
 
-        <a href="ideas.php?status=Shortlisted" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-400 transition">
+        <a href="<?= buildIdeaUrl(['status' => 'Shortlisted', 'has_video' => null]) ?>" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-400 transition">
             <span class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">Shortlisted</span>
             <span class="text-2xl font-extrabold text-emerald-600 mt-1 block"><?= $shortlistedCount ?></span>
             <span class="text-[11px] text-emerald-700 font-semibold mt-0.5 block">For Founder Interview</span>
         </a>
 
-        <a href="ideas.php?status=Contacted" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-blue-400 transition">
+        <a href="<?= buildIdeaUrl(['status' => 'Contacted', 'has_video' => null]) ?>" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-blue-400 transition">
             <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider block">Contacted</span>
             <span class="text-2xl font-extrabold text-blue-600 mt-1 block"><?= $contactedCount ?></span>
             <span class="text-[11px] text-blue-700 font-semibold mt-0.5 block">Via WhatsApp / Call</span>
         </a>
 
-        <a href="ideas.php?has_video=1" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-purple-400 transition col-span-2 sm:col-span-1">
+        <a href="<?= buildIdeaUrl(['has_video' => '1', 'status' => null]) ?>" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-purple-400 transition col-span-2 sm:col-span-1">
             <span class="text-[11px] font-bold text-purple-600 uppercase tracking-wider block">With Video Pitch</span>
             <span class="text-2xl font-extrabold text-purple-600 mt-1 block"><?= $withVideoCount ?></span>
             <span class="text-[11px] text-purple-700 font-semibold mt-0.5 block">5-Min Video Available</span>
@@ -199,51 +232,76 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
     </div>
 
     <!-- Filters & Search Toolbar -->
-    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6 space-y-3">
         
-        <!-- Status Filter Tabs -->
-        <div class="flex flex-wrap items-center gap-1.5 text-xs font-bold">
-            <a href="ideas.php<?= !empty($search) ? '?search=' . urlencode($search) : '' ?>" class="px-3 py-1.5 rounded-lg border <?= empty($statusFilter) && $hasVideoFilter === null ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
-                All (<?= $totalIdeasCount ?>)
+        <!-- Category Track Selector Row -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 text-xs font-bold border-b border-slate-100">
+            <span class="text-slate-400 uppercase text-[10px] tracking-wider shrink-0 mr-1"><i class="fa-solid fa-layer-group mr-1"></i> Track:</span>
+            <a href="<?= buildIdeaUrl(['category' => null]) ?>" class="px-3 py-1.5 rounded-lg border <?= empty($categoryFilter) ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' ?> shrink-0 transition">
+                All Tracks (<?= $totalIdeasCount ?>)
             </a>
-            <a href="ideas.php?status=New<?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="px-3 py-1.5 rounded-lg border <?= $statusFilter === 'New' ? 'bg-amber-600 text-white border-amber-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
-                New (<?= $newCount ?>)
+            <a href="<?= buildIdeaUrl(['category' => 'Entrepreneurs']) ?>" class="px-3 py-1.5 rounded-lg border <?= $categoryFilter === 'Entrepreneurs' ? 'bg-emerald-700 text-white border-emerald-700 shadow-sm' : 'bg-emerald-50/70 text-emerald-800 border-emerald-200 hover:bg-emerald-100' ?> shrink-0 transition inline-flex items-center">
+                <i class="fa-solid fa-seedling mr-1.5 text-xs"></i> Entrepreneurs (<?= $entrepreneursCount ?>)
             </a>
-            <a href="ideas.php?status=Reviewed<?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="px-3 py-1.5 rounded-lg border <?= $statusFilter === 'Reviewed' ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
-                Reviewed (<?= $reviewedCount ?>)
+            <a href="<?= buildIdeaUrl(['category' => 'Investors']) ?>" class="px-3 py-1.5 rounded-lg border <?= $categoryFilter === 'Investors' ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-amber-50/70 text-amber-800 border-amber-200 hover:bg-amber-100' ?> shrink-0 transition inline-flex items-center">
+                <i class="fa-solid fa-coins mr-1.5 text-xs"></i> Investors (<?= $investorsCount ?>)
             </a>
-            <a href="ideas.php?status=Shortlisted<?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="px-3 py-1.5 rounded-lg border <?= $statusFilter === 'Shortlisted' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
-                Shortlisted (<?= $shortlistedCount ?>)
+            <a href="<?= buildIdeaUrl(['category' => 'Mentors']) ?>" class="px-3 py-1.5 rounded-lg border <?= $categoryFilter === 'Mentors' ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-blue-50/70 text-blue-800 border-blue-200 hover:bg-blue-100' ?> shrink-0 transition inline-flex items-center">
+                <i class="fa-solid fa-chalkboard-user mr-1.5 text-xs"></i> Mentors (<?= $mentorsCount ?>)
             </a>
-            <a href="ideas.php?status=Contacted<?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="px-3 py-1.5 rounded-lg border <?= $statusFilter === 'Contacted' ? 'bg-purple-600 text-white border-purple-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
-                Contacted (<?= $contactedCount ?>)
-            </a>
-            <a href="ideas.php?has_video=1<?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="px-3 py-1.5 rounded-lg border <?= $hasVideoFilter === true ? 'bg-purple-700 text-white border-purple-700' : 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' ?> transition flex items-center">
-                <i class="fa-solid fa-video mr-1 text-xs"></i> Videos Only (<?= $withVideoCount ?>)
+            <a href="<?= buildIdeaUrl(['category' => 'Organizers']) ?>" class="px-3 py-1.5 rounded-lg border <?= $categoryFilter === 'Organizers' ? 'bg-teal-700 text-white border-teal-700 shadow-sm' : 'bg-teal-50/70 text-teal-800 border-teal-200 hover:bg-teal-100' ?> shrink-0 transition inline-flex items-center">
+                <i class="fa-solid fa-users mr-1.5 text-xs"></i> Organizers (<?= $organizersCount ?>)
             </a>
         </div>
 
-        <!-- Search Input -->
-        <form action="ideas.php" method="GET" class="flex items-center space-x-2 shrink-0">
-            <?php if ($statusFilter): ?>
-                <input type="hidden" name="status" value="<?= htmlspecialchars($statusFilter) ?>">
-            <?php endif; ?>
-            <?php if ($hasVideoFilter !== null): ?>
-                <input type="hidden" name="has_video" value="<?= $hasVideoFilter ? '1' : '0' ?>">
-            <?php endif; ?>
-            <div class="relative">
-                <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search name, phone, idea..." class="pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white w-48 sm:w-60">
-                <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none"></i>
-            </div>
-            <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg transition">
-                Search
-            </button>
-            <?php if (!empty($search) || !empty($statusFilter) || $hasVideoFilter !== null): ?>
-                <a href="ideas.php" class="text-xs text-slate-500 hover:text-slate-800 px-2 py-1.5 rounded hover:bg-slate-100" title="Reset Filters">
-                    <i class="fa-solid fa-xmark"></i>
+        <!-- Status Filter Tabs & Search Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+            <div class="flex flex-wrap items-center gap-1.5 text-xs font-bold">
+                <a href="<?= buildIdeaUrl(['status' => null, 'has_video' => null]) ?>" class="px-3 py-1.5 rounded-lg border <?= empty($statusFilter) && $hasVideoFilter === null ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
+                    All Status
                 </a>
-            <?php endif; ?>
-        </form>
+                <a href="<?= buildIdeaUrl(['status' => 'New', 'has_video' => null]) ?>" class="px-3 py-1.5 rounded-lg border <?= $statusFilter === 'New' ? 'bg-amber-600 text-white border-amber-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
+                    New (<?= $newCount ?>)
+                </a>
+                <a href="<?= buildIdeaUrl(['status' => 'Reviewed', 'has_video' => null]) ?>" class="px-3 py-1.5 rounded-lg border <?= $statusFilter === 'Reviewed' ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
+                    Reviewed (<?= $reviewedCount ?>)
+                </a>
+                <a href="<?= buildIdeaUrl(['status' => 'Shortlisted', 'has_video' => null]) ?>" class="px-3 py-1.5 rounded-lg border <?= $statusFilter === 'Shortlisted' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
+                    Shortlisted (<?= $shortlistedCount ?>)
+                </a>
+                <a href="<?= buildIdeaUrl(['status' => 'Contacted', 'has_video' => null]) ?>" class="px-3 py-1.5 rounded-lg border <?= $statusFilter === 'Contacted' ? 'bg-purple-600 text-white border-purple-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' ?> transition">
+                    Contacted (<?= $contactedCount ?>)
+                </a>
+                <a href="<?= buildIdeaUrl(['has_video' => $hasVideoFilter === true ? null : '1']) ?>" class="px-3 py-1.5 rounded-lg border <?= $hasVideoFilter === true ? 'bg-purple-700 text-white border-purple-700' : 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' ?> transition flex items-center">
+                    <i class="fa-solid fa-video mr-1 text-xs"></i> Videos Only (<?= $withVideoCount ?>)
+                </a>
+            </div>
+
+            <!-- Search Input -->
+            <form action="ideas.php" method="GET" class="flex items-center space-x-2 shrink-0">
+                <?php if ($statusFilter): ?>
+                    <input type="hidden" name="status" value="<?= htmlspecialchars($statusFilter) ?>">
+                <?php endif; ?>
+                <?php if ($categoryFilter): ?>
+                    <input type="hidden" name="category" value="<?= htmlspecialchars($categoryFilter) ?>">
+                <?php endif; ?>
+                <?php if ($hasVideoFilter !== null): ?>
+                    <input type="hidden" name="has_video" value="<?= $hasVideoFilter ? '1' : '0' ?>">
+                <?php endif; ?>
+                <div class="relative">
+                    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search name, phone, idea..." class="pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white w-48 sm:w-60">
+                    <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none"></i>
+                </div>
+                <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg transition">
+                    Search
+                </button>
+                <?php if (!empty($search) || !empty($statusFilter) || !empty($categoryFilter) || $hasVideoFilter !== null): ?>
+                    <a href="ideas.php" class="text-xs text-slate-500 hover:text-slate-800 px-2 py-1.5 rounded hover:bg-slate-100" title="Reset All Filters">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                <?php endif; ?>
+            </form>
+        </div>
 
     </div>
 
@@ -254,6 +312,7 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
                 <thead class="bg-slate-50 text-slate-700 uppercase font-extrabold tracking-wider border-b border-slate-200">
                     <tr>
                         <th class="px-5 py-3.5">ID / Date</th>
+                        <th class="px-5 py-3.5">Track / Category</th>
                         <th class="px-5 py-3.5">Applicant & Background</th>
                         <th class="px-5 py-3.5">WhatsApp / Contact</th>
                         <th class="px-5 py-3.5">Idea Description</th>
@@ -264,7 +323,7 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
                 <tbody class="divide-y divide-slate-100 bg-white">
                     <?php if (empty($ideas)): ?>
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-slate-400">
+                            <td colspan="7" class="px-6 py-12 text-center text-slate-400">
                                 <i class="fa-solid fa-lightbulb text-4xl mb-3 text-slate-300 block"></i>
                                 No visitor idea submissions found under current criteria.
                             </td>
@@ -291,6 +350,31 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
                                 'Archived'    => 'bg-slate-100 text-slate-600 border-slate-300'
                             ];
                             $statusBadgeClass = $statusColors[$status] ?? 'bg-slate-100 text-slate-700 border-slate-200';
+
+                            $category = !empty($row['category']) ? $row['category'] : 'Entrepreneurs';
+                            $catBadgeConfig = [
+                                'Entrepreneurs' => [
+                                    'class' => 'bg-emerald-50 text-emerald-800 border-emerald-300',
+                                    'icon'  => 'fa-seedling',
+                                    'label' => 'Entrepreneurs'
+                                ],
+                                'Investors' => [
+                                    'class' => 'bg-amber-50 text-amber-800 border-amber-300',
+                                    'icon'  => 'fa-coins',
+                                    'label' => 'Investors'
+                                ],
+                                'Mentors' => [
+                                    'class' => 'bg-blue-50 text-blue-800 border-blue-300',
+                                    'icon'  => 'fa-chalkboard-user',
+                                    'label' => 'Mentors'
+                                ],
+                                'Organizers' => [
+                                    'class' => 'bg-teal-50 text-teal-800 border-teal-300',
+                                    'icon'  => 'fa-users',
+                                    'label' => 'Organizers'
+                                ]
+                            ];
+                            $catConfig = $catBadgeConfig[$category] ?? $catBadgeConfig['Entrepreneurs'];
                         ?>
                             <tr class="hover:bg-slate-50/70 transition">
                                 
@@ -303,6 +387,14 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
                                     <span class="text-[10px] text-slate-400 block font-mono">
                                         <?= date('h:i A', strtotime($row['created_at'])) ?>
                                     </span>
+                                </td>
+
+                                <!-- Track / Category -->
+                                <td class="px-5 py-4 align-top">
+                                    <a href="<?= buildIdeaUrl(['category' => $category]) ?>" class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold border <?= $catConfig['class'] ?> shadow-2xs hover:opacity-80 transition" title="Filter by <?= htmlspecialchars($category) ?>">
+                                        <i class="fa-solid <?= $catConfig['icon'] ?> mr-1.5 text-xs"></i>
+                                        <?= htmlspecialchars($category) ?>
+                                    </a>
                                 </td>
 
                                 <!-- Applicant & Background -->
@@ -459,9 +551,12 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
     <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
             <div>
-                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wide">
-                    Visitor Idea Intake Details
-                </span>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wide">
+                        Visitor Idea Intake Details
+                    </span>
+                    <span id="detail-modal-category-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wide"></span>
+                </div>
                 <h3 class="text-xl font-extrabold text-slate-900 mt-1" id="detail-modal-name">Applicant Name</h3>
             </div>
             <button type="button" onclick="closeIdeaModal()" class="text-slate-400 hover:text-slate-800 p-1">
@@ -471,6 +566,10 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
 
         <div class="space-y-4 text-xs text-slate-700">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div class="sm:col-span-2 flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-200">
+                    <span class="font-bold text-slate-500 uppercase tracking-wider block text-[10px]">Track / Role Selection:</span>
+                    <span id="detail-modal-category" class="font-bold text-xs inline-flex items-center px-2.5 py-0.5 rounded-lg border"></span>
+                </div>
                 <div>
                     <span class="font-bold text-slate-500 uppercase tracking-wider block text-[10px]">WhatsApp Phone:</span>
                     <span id="detail-modal-phone" class="font-bold text-slate-900 text-sm mt-0.5 block"></span>
@@ -544,6 +643,27 @@ renderAdminHeader('ideas', 'Visitor Idea Pitches & Video Intake', 'Visitor Ideas
         document.getElementById('detail-modal-education').textContent = data.education || 'N/A';
         document.getElementById('detail-modal-address').textContent = data.local_address || 'N/A';
         document.getElementById('detail-modal-description').textContent = data.idea_description || '';
+
+        const category = data.category || 'Entrepreneurs';
+        const catEl = document.getElementById('detail-modal-category');
+        const badgeEl = document.getElementById('detail-modal-category-badge');
+        
+        const catConfigs = {
+            'Entrepreneurs': { class: 'bg-emerald-50 text-emerald-800 border-emerald-300', icon: 'fa-seedling' },
+            'Investors': { class: 'bg-amber-50 text-amber-800 border-amber-300', icon: 'fa-coins' },
+            'Mentors': { class: 'bg-blue-50 text-blue-800 border-blue-300', icon: 'fa-chalkboard-user' },
+            'Organizers': { class: 'bg-teal-50 text-teal-800 border-teal-300', icon: 'fa-users' }
+        };
+        const cfg = catConfigs[category] || catConfigs['Entrepreneurs'];
+
+        if (catEl) {
+            catEl.className = 'font-bold text-xs inline-flex items-center px-2.5 py-0.5 rounded-lg border ' + cfg.class;
+            catEl.innerHTML = '<i class="fa-solid ' + cfg.icon + ' mr-1.5"></i> ' + category;
+        }
+        if (badgeEl) {
+            badgeEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wide ' + cfg.class;
+            badgeEl.innerHTML = '<i class="fa-solid ' + cfg.icon + ' mr-1.5"></i> ' + category + ' Track';
+        }
 
         const vidBox = document.getElementById('detail-modal-video-box');
         const vidBtn = document.getElementById('detail-modal-video-btn');

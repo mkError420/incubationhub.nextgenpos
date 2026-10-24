@@ -152,6 +152,7 @@ CREATE TABLE IF NOT EXISTS `network_partners` (
 CREATE TABLE IF NOT EXISTS `visitor_ideas` (
     `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `full_name` VARCHAR(150) NOT NULL,
+    `category` VARCHAR(50) NOT NULL DEFAULT 'Entrepreneurs',
     `email` VARCHAR(150) DEFAULT NULL,
     `phone` VARCHAR(50) NOT NULL,
     `local_address` TEXT NOT NULL,
@@ -167,6 +168,7 @@ CREATE TABLE IF NOT EXISTS `visitor_ideas` (
     `user_agent` VARCHAR(255) DEFAULT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_category` (`category`),
     INDEX `idx_status` (`status`),
     INDEX `idx_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

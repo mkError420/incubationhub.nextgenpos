@@ -33,6 +33,7 @@ if (!empty($_POST['website_trap'])) {
 // Gather form fields
 $ideaData = [
     'full_name'        => $_POST['full_name'] ?? '',
+    'category'         => $_POST['category'] ?? 'Entrepreneurs',
     'email'            => $_POST['email'] ?? '',
     'phone'            => $_POST['phone'] ?? '',
     'local_address'    => $_POST['local_address'] ?? '',
@@ -50,12 +51,15 @@ $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTT
     || (isset($_POST['is_ajax']) && $_POST['is_ajax'] == '1');
 
 if ($result['success']) {
+    $updatedCounts = function_exists('getVisitorIdeaCountsByCategory') ? getVisitorIdeaCountsByCategory() : [];
     http_response_code(200);
     echo json_encode([
-        'status'   => 'success',
-        'message'  => $result['message'],
-        'id'       => $result['id'] ?? null,
-        'redirect' => 'index.php?unlocked=1'
+        'status'         => 'success',
+        'message'        => $result['message'],
+        'id'             => $result['id'] ?? null,
+        'category'       => $result['category'] ?? ($ideaData['category']),
+        'updated_counts' => $updatedCounts,
+        'redirect'       => 'index.php?unlocked=1'
     ]);
 } else {
     http_response_code(400);

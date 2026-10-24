@@ -28,6 +28,7 @@ $landingSubtitle = getSiteSetting('landing_subtitle', 'Empowering visionary inno
 $carouselEnabled = getSiteSetting('landing_carousel_enabled', '1');
 $carouselAutoplay = (int)getSiteSetting('landing_carousel_autoplay', '5000');
 $landingBanners = getLandingBanners(true); // Active banners only
+$counterStats = getVisitorIdeaCountsByCategory();
 ?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -261,23 +262,50 @@ $landingBanners = getLandingBanners(true); // Active banners only
                 NextGen Farming Incubation Hub unlocks pre-seed capital, 500+ acres of living farmland testbeds, and direct commercial off-take partnerships. Share your idea below to unlock full access to our platform and pitch directly to our incubation committee.
             </p>
 
-            <!-- Trust / Impact Counters -->
-            <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto text-left">
-                <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 sm:p-4 rounded-xl backdrop-blur">
-                    <span class="text-xl sm:text-2xl font-black text-emerald-400 block">100+</span>
-                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Entrepreneurs</span>
+            <!-- Trust / Impact Counters (Dynamic & Interactive with Form Selection) -->
+            <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto text-left" id="impact-counters-container">
+                <div id="counter-card-entrepreneurs" data-category="Entrepreneurs" class="impact-counter-card cursor-pointer bg-slate-900/80 border-2 border-emerald-500/80 ring-2 ring-emerald-500/30 p-3.5 sm:p-4 rounded-xl backdrop-blur transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg shadow-emerald-950/50" title="Click to select Entrepreneurs in form">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xl sm:text-2xl font-black text-emerald-400 block tracking-tight">
+                            <span id="counter-val-entrepreneurs"><?= htmlspecialchars((string)($counterStats['Entrepreneurs'] ?? 100)) ?></span>+
+                        </span>
+                        <i class="fa-solid fa-seedling text-emerald-400 text-xs"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs text-white font-extrabold block mt-1">Entrepreneurs</span>
+                    <span class="text-[10px] text-emerald-300 font-semibold block mt-0.5">Innovators & Startups</span>
                 </div>
-                <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 sm:p-4 rounded-xl backdrop-blur">
-                    <span class="text-xl sm:text-2xl font-black text-amber-300 block">20+</span>
-                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Investors</span>
+
+                <div id="counter-card-investors" data-category="Investors" class="impact-counter-card cursor-pointer bg-slate-900/60 border border-slate-800/80 hover:border-amber-500/50 p-3.5 sm:p-4 rounded-xl backdrop-blur transition-all duration-300 transform hover:-translate-y-0.5" title="Click to select Investors in form">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xl sm:text-2xl font-black text-amber-300 block tracking-tight">
+                            <span id="counter-val-investors"><?= htmlspecialchars((string)($counterStats['Investors'] ?? 20)) ?></span>+
+                        </span>
+                        <i class="fa-solid fa-coins text-amber-400/50 text-xs"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs text-slate-300 font-bold block mt-1">Investors</span>
+                    <span class="text-[10px] text-amber-300/80 font-semibold block mt-0.5">Angels & Syndicates</span>
                 </div>
-                <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 sm:p-4 rounded-xl backdrop-blur">
-                    <span class="text-xl sm:text-2xl font-black text-emerald-400 block">15+</span>
-                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Mentors</span>
+
+                <div id="counter-card-mentors" data-category="Mentors" class="impact-counter-card cursor-pointer bg-slate-900/60 border border-slate-800/80 hover:border-blue-500/50 p-3.5 sm:p-4 rounded-xl backdrop-blur transition-all duration-300 transform hover:-translate-y-0.5" title="Click to select Mentors in form">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xl sm:text-2xl font-black text-blue-400 block tracking-tight">
+                            <span id="counter-val-mentors"><?= htmlspecialchars((string)($counterStats['Mentors'] ?? 15)) ?></span>+
+                        </span>
+                        <i class="fa-solid fa-chalkboard-user text-blue-400/50 text-xs"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs text-slate-300 font-bold block mt-1">Mentors</span>
+                    <span class="text-[10px] text-blue-300/80 font-semibold block mt-0.5">Scientists & Advisors</span>
                 </div>
-                <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 sm:p-4 rounded-xl backdrop-blur">
-                    <span class="text-xl sm:text-2xl font-black text-teal-300 block">24+</span>
-                    <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Organizers</span>
+
+                <div id="counter-card-organizers" data-category="Organizers" class="impact-counter-card cursor-pointer bg-slate-900/60 border border-slate-800/80 hover:border-teal-500/50 p-3.5 sm:p-4 rounded-xl backdrop-blur transition-all duration-300 transform hover:-translate-y-0.5" title="Click to select Organizers in form">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xl sm:text-2xl font-black text-teal-300 block tracking-tight">
+                            <span id="counter-val-organizers"><?= htmlspecialchars((string)($counterStats['Organizers'] ?? 24)) ?></span>+
+                        </span>
+                        <i class="fa-solid fa-users text-teal-400/50 text-xs"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs text-slate-300 font-bold block mt-1">Organizers</span>
+                    <span class="text-[10px] text-teal-300/80 font-semibold block mt-0.5">Agri Co-ops & Hubs</span>
                 </div>
             </div>
 
@@ -300,9 +328,6 @@ $landingBanners = getLandingBanners(true); // Active banners only
                         <p class="text-xs sm:text-sm text-slate-400 mt-1">
                             Fill in your details and idea overview below. Submitting will register your pitch directly into our Admin Portal and immediately unlock the main website.
                         </p>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 hidden sm:flex">
-                        <i class="fa-solid fa-lightbulb text-xl"></i>
                     </div>
                 </div>
 
@@ -338,6 +363,74 @@ $landingBanners = getLandingBanners(true); // Active banners only
                     <input type="text" name="website_trap" value="" style="display:none !important;" tabindex="-1" autocomplete="off">
                     <input type="hidden" name="is_ajax" value="1">
                     <input type="hidden" id="video_duration_input" name="video_duration" value="">
+
+                    <!-- Selecting Field on Top: Category Track -->
+                    <div class="p-4 sm:p-5 rounded-2xl bg-slate-950/90 border border-emerald-500/30 shadow-inner">
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="block text-xs font-bold text-slate-200 uppercase tracking-wider">
+                                Select Your Category / Track <span class="text-emerald-400">*</span>
+                            </label>
+                            <span class="text-[11px] text-emerald-400 font-semibold flex items-center">
+                                <i class="fa-solid fa-circle-check mr-1 text-[10px]"></i> Live Sync with Impact Counter
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="category-selection-container">
+                            
+                            <!-- Option 1: Entrepreneurs -->
+                            <label class="category-pill-label cursor-pointer relative flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-950/50 text-emerald-300 shadow-sm transition-all duration-200 hover:scale-[1.02] ring-2 ring-emerald-500/40">
+                                <input type="radio" name="category" value="Entrepreneurs" checked class="sr-only category-radio">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center mb-1.5 text-sm">
+                                    <i class="fa-solid fa-seedling"></i>
+                                </div>
+                                <span class="text-xs font-black tracking-tight text-white block">Entrepreneurs</span>
+                                <span class="text-[10px] text-emerald-300 font-medium block mt-0.5">Innovators & Startups</span>
+                                <span class="active-indicator absolute top-2 right-2 text-emerald-400 text-xs">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </span>
+                            </label>
+
+                            <!-- Option 2: Investors -->
+                            <label class="category-pill-label cursor-pointer relative flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-xl border border-slate-700/80 bg-slate-900/80 text-slate-400 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-slate-600">
+                                <input type="radio" name="category" value="Investors" class="sr-only category-radio">
+                                <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-300 flex items-center justify-center mb-1.5 text-sm">
+                                    <i class="fa-solid fa-coins"></i>
+                                </div>
+                                <span class="text-xs font-black tracking-tight text-white block">Investors</span>
+                                <span class="text-[10px] text-slate-400 font-medium block mt-0.5">Angel & Capital</span>
+                                <span class="active-indicator absolute top-2 right-2 text-emerald-400 text-xs hidden">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </span>
+                            </label>
+
+                            <!-- Option 3: Mentors -->
+                            <label class="category-pill-label cursor-pointer relative flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-xl border border-slate-700/80 bg-slate-900/80 text-slate-400 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-slate-600">
+                                <input type="radio" name="category" value="Mentors" class="sr-only category-radio">
+                                <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-300 flex items-center justify-center mb-1.5 text-sm">
+                                    <i class="fa-solid fa-chalkboard-user"></i>
+                                </div>
+                                <span class="text-xs font-black tracking-tight text-white block">Mentors</span>
+                                <span class="text-[10px] text-slate-400 font-medium block mt-0.5">Advisors & Experts</span>
+                                <span class="active-indicator absolute top-2 right-2 text-emerald-400 text-xs hidden">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </span>
+                            </label>
+
+                            <!-- Option 4: Organizers -->
+                            <label class="category-pill-label cursor-pointer relative flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-xl border border-slate-700/80 bg-slate-900/80 text-slate-400 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-slate-600">
+                                <input type="radio" name="category" value="Organizers" class="sr-only category-radio">
+                                <div class="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-300 flex items-center justify-center mb-1.5 text-sm">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+                                <span class="text-xs font-black tracking-tight text-white block">Organizers</span>
+                                <span class="text-[10px] text-slate-400 font-medium block mt-0.5">Co-ops & Hubs</span>
+                                <span class="active-indicator absolute top-2 right-2 text-emerald-400 text-xs hidden">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </span>
+                            </label>
+
+                        </div>
+                    </div>
 
                     <!-- Field 1: Name & Field 2: Email (Optional) -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -800,6 +893,64 @@ $landingBanners = getLandingBanners(true); // Active banners only
                 };
             });
 
+            // Category Selection & Trust/Impact Counter Interactive Sync
+            const categoryRadios = document.querySelectorAll('.category-radio');
+            const categoryCards = document.querySelectorAll('.category-pill-label');
+            const counterCards = document.querySelectorAll('.impact-counter-card');
+
+            function highlightCategoryTrack(selectedCategory) {
+                // 1. Update form radio buttons and active styling
+                categoryCards.forEach(card => {
+                    const radio = card.querySelector('.category-radio');
+                    const indicator = card.querySelector('.active-indicator');
+                    if (radio && radio.value === selectedCategory) {
+                        radio.checked = true;
+                        card.classList.remove('border-slate-700/80', 'bg-slate-900/80', 'text-slate-400');
+                        card.classList.add('border-2', 'border-emerald-500', 'bg-emerald-950/50', 'text-emerald-300', 'ring-2', 'ring-emerald-500/40', 'scale-[1.02]');
+                        if (indicator) indicator.classList.remove('hidden');
+                    } else {
+                        card.classList.remove('border-2', 'border-emerald-500', 'bg-emerald-950/50', 'text-emerald-300', 'ring-2', 'ring-emerald-500/40', 'scale-[1.02]');
+                        card.classList.add('border', 'border-slate-700/80', 'bg-slate-900/80', 'text-slate-400');
+                        if (indicator) indicator.classList.add('hidden');
+                    }
+                });
+
+                // 2. Dynamically highlight the matching Trust / Impact Counter Card
+                counterCards.forEach(card => {
+                    const cat = card.getAttribute('data-category');
+                    if (cat === selectedCategory) {
+                        card.classList.add('border-2', 'border-emerald-500/80', 'ring-2', 'ring-emerald-500/30', 'scale-[1.03]', 'shadow-lg', 'shadow-emerald-950/50', 'bg-slate-900/90');
+                        card.classList.remove('border-slate-800/80', 'bg-slate-900/60');
+                    } else {
+                        card.classList.remove('border-2', 'border-emerald-500/80', 'ring-2', 'ring-emerald-500/30', 'scale-[1.03]', 'shadow-lg', 'shadow-emerald-950/50', 'bg-slate-900/90');
+                        card.classList.add('border', 'border-slate-800/80', 'bg-slate-900/60');
+                    }
+                });
+            }
+
+            // Category radio input change listeners
+            categoryRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.checked) {
+                        highlightCategoryTrack(this.value);
+                    }
+                });
+            });
+
+            // Trust / Impact Counter cards click to auto-select matching category & scroll to form
+            counterCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const cat = this.getAttribute('data-category');
+                    if (cat) {
+                        highlightCategoryTrack(cat);
+                        const intakeSection = document.getElementById('intake-form-section');
+                        if (intakeSection) {
+                            intakeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }
+                });
+            });
+
             // Form Submit via AJAX with Upload Progress
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -852,6 +1003,23 @@ $landingBanners = getLandingBanners(true); // Active banners only
                     }
 
                     if (xhr.status >= 200 && xhr.status < 300 && response.status === 'success') {
+                        // Dynamically update Trust / Impact Counter numbers in real time
+                        if (response.updated_counts) {
+                            ['entrepreneurs', 'investors', 'mentors', 'organizers'].forEach(k => {
+                                const capKey = k.charAt(0).toUpperCase() + k.slice(1);
+                                const valEl = document.getElementById('counter-val-' + k);
+                                if (valEl && response.updated_counts[capKey] !== undefined) {
+                                    valEl.textContent = response.updated_counts[capKey];
+                                }
+                            });
+
+                            const subCat = (response.submitted_category || 'Entrepreneurs').toLowerCase();
+                            const activeCounterCard = document.getElementById('counter-card-' + subCat);
+                            if (activeCounterCard) {
+                                activeCounterCard.classList.add('ring-4', 'ring-emerald-400', 'scale-105', 'transition-transform');
+                            }
+                        }
+
                         // Success! Hide form and show celebration
                         form.classList.add('hidden');
                         successBox.classList.remove('hidden');
