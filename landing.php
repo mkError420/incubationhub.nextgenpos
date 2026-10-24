@@ -3,7 +3,7 @@
  * NextGen Farming Incubation Hub - Gate Landing Page & Idea Intake
  * 
  * Visitors are greeted with this landing page first.
- * Upon submitting their profile, idea description, and optional 5-minute video pitch,
+ * Upon submitting their profile and idea description,
  * their data is recorded to the admin dashboard and full website access is unlocked.
  */
 
@@ -374,12 +374,11 @@ $counterStats = getVisitorIdeaCountsByCategory();
                 </div>
 
                 <!-- The Actual Intake Form -->
-                <form id="landing-intake-form" action="api/submit_idea.php" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form id="landing-intake-form" action="api/submit_idea.php" method="POST" class="space-y-6">
                     
                     <!-- Honeypot field (anti-spam) -->
                     <input type="text" name="website_trap" value="" style="display:none !important;" tabindex="-1" autocomplete="off">
                     <input type="hidden" name="is_ajax" value="1">
-                    <input type="hidden" id="video_duration_input" name="video_duration" value="">
 
                     <!-- Selecting Field on Top: Category Track -->
                     <div class="p-4 sm:p-5 rounded-2xl bg-slate-950/90 border border-emerald-500/30 shadow-inner">
@@ -495,7 +494,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-500">
                                     <i class="fa-brands fa-whatsapp text-base"></i>
                                 </div>
-                                <input type="tel" id="field-phone" name="phone" required placeholder="e.g., +880 1712-345678" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+                                <input type="tel" id="field-phone" name="phone" required placeholder="e.g., +880 1712******" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
                             </div>
                             <span class="block text-[11px] text-emerald-400/90 mt-1 font-medium">
                                 <i class="fa-solid fa-circle-info mr-1"></i> Our team will reach out directly via WhatsApp.
@@ -553,92 +552,6 @@ $counterStats = getVisitorIdeaCountsByCategory();
                         <textarea id="field-idea" name="idea_description" required rows="5" placeholder="Describe your farming innovation, agri-tech solution, or business concept. What problem does it solve? Who are your target farmers or buyers? What prototype or stage are you at?" class="w-full p-4 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition leading-relaxed"></textarea>
                     </div>
 
-                    <!-- Field 7: Upload Videos Option with 5 Minutes (Optional) -->
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <label class="block text-xs font-bold text-slate-200 uppercase tracking-wider">
-                                Upload Your Own Presentation Video (Optional • Max 5 Minutes)
-                            </label>
-                            <span class="text-[10px] text-emerald-400 font-semibold bg-emerald-950 border border-emerald-800/60 px-2 py-0.5 rounded">
-                                <i class="fa-solid fa-stopwatch mr-1"></i> Max 5 mins (Optional)
-                            </span>
-                        </div>
-
-                        <!-- Drag & Drop Container -->
-                        <div id="video-dropzone" class="relative border-2 border-dashed border-slate-700 hover:border-emerald-500/60 bg-slate-950/70 hover:bg-slate-950 rounded-2xl p-6 text-center transition cursor-pointer group">
-                            <input type="file" id="video-file-input" name="pitch_video" accept="video/mp4,video/webm,video/quicktime,video/x-msvideo,video/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                            
-                            <!-- Dropzone Default View -->
-                            <div id="dropzone-idle-state" class="space-y-2 pointer-events-none">
-                                <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 group-hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto transition transform group-hover:scale-105">
-                                    <i class="fa-solid fa-video text-2xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-bold text-white group-hover:text-emerald-300 transition">
-                                        Click to choose video or drag and drop
-                                    </p>
-                                    <p class="text-xs text-slate-400 mt-1">
-                                        MP4, WebM, MOV, AVI • <strong class="text-emerald-400">Duration must be 5 minutes or less</strong>
-                                    </p>
-                                </div>
-                                <span class="inline-block text-[10px] uppercase tracking-wider font-bold text-slate-500 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
-                                    Live automatic duration check enabled
-                                </span>
-                            </div>
-
-                            <!-- Duration Warning Error State (Over 5 Minutes) -->
-                            <div id="dropzone-overlength-error" class="hidden text-rose-300 space-y-2 py-2">
-                                <i class="fa-solid fa-triangle-exclamation text-3xl text-rose-400 block mb-1"></i>
-                                <span class="font-bold text-sm block" id="overlength-text">Video duration exceeds 5 minutes</span>
-                                <span class="text-xs text-slate-400 block">Please select or trim a video of 5 minutes (300 seconds) or less.</span>
-                                <button type="button" id="reselect-video-btn" class="mt-2 text-xs bg-rose-900/60 hover:bg-rose-900 text-rose-200 px-3 py-1.5 rounded-lg border border-rose-700 transition">
-                                    Choose another video
-                                </button>
-                            </div>
-
-                            <!-- Dropzone Valid Video Preview State -->
-                            <div id="dropzone-preview-state" class="hidden space-y-3 py-2 text-left">
-                                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                                    <div class="flex items-center space-x-3 truncate">
-                                        <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                                            <i class="fa-solid fa-film text-lg"></i>
-                                        </div>
-                                        <div class="truncate">
-                                            <span id="preview-filename" class="text-xs font-bold text-white block truncate">video.mp4</span>
-                                            <div class="flex items-center space-x-2 text-[11px] text-slate-400">
-                                                <span id="preview-duration" class="text-emerald-400 font-bold flex items-center">
-                                                    <i class="fa-solid fa-check-circle mr-1"></i> 2m 45s
-                                                </span>
-                                                <span>•</span>
-                                                <span id="preview-filesize">18.5 MB</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button type="button" id="remove-video-btn" class="text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/60 px-2.5 py-1.5 rounded-lg border border-rose-900/40 transition shrink-0">
-                                        <i class="fa-solid fa-trash mr-1"></i> Remove
-                                    </button>
-                                </div>
-
-                                <!-- Inline Video Preview -->
-                                <div class="rounded-xl overflow-hidden bg-black max-h-56 flex items-center justify-center">
-                                    <video id="video-preview-player" controls class="max-h-56 w-full object-contain"></video>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!-- Upload Progress Bar (Visible during video upload) -->
-                    <div id="upload-progress-container" class="hidden space-y-2">
-                        <div class="flex justify-between text-xs text-slate-300 font-medium">
-                            <span id="progress-status-text"><i class="fa-solid fa-cloud-arrow-up mr-1 text-emerald-400"></i> Uploading your idea & pitch video...</span>
-                            <span id="progress-percentage-text" class="font-bold text-emerald-400">0%</span>
-                        </div>
-                        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
-                            <div id="upload-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2.5 rounded-full transition-all duration-200" style="width: 0%"></div>
-                        </div>
-                    </div>
-
                     <!-- Submit Button -->
                     <div class="pt-2">
                         <button type="submit" id="submit-intake-btn" class="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 via-agro-700 to-emerald-600 hover:from-emerald-400 hover:via-agro-600 hover:to-emerald-500 text-slate-950 font-black text-base sm:text-lg rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition transform hover:-translate-y-0.5 flex items-center justify-center space-x-2">
@@ -687,7 +600,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                     </div>
                     <h4 class="text-lg font-bold text-white">Committee Evaluation</h4>
                     <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        Our incubation directors and technical agronomists review your idea text and pitch video within 48 to 72 hours, evaluating fit across our pre-seed and growth tracks.
+                        Our incubation directors and technical agronomists review your idea submission and profile within 48 to 72 hours, evaluating fit across our pre-seed and growth tracks.
                     </p>
                 </div>
 
@@ -723,21 +636,21 @@ $counterStats = getVisitorIdeaCountsByCategory();
 
                 <details class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 text-slate-300 group cursor-pointer">
                     <summary class="font-bold text-white flex items-center justify-between list-none">
-                        <span>Is the video pitch mandatory?</span>
+                        <span>Who is eligible to submit an idea?</span>
                         <i class="fa-solid fa-chevron-down text-xs text-slate-500 group-open:rotate-180 transition"></i>
                     </summary>
                     <p class="mt-3 text-slate-400 leading-relaxed">
-                        No, the video upload is 100% optional! You can submit with just the text box description. However, a quick mobile phone video (up to 5 minutes) introducing yourself and showing your farm, prototype, or test results significantly speeds up evaluation.
+                        Anyone with an innovation or vision in agriculture! Farmers, agronomists, students, researchers, software engineers, and agribusiness founders are all encouraged to apply. Whether at idea stage or with an early prototype, we provide the testbeds and mentorship you need.
                     </p>
                 </details>
 
                 <details class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 text-slate-300 group cursor-pointer">
                     <summary class="font-bold text-white flex items-center justify-between list-none">
-                        <span>What if my video exceeds 5 minutes?</span>
+                        <span>What happens immediately after submitting my idea?</span>
                         <i class="fa-solid fa-chevron-down text-xs text-slate-500 group-open:rotate-180 transition"></i>
                     </summary>
                     <p class="mt-3 text-slate-400 leading-relaxed">
-                        Our system enforces a strict 5-minute (300 seconds) duration limit to maintain standardized evaluation. If your video is longer, our interactive file checker will alert you so you can quickly trim it or record a focused 3-5 minute summary pitch.
+                        Your submission immediately unlocks full access to the NextGen Farming website and resources. Simultaneously, our intake team records your details and contacts you directly via WhatsApp with your submission reference and next steps.
                     </p>
                 </details>
 
@@ -761,34 +674,16 @@ $counterStats = getVisitorIdeaCountsByCategory();
         </div>
     </footer>
 
-    <!-- Client-Side Validation & Video Duration Checker Script -->
+    <!-- Client-Side Validation & Form Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('landing-intake-form');
             const submitBtn = document.getElementById('submit-intake-btn');
-            const videoInput = document.getElementById('video-file-input');
-            const durationHidden = document.getElementById('video_duration_input');
-            const idleState = document.getElementById('dropzone-idle-state');
-            const previewState = document.getElementById('dropzone-preview-state');
-            const overlengthError = document.getElementById('dropzone-overlength-error');
-            const overlengthText = document.getElementById('overlength-text');
-            const reselectBtn = document.getElementById('reselect-video-btn');
-            const removeBtn = document.getElementById('remove-video-btn');
-            const previewPlayer = document.getElementById('video-preview-player');
-            const previewFilename = document.getElementById('preview-filename');
-            const previewDuration = document.getElementById('preview-duration');
-            const previewFilesize = document.getElementById('preview-filesize');
             const errorAlert = document.getElementById('form-error-alert');
             const errorMessage = document.getElementById('form-error-message');
             const successBox = document.getElementById('form-success-box');
-            const progressContainer = document.getElementById('upload-progress-container');
-            const progressBar = document.getElementById('upload-progress-bar');
-            const progressPercent = document.getElementById('progress-percentage-text');
             const charCounter = document.getElementById('char-counter');
             const ideaInput = document.getElementById('field-idea');
-
-            // Maximum allowed video duration: 5 minutes = 300 seconds (with a 2s grace threshold)
-            const MAX_DURATION_SEC = 300;
 
             // Character counter for idea description
             if (ideaInput && charCounter) {
@@ -811,104 +706,6 @@ $counterStats = getVisitorIdeaCountsByCategory();
                     errorAlert.classList.add('hidden');
                 }
             }
-
-            function resetVideoSelection() {
-                videoInput.value = '';
-                durationHidden.value = '';
-                previewPlayer.pause();
-                previewPlayer.removeAttribute('src');
-                previewPlayer.load();
-
-                idleState.classList.remove('hidden');
-                previewState.classList.add('hidden');
-                overlengthError.classList.add('hidden');
-            }
-
-            if (removeBtn) {
-                removeBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    resetVideoSelection();
-                });
-            }
-
-            if (reselectBtn) {
-                reselectBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    resetVideoSelection();
-                    videoInput.click();
-                });
-            }
-
-            // Video Duration & Format Validation
-            videoInput.addEventListener('change', function () {
-                clearError();
-                const file = this.files && this.files[0];
-                if (!file) {
-                    resetVideoSelection();
-                    return;
-                }
-
-                // Check file size (100MB max)
-                if (file.size > 104857600) {
-                    showError('Selected video file exceeds 100MB limit. Please choose a smaller file.');
-                    resetVideoSelection();
-                    return;
-                }
-
-                const fileUrl = URL.createObjectURL(file);
-                const tempVideo = document.createElement('video');
-                tempVideo.preload = 'metadata';
-                tempVideo.src = fileUrl;
-
-                tempVideo.onloadedmetadata = function () {
-                    window.URL.revokeObjectURL(tempVideo.src);
-                    const duration = Math.round(tempVideo.duration);
-
-                    if (duration > MAX_DURATION_SEC) {
-                        const mins = Math.floor(duration / 60);
-                        const secs = duration % 60;
-                        const durationFormatted = mins + 'm ' + (secs < 10 ? '0' : '') + secs + 's';
-                        
-                        overlengthText.textContent = 'Video duration is ' + durationFormatted + ' (Max allowed: 5 minutes)';
-                        idleState.classList.add('hidden');
-                        previewState.classList.add('hidden');
-                        overlengthError.classList.remove('hidden');
-                        
-                        // Clear the input so oversized video is not uploaded
-                        videoInput.value = '';
-                        durationHidden.value = '';
-                    } else {
-                        // Duration is valid!
-                        const mins = Math.floor(duration / 60);
-                        const secs = duration % 60;
-                        const durationFormatted = mins + 'm ' + (secs < 10 ? '0' : '') + secs + 's';
-
-                        durationHidden.value = duration;
-                        previewFilename.textContent = file.name;
-                        previewDuration.innerHTML = '<i class="fa-solid fa-check-circle mr-1"></i> ' + durationFormatted + ' (Max 5m)';
-                        previewFilesize.textContent = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-                        
-                        previewPlayer.src = fileUrl;
-
-                        idleState.classList.add('hidden');
-                        overlengthError.classList.add('hidden');
-                        previewState.classList.remove('hidden');
-                    }
-                };
-
-                tempVideo.onerror = function () {
-                    // Browser could not load metadata (e.g. rare codec or unsupported preview)
-                    // We still allow it through to the server for validation
-                    durationHidden.value = '';
-                    previewFilename.textContent = file.name;
-                    previewDuration.innerHTML = '<i class="fa-solid fa-clock mr-1"></i> Duration will be verified on upload';
-                    previewFilesize.textContent = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-                    
-                    idleState.classList.add('hidden');
-                    overlengthError.classList.add('hidden');
-                    previewState.classList.remove('hidden');
-                };
-            });
 
             // Category Selection & Trust/Impact Counter Interactive Sync
             const categoryRadios = document.querySelectorAll('.category-radio');
@@ -1003,24 +800,9 @@ $counterStats = getVisitorIdeaCountsByCategory();
                 submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
                 submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Submitting Idea & Unlocking Access...';
 
-                // Display progress bar if video is attached
-                const hasVideo = videoInput.files && videoInput.files.length > 0;
-                if (hasVideo) {
-                    progressContainer.classList.remove('hidden');
-                }
-
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', form.action, true);
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-                // Progress tracking
-                xhr.upload.onprogress = function (event) {
-                    if (event.lengthComputable && hasVideo) {
-                        const percent = Math.round((event.loaded / event.total) * 100);
-                        progressBar.style.width = percent + '%';
-                        progressPercent.textContent = percent + '%';
-                    }
-                };
 
                 xhr.onload = function () {
                     let response;
@@ -1097,7 +879,6 @@ $counterStats = getVisitorIdeaCountsByCategory();
                         submitBtn.disabled = false;
                         submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
                         submitBtn.innerHTML = '<span>Submit Idea & Unlock Full Website</span><i class="fa-solid fa-arrow-right text-sm ml-2"></i>';
-                        progressContainer.classList.add('hidden');
                         showError(response.message || 'Could not submit your idea. Please verify the form and try again.');
                     }
                 };
@@ -1106,7 +887,6 @@ $counterStats = getVisitorIdeaCountsByCategory();
                     submitBtn.disabled = false;
                     submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
                     submitBtn.innerHTML = '<span>Submit Idea & Unlock Full Website</span><i class="fa-solid fa-arrow-right text-sm ml-2"></i>';
-                    progressContainer.classList.add('hidden');
                     showError('Network connection issue. Please check your internet connection and try again.');
                 };
 
