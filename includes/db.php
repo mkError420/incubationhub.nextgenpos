@@ -1074,6 +1074,7 @@ function getDefaultSiteSettings() {
         'about_advisors_json'        => '',
         'site_logo'                  => '',
         'login_logo'                 => '',
+        'landing_gate_enabled'       => '1',
     ];
 }
 
@@ -2821,18 +2822,26 @@ function isVisitorUnlocked() {
         @session_start();
     }
 
+    // Manual reset check for testing gate intake flow
+    if (isset($_GET['reset_gate']) || isset($_GET['reset'])) {
+        unset($_SESSION['nextgen_visitor_unlocked']);
+        @setcookie('nextgen_visitor_pass', '', time() - 3600, '/');
+        return false;
+    }
+
     // If gate is disabled in settings, allow everyone
     $gateEnabled = getSiteSetting('landing_gate_enabled', '1');
     if ($gateEnabled === '0' || $gateEnabled === 'false') {
         return true;
     }
 
-    // Administrator bypass: Logged-in admin can always view the live website
-    if (!empty($_SESSION['admin_user'])) {
+    // Explicit Admin bypass if requested with query parameter
+    if (isset($_GET['admin_bypass']) && !empty($_SESSION['admin_user'])) {
+        $_SESSION['nextgen_visitor_unlocked'] = true;
         return true;
     }
 
-    // Session unlock flag
+    // Session unlock flag (set after successfully submitting idea form)
     if (!empty($_SESSION['nextgen_visitor_unlocked'])) {
         return true;
     }

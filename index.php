@@ -1,4 +1,15 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
+require_once __DIR__ . '/includes/db.php';
+
+// If visitor has not submitted the form, directly open the landing page
+if (!isVisitorUnlocked()) {
+    require_once __DIR__ . '/landing.php';
+    exit;
+}
+
 $currentPage = 'index';
 $pageTitle = 'NextGen Farming Incubation Hub | Connecting Ecosystem Builders in Bangladesh & Emerging Markets';
 $pageDescription = 'NextGen Farming Incubation Hub connects entrepreneurs, investors, support organisations, and mentors to accelerate agricultural innovation in Bangladesh and emerging markets.';

@@ -118,9 +118,14 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
             <!-- Right Controls: Status & Admin Link -->
             <div class="flex items-center space-x-3 text-xs">
                 <?php if ($alreadyUnlocked): ?>
-                    <a href="index.php" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-lg shadow transition">
-                        <i class="fa-solid fa-circle-check mr-1.5 text-slate-950"></i> Hub Access Active • View Main Website &rarr;
-                    </a>
+                    <div class="flex items-center space-x-2">
+                        <a href="landing.php?reset=1" class="hidden sm:inline-flex items-center px-2.5 py-1.5 rounded-lg border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 text-[11px] font-semibold transition" title="Clear unlock session and test gate submission again">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Access (Test Gate)
+                        </a>
+                        <a href="index.php" class="inline-flex items-center px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-lg shadow transition text-xs">
+                            <i class="fa-solid fa-circle-check mr-1 text-slate-950"></i> Enter Main Website &rarr;
+                        </a>
+                    </div>
                 <?php else: ?>
                     <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800/60">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
@@ -146,12 +151,12 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
         <section class="pt-12 sm:pt-16 pb-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center relative z-10">
             
             <div class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-900/40 text-emerald-300 border border-emerald-500/30 mb-6 backdrop-blur">
-                <i class="fa-solid fa-seedling mr-2 text-emerald-400"></i> Bangladesh's Premier Agricultural Venture Studio
+                <i class="fa-solid fa-seedling mr-2 text-emerald-400"></i> Agricultural Entrepreneurship Zone
             </div>
 
             <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight sm:leading-none">
                 Transform Your Agricultural Vision into <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">Commercial Scale</span>
-            </h1>
+            </h1> 
 
             <p class="mt-5 text-sm sm:text-base lg:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
                 NextGen Farming Incubation Hub unlocks pre-seed capital, 500+ acres of living farmland testbeds, and direct commercial off-take partnerships. Share your idea below to unlock full access to our platform and pitch directly to our incubation committee.
@@ -343,7 +348,7 @@ $dynSiteName = getSiteSetting('site_name', 'NextGen Farming Incubation Hub');
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <label class="block text-xs font-bold text-slate-200 uppercase tracking-wider">
-                                Upload Pitch Video (Optional • Max 5 Minutes)
+                                Upload Your Own Presentation Video (Optional • Max 5 Minutes)
                             </label>
                             <span class="text-[10px] text-emerald-400 font-semibold bg-emerald-950 border border-emerald-800/60 px-2 py-0.5 rounded">
                                 <i class="fa-solid fa-stopwatch mr-1"></i> Max 5 mins (Optional)
