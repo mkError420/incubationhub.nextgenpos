@@ -460,7 +460,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                                     <i class="fa-solid fa-user text-sm"></i>
                                 </div>
-                                <input type="text" id="field-full-name" name="full_name" required placeholder="e.g., Mohammad Rafiqul Islam" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+                                <input type="text" id="field-full-name" name="full_name" required placeholder="e.g., Your Name" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
                             </div>
                         </div>
 
@@ -476,7 +476,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                                     <i class="fa-solid fa-envelope text-sm"></i>
                                 </div>
-                                <input type="email" id="field-email" name="email" placeholder="e.g., rafiqul@example.com" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+                                <input type="email" id="field-email" name="email" placeholder="e.g., [EMAIL_ADDRESS]" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
                             </div>
                         </div>
 
@@ -494,7 +494,7 @@ $counterStats = getVisitorIdeaCountsByCategory();
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-500">
                                     <i class="fa-brands fa-whatsapp text-base"></i>
                                 </div>
-                                <input type="tel" id="field-phone" name="phone" required placeholder="e.g., +880 1712******" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+                                <input type="tel" id="field-phone" name="phone" required placeholder="e.g., +8801712******" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
                             </div>
                             <span class="block text-[11px] text-emerald-400/90 mt-1 font-medium">
                                 <i class="fa-solid fa-circle-info mr-1"></i> Our team will reach out directly via WhatsApp.

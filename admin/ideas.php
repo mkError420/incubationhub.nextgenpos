@@ -18,7 +18,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
     header('Content-Disposition: attachment; filename=nextgen_visitor_ideas_' . date('Y-m-d') . '.csv');
     
     $output = fopen('php://output', 'w');
-    fputcsv($output, ['ID', 'Category Track', 'Full Name', 'WhatsApp Phone', 'Email', 'Education', 'Local Address', 'Idea Description', 'Video File', 'Video Duration (s)', 'Status', 'Date', 'Admin Notes', 'IP Address']);
+    fputcsv($output, ['ID', 'Category Track', 'Full Name', 'WhatsApp Phone', 'Email', 'Education', 'Local Address', 'Idea Description', 'Status', 'Date', 'Admin Notes']);
     
     foreach ($rows as $r) {
         if ($statusFilter && ($r['status'] ?? '') !== $statusFilter) continue;
@@ -38,12 +38,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
             $r['education'] ?? '',
             $r['local_address'] ?? '',
             $r['idea_description'] ?? '',
-            $r['video_path'] ?? '',
-            $r['video_duration'] ?? '',
             $r['status'] ?? 'New',
             $r['created_at'] ?? '',
-            $r['admin_notes'] ?? '',
-            $r['ip_address'] ?? ''
+            $r['admin_notes'] ?? ''
         ]);
     }
     fclose($output);
